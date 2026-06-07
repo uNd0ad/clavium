@@ -29,7 +29,7 @@ export default function LoginPage() {
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
-      setStatus(`Bine ai venit, ${data.user.name}!`)
+      setStatus(`Bine ai venit, ${data.user.firstName}!`)
       router.push('/')
     } catch (error) {
       setStatus((error as Error).message)
@@ -74,7 +74,7 @@ export default function LoginPage() {
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
-      setStatus(`Autentificare reușită. Bun venit, ${data.user.name}!`)
+      setStatus(`Autentificare reușită. Bun venit, ${data.user.firstName}!`)
       router.push('/')
     } catch (error) {
       setStatus((error as Error).message)

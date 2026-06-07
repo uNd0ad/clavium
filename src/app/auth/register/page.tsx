@@ -9,7 +9,8 @@ const steps = ['Informații cont', 'Parolă', 'Detalii', 'Finalizare']
 export default function RegisterPage() {
   const router = useRouter()
   const [step, setStep] = useState(0)
-  const [name, setName] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -17,8 +18,8 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false)
 
   const handleNext = () => {
-    if (step === 0 && (!name || !email)) {
-      setStatus('Completează numele și email-ul pentru a continua.')
+    if (step === 0 && (!firstName || !lastName || !email)) {
+      setStatus('Completează prenumele, numele de familie și email-ul pentru a continua.')
       return
     }
     if (step === 1 && (password.length < 8 || password !== confirmPassword)) {
@@ -50,12 +51,12 @@ export default function RegisterPage() {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ firstName, lastName, email, password }),
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
       setStep(3)
-      setStatus(`Cont creat! Bine ai venit, ${data.user.name}.`)
+      setStatus(`Cont creat! Bine ai venit, ${data.user.firstName}.`)
       router.push('/')
     } catch (error) {
       setStatus((error as Error).message)
@@ -77,7 +78,8 @@ export default function RegisterPage() {
 
         {step === 0 && (
           <div className="space-y-5">
-            <FormField label="Nume complet" value={name} onChange={(event) => setName(event.target.value)} placeholder="Ion Popescu" />
+            <FormField label="Prenume" value={firstName} onChange={(event) => setFirstName(event.target.value)} placeholder="Ion" />
+            <FormField label="Nume de familie" value={lastName} onChange={(event) => setLastName(event.target.value)} placeholder="Popescu" />
             <FormField label="Email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="exemplu@domeniu.ro" />
           </div>
         )}
@@ -96,7 +98,8 @@ export default function RegisterPage() {
             </p>
             <div className="rounded-[24px] border border-[var(--border)] bg-white p-5 text-sm text-[var(--text)]">
               <p className="font-semibold">Rezumat cont</p>
-              <p className="mt-3">Nume: {name || '—'}</p>
+              <p className="mt-3">Prenume: {firstName || '—'}</p>
+              <p>Nume de familie: {lastName || '—'}</p>
               <p>Email: {email || '—'}</p>
               <p>Parolă: {password ? 'Setată' : 'Nedefinită'}</p>
             </div>

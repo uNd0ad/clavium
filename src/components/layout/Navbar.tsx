@@ -16,7 +16,7 @@ export default function Navbar() {
   const router = useRouter()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [currentUser, setCurrentUser] = useState<{ name: string } | null>(null)
+  const [currentUser, setCurrentUser] = useState<{ firstName: string; lastName: string; email: string } | null>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
@@ -75,7 +75,7 @@ export default function Navbar() {
             {currentUser ? (
               <>
                 <span className="text-[12px] tracking-[0.08em] uppercase text-[var(--text)]">
-                  {`Bun venit, ${currentUser.name}`}
+                  {`Bun venit, ${currentUser.firstName}`}
                 </span>
                 <button onClick={handleLogout} className="btn-outline text-[12px] px-6 py-3">
                   Deconectare

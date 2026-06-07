@@ -10,6 +10,7 @@ import {
   clearExpiredOtps,
 } from './userStore'
 import { JWT_SECRET } from './constants'
+import { ROLES } from './types/roles'
 import type {
   AuthPayload,
   LoginRequest,
@@ -44,7 +45,7 @@ export async function verifyToken(token: string): Promise<AuthPayload | null> {
 
 export async function registerUser(data: RegisterRequest) {
   const passwordHash = await hash(data.password, 10)
-  return await createUser(data.name, data.email, passwordHash)
+  return await createUser(data.firstName, data.lastName, data.email, passwordHash, data.role)
 }
 
 export async function loginUser(data: LoginRequest) {
@@ -77,8 +78,10 @@ export async function verifyOtpCode(data: OtpVerifyRequest) {
   await invalidateOtp(data.email)
   const user = await findUserByEmail(data.email)
   if (user) return user
-  const name = data.email.split('@')[0]
-  return await createUser(name, data.email, await hash(Math.random().toString(36), 10))
+  const [firstName, lastName] = data.email.split('@')[0].split('.').length > 1 
+    ? data.email.split('@')[0].split('.')
+    : [data.email.split('@')[0], 'User']
+  return await createUser(firstName, lastName, data.email, await hash(Math.random().toString(36), 10), ROLES.CLIENT)
 }
 
 export async function getUserFromToken(token: string) {

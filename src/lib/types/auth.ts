@@ -1,9 +1,18 @@
+import type { UserRole } from './roles'
+
 export type User = {
   id: string
+  firstName: string
+  lastName: string
   email: string
-  name: string
+  phone?: string | null
   passwordHash: string
+  role: UserRole
+  emailVerified: boolean
+  isActive: boolean
+  avatar?: string | null
   createdAt: string
+  updatedAt: string
 }
 
 export type AuthPayload = {
@@ -17,9 +26,11 @@ export type LoginRequest = {
 }
 
 export type RegisterRequest = {
-  name: string
+  firstName: string
+  lastName: string
   email: string
   password: string
+  role?: UserRole
 }
 
 export type OtpSendRequest = {
