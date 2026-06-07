@@ -1,0 +1,59 @@
+export default function Footer() {
+  const year = new Date().getFullYear()
+
+  return (
+    <footer className="bg-[var(--bg)] text-[var(--muted)]">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 mb-16">
+          <div className="lg:col-span-1">
+            <div className="font-sans text-2xl font-semibold text-[var(--text)] mb-4">
+              Clavium<span className="italic text-[var(--brand)]">.ro</span>
+            </div>
+            <p className="text-[14px] leading-relaxed text-[var(--muted)]/85">
+              Prima platformă din România pentru tranzacții imobiliare curate, rapide și complet digitale.
+            </p>
+          </div>
+
+          {[
+            {
+              title: 'Platformă',
+              links: ['Proprietăți', 'Cum funcționează', 'Prețuri', 'Blog'],
+            },
+            {
+              title: 'Legal',
+              links: ['Termeni și condiții', 'Politică de confidențialitate', 'GDPR', 'Cookies'],
+            },
+            {
+              title: 'Contact',
+              links: ['contact@clavium.ro', 'Timișoara, România', 'L-V 9-18'],
+            },
+          ].map((col) => (
+            <div key={col.title}>
+              <h4 className="text-[11px] tracking-[0.22em] uppercase text-[var(--brand)] mb-6 font-semibold">
+                {col.title}
+              </h4>
+              <ul className="space-y-3">
+                {col.links.map((l) => (
+                  <li key={l}>
+                    <a href="#" className="text-[14px] text-[var(--muted)]/80 hover:text-[var(--text)] transition-colors no-underline">
+                      {l}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <div className="border-t border-[var(--border)] pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-[13px] text-[var(--muted)]/70">
+            © {year} Clavium.ro · Toate drepturile rezervate
+          </p>
+          <span className="text-[12px] tracking-[0.18em] uppercase text-[var(--muted)]/70">
+            Semnătură electronică conformă eIDAS · Legea 214/2024
+          </span>
+        </div>
+      </div>
+    </footer>
+  )
+}
