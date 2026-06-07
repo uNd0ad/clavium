@@ -14,9 +14,9 @@ export default function SignatureSection() {
   const ref = useReveal()
 
   return (
-    <section id="contracte" className="bg-[var(--bg)] py-28 lg:py-32" ref={ref}>
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+    <section id="contracte" className="bg-[var(--bg)] py-24 lg:py-28" ref={ref}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+        <div className="grid gap-12 lg:grid-cols-2 lg:gap-20 items-center">
           <div>
             <div className="inline-flex items-center gap-2.5 rounded-full border border-[var(--brand)]/20 bg-[var(--brand-soft)] px-4 py-2 mb-8 text-[11px] uppercase tracking-[0.18em] text-[var(--brand)]">
               <span className="h-2.5 w-2.5 rounded-full bg-[var(--brand)] animate-pulse" />
@@ -82,7 +82,7 @@ export default function SignatureSection() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6 pt-6 border-t border-[var(--border)] mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6 border-t border-[var(--border)] mb-6">
                 {['Ioan Popescu', 'Maria Ionescu'].map((name) => (
                   <div key={name}>
                     <div className="text-[18px] font-semibold text-[var(--brand)] mb-1">{name.split(' ')[0]}</div>

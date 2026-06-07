@@ -37,8 +37,8 @@ export default function HowItWorksSection() {
   const ref = useReveal()
 
   return (
-    <section id="cum-functioneaza" className="bg-[var(--bg)] py-28 lg:py-36" ref={ref}>
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+    <section id="cum-functioneaza" className="bg-[var(--bg)] py-24 lg:py-32" ref={ref}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         <div className="mb-16">
           <div className="section-label mb-5">Procesul</div>
           <div className="max-w-4xl">
@@ -53,7 +53,7 @@ export default function HowItWorksSection() {
           </div>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((step) => (
             <div key={step.num} className="surface-card rounded-[32px] p-8 border border-[var(--border)]">
               <div className="inline-flex h-12 w-12 items-center justify-center rounded-3xl bg-[var(--brand-soft)] text-[var(--brand)] text-xl font-semibold mb-6">

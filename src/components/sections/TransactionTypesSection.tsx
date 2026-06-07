@@ -31,8 +31,8 @@ export default function TransactionTypesSection() {
   const ref = useReveal()
 
   return (
-    <section id="proprietati" className="bg-[var(--bg)] py-28 lg:py-36" ref={ref}>
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+    <section id="proprietati" className="bg-[var(--bg)] py-24 lg:py-32" ref={ref}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         <div className="mb-16">
           <div className="section-label mb-5">Tipuri de tranzacții</div>
           <h2 className="font-sans text-[clamp(34px,4vw,50px)] font-semibold tracking-[-0.03em] text-[var(--text)] leading-tight">
@@ -42,7 +42,7 @@ export default function TransactionTypesSection() {
           </h2>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {TYPES.map((type) => (
             <a key={type.name} href={type.href} className="surface-card group rounded-[32px] p-8 border border-[var(--border)] transition hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(15,23,42,0.08)]">
               <div className="inline-flex items-center gap-3 mb-6">

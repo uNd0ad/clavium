@@ -101,12 +101,16 @@ body, button, input, textarea, select {
     border: 1px solid rgba(255,255,255,0.75);
     backdrop-filter: blur(18px);
     box-shadow: var(--shadow);
+    min-width: 0;
+    width: 100%;
   }
 
   .surface-card {
     background: var(--surface-strong);
     border: 1px solid rgba(15,23,42,0.06);
     box-shadow: var(--shadow);
+    min-width: 0;
+    width: 100%;
   }
 }
 

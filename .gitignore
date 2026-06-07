@@ -18,6 +18,9 @@ pnpm-debug.log*
 .env.test.local
 .env.production.local
 
+# Database
+dev.db
+
 # MacOS
 .DS_Store
 

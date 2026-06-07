@@ -14,14 +14,14 @@ export default function HeroSection() {
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-[var(--bg)]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(0,113,227,0.18),_transparent_22%),radial-gradient(circle_at_bottom_right,_rgba(0,113,227,0.12),_transparent_30%)] opacity-95" />
 
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-12 pt-32 pb-24 w-full">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-28 pb-16 sm:pt-24 sm:pb-20 w-full">
         <div className="grid lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7">
             <div className="section-label mb-6">
               Prima platformă imobiliară cu design modern
             </div>
 
-            <h1 className="font-sans text-[clamp(48px,6vw,88px)] leading-[0.96] font-semibold tracking-[-0.04em] text-[var(--text)] max-w-[12ch]">
+            <h1 className="font-sans text-[clamp(42px,6vw,88px)] leading-[0.96] font-semibold tracking-[-0.04em] text-[var(--text)] max-w-none sm:max-w-[20ch] md:max-w-[16ch] lg:max-w-[12ch]">
               Real estate, construită ca un produs.
             </h1>
 
