@@ -28,7 +28,11 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       })
       const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
+      if (!response.ok) {
+        setStatus(data.error || 'Nu există un cont cu această adresă de email sau parola este incorectă.')
+        setLoading(false)
+        return
+      }
       setStatus(`Bine ai venit, ${data.user.firstName}!`)
       router.push('/')
     } catch (error) {

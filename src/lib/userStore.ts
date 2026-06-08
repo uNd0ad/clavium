@@ -8,11 +8,12 @@ function mapUserRole(role: string): UserRole {
 }
 
 export async function findUserByEmail(email: string): Promise<User | null> {
-  const user = await prisma.user.findUnique({
-    where: { email: email.toLowerCase() },
-  })
-  if (!user) return null
-  return {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    })
+    if (!user) return null
+    return {
     id: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
@@ -26,6 +27,10 @@ export async function findUserByEmail(email: string): Promise<User | null> {
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
   }
+  } catch (err) {
+    console.error('findUserByEmail error:', err)
+    return null
+  }
 }
 
 export async function createUser(firstName: string, lastName: string, email: string, passwordHash: string, role?: UserRole): Promise<User> {
@@ -34,15 +39,34 @@ export async function createUser(firstName: string, lastName: string, email: str
     throw new Error('Există deja un cont cu acest email.')
   }
 
-  const user = await prisma.user.create({
-    data: {
-      firstName,
-      lastName,
-      email: email.toLowerCase(),
-      passwordHash,
-      role: role || ROLES.CLIENT,
-    },
-  })
+  let user: any
+  try {
+    user = await prisma.user.create({
+      data: {
+        firstName,
+        lastName,
+        email: email.toLowerCase(),
+        passwordHash,
+        role: role || ROLES.CLIENT,
+      },
+    })
+  } catch (err: any) {
+    console.error('createUser error, trying legacy payload:', err?.message || err)
+    // Fallback for older DB schema that only has `name` column
+    try {
+      user = await (prisma as any).user.create({
+        data: {
+          name: `${firstName} ${lastName}`,
+          email: email.toLowerCase(),
+          passwordHash,
+          role: role || ROLES.CLIENT,
+        },
+      })
+    } catch (err2) {
+      console.error('createUser legacy fallback failed:', err2)
+      throw err2
+    }
+  }
 
   return {
     id: user.id,
@@ -61,9 +85,10 @@ export async function createUser(firstName: string, lastName: string, email: str
 }
 
 export async function getUserById(id: string): Promise<User | null> {
-  const user = await prisma.user.findUnique({ where: { id } })
-  if (!user) return null
-  return {
+  try {
+    const user = await prisma.user.findUnique({ where: { id } })
+    if (!user) return null
+    return {
     id: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
@@ -76,6 +101,10 @@ export async function getUserById(id: string): Promise<User | null> {
     avatar: user.avatar,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
+  }
+  } catch (err) {
+    console.error('getUserById error:', err)
+    return null
   }
 }
 
