@@ -39,34 +39,15 @@ export async function createUser(firstName: string, lastName: string, email: str
     throw new Error('Există deja un cont cu acest email.')
   }
 
-  let user: any
-  try {
-    user = await prisma.user.create({
-      data: {
-        firstName,
-        lastName,
-        email: email.toLowerCase(),
-        passwordHash,
-        role: role || ROLES.CLIENT,
-      },
-    })
-  } catch (err: any) {
-    console.error('createUser error, trying legacy payload:', err?.message || err)
-    // Fallback for older DB schema that only has `name` column
-    try {
-      user = await (prisma as any).user.create({
-        data: {
-          name: `${firstName} ${lastName}`,
-          email: email.toLowerCase(),
-          passwordHash,
-          role: role || ROLES.CLIENT,
-        },
-      })
-    } catch (err2) {
-      console.error('createUser legacy fallback failed:', err2)
-      throw err2
-    }
-  }
+  const user = await prisma.user.create({
+    data: {
+      firstName,
+      lastName,
+      email: email.toLowerCase(),
+      passwordHash,
+      role: role || ROLES.CLIENT,
+    },
+  })
 
   return {
     id: user.id,
