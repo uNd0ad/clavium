@@ -35,7 +35,7 @@ export default function RegisterPage() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (step === 3) {
-      router.push('/')
+      router.push('/dashboard')
       return
     }
 
@@ -57,7 +57,7 @@ export default function RegisterPage() {
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
       setStep(3)
       setStatus(`Cont creat! Bine ai venit, ${data.user.firstName}.`)
-      router.push('/')
+      router.push('/dashboard')
     } catch (error) {
       setStatus((error as Error).message)
     } finally {

@@ -69,6 +69,14 @@ export default function Navbar() {
                 {l.label}
               </a>
             ))}
+            {currentUser && (
+              <a
+                href="/dashboard"
+                className="text-[12px] tracking-[0.08em] uppercase text-[var(--muted)] hover:text-[var(--text)] transition-colors duration-200 no-underline"
+              >
+                Dashboard
+              </a>
+            )}
           </div>
 
           <div className="hidden lg:flex items-center gap-4">

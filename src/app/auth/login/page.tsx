@@ -34,7 +34,7 @@ export default function LoginPage() {
         return
       }
       setStatus(`Bine ai venit, ${data.user.firstName}!`)
-      router.push('/')
+      router.push('/dashboard')
     } catch (error) {
       setStatus((error as Error).message)
     } finally {
