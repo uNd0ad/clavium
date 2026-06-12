@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useReveal } from '@/hooks/useReveal'
 import { ArrowRight } from 'lucide-react'
 
@@ -29,10 +30,10 @@ export default function CtaSection() {
             Creează cont gratuit
             <ArrowRight size={16} />
           </a>
-          <a href="/proprietati" className="btn-outline px-10 py-4 text-[13px] w-full sm:w-auto justify-center">
+          <Link href="/proprietati" className="btn-outline px-10 py-4 text-[13px] w-full sm:w-auto justify-center">
             Explorează proprietăți
             <ArrowRight size={16} />
-          </a>
+          </Link>
         </div>
 
         <p className="text-[12px] text-[var(--muted)] tracking-[0.16em] uppercase">

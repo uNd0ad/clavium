@@ -3,11 +3,17 @@ import { otpVerifySchema } from '@/lib/validations'
 import { createToken, verifyOtpCode } from '@/lib/auth'
 import { COOKIE_NAME } from '@/lib/constants'
 import { errorMessage } from '@/lib/apiError'
+import { rateLimit, RATE_LIMIT_MESSAGE } from '@/lib/rateLimit'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const data = otpVerifySchema.parse(body)
+
+    if (!rateLimit(`otp-verify:${data.email.toLowerCase()}`, 5, 10 * 60 * 1000)) {
+      return NextResponse.json({ error: RATE_LIMIT_MESSAGE }, { status: 429 })
+    }
+
     const user = await verifyOtpCode(data)
     const token = await createToken(user)
 

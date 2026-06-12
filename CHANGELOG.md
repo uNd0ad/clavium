@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.4.0 — 2026-06-13
+
+### Marketplace funcțional (milestone 0.4)
+- Browsing public `/proprietati` cu filtre (căutare, chirie min/max) și pagini de detaliu cu descriere, caracteristici și proprietar.
+- CRUD proprietăți pentru owneri din dashboard (adăugare cu descriere/camere/suprafață, dezactivare/reactivare listare).
+- Salvare proprietăți (toggle) pentru utilizatori autentificați.
+- Flux complet de oferte: clientul trimite oferta de pe pagina proprietății, ownerul acceptă/respinge din dashboard; la acceptare se creează automat contractul și se resping celelalte oferte în curs.
+- Flux de semnare contract: fiecare parte semnează (QES prin furnizor pluggable, simulat în dev); la ambele semnături contractul devine ACTIV, proprietatea ÎNCHIRIATĂ și prima chirie devine scadentă.
+- Notificări generate de evenimente reale (ofertă primită/acceptată/respinsă, semnătură necesară, contract activ, chirie încasată), cu marcare ca citite.
+- Editare profil (nume, telefon cu re-verificare OTP), schimbare parolă (revocă celelalte sesiuni), export GDPR (JSON) și dezactivare cont.
+- Panou de administrare: statistici platformă, schimbare roluri, dezactivare/reactivare conturi (cu revocarea sesiunilor).
+
+### Plăți și chirii recurente (milestone 0.5)
+- Plata chiriei de către chiriaș (procesator pluggable prin `PAYMENTS_API_KEY`, simulat în dev): chiria devine FINALIZATĂ, se înregistrează comisionul platformei (5%) și se programează următoarea scadență lunară.
+- La ultima chirie din contract, contractul se încheie automat și proprietatea redevine disponibilă.
+
+### Securitate
+- Sesiuni în baza de date cu revocare: logout, schimbarea/resetarea parolei și acțiunile de admin invalidează token-urile active.
+- Fix conturi-fantomă: OTP-ul de email autentifică doar conturi existente (nu mai creează utilizatori automat).
+- Codurile OTP (email + SMS) sunt stocate hash-uit (SHA-256); token-urile de email la fel.
+- Rate limiting pe login, înregistrare, OTP email/SMS și resetare parolă.
+- Verificare email cu link (24h) și resetare parolă prin email (30 min) — serviciu de email pluggable, consolă în dev.
+- `JWT_SECRET` puternic obligatoriu în producție (aplicația refuză pornirea cu secretul de dev).
+- Security headers (X-Frame-Options, nosniff, Referrer-Policy, HSTS în producție).
+- Conturile dezactivate nu se mai pot autentifica pe nicio cale.
+
+### Calitate, SEO, legal
+- Pagini de eroare 404/500, loading skeleton pentru dashboard.
+- `sitemap.xml` (include proprietățile disponibile) și `robots.txt`.
+- Font Inter servit local prin `next/font` (fără Google Fonts CDN).
+- Pagini legale `/termeni` și `/confidentialitate`, cookie banner, consimțământ GDPR obligatoriu la înregistrare, linkuri ANPC/SOL în footer.
+
+### Infrastructură
+- ESLint (flat config, `eslint-config-next`) — `npm run lint`, zero erori.
+- Vitest cu teste unitare pe validări, rate limiting și hashing — `npm test`.
+- Workflow GitHub Actions (lint + typecheck + teste + build) la fiecare push/PR.
+
 ## 0.3.0 — 2026-06-12
 
 ### Dashboard pe date reale

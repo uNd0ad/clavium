@@ -3,11 +3,17 @@ import { loginSchema } from '@/lib/validations'
 import { createToken, loginUser } from '@/lib/auth'
 import { COOKIE_NAME } from '@/lib/constants'
 import { errorMessage } from '@/lib/apiError'
+import { rateLimit, clientIp, RATE_LIMIT_MESSAGE } from '@/lib/rateLimit'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const data = loginSchema.parse(body)
+
+    if (!rateLimit(`login:${clientIp(request)}:${data.email.toLowerCase()}`, 10, 15 * 60 * 1000)) {
+      return NextResponse.json({ error: RATE_LIMIT_MESSAGE }, { status: 429 })
+    }
+
     const user = await loginUser(data)
     const token = await createToken(user)
 

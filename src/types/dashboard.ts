@@ -4,7 +4,7 @@ export type DashboardNavItem = {
   label: string
   href: string
   roles: UserRole[]
-  icon: 'home' | 'offer' | 'contracts' | 'properties' | 'payments' | 'profile'
+  icon: 'home' | 'search' | 'offer' | 'contracts' | 'properties' | 'payments' | 'profile' | 'admin'
 }
 
 export type UserProfile = {
@@ -18,9 +18,11 @@ export type UserProfile = {
 
 export const dashboardNavItems: DashboardNavItem[] = [
   { label: 'Overview', href: '/dashboard', roles: ['ADMIN', 'OWNER', 'CLIENT'], icon: 'home' },
+  { label: 'Caută', href: '/dashboard/cauta', roles: ['CLIENT'], icon: 'search' },
   { label: 'Oferte', href: '/dashboard/oferte', roles: ['ADMIN', 'OWNER', 'CLIENT'], icon: 'offer' },
   { label: 'Contracte', href: '/dashboard/contracte', roles: ['ADMIN', 'OWNER', 'CLIENT'], icon: 'contracts' },
   { label: 'Proprietăți', href: '/dashboard/proprietati', roles: ['ADMIN', 'OWNER'], icon: 'properties' },
   { label: 'Plăți', href: '/dashboard/plati', roles: ['ADMIN', 'OWNER'], icon: 'payments' },
   { label: 'Profil', href: '/dashboard/profil', roles: ['ADMIN', 'OWNER', 'CLIENT'], icon: 'profile' },
+  { label: 'Administrare', href: '/dashboard/admin', roles: ['ADMIN'], icon: 'admin' },
 ]

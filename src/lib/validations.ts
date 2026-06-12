@@ -40,3 +40,41 @@ export const phoneOtpVerifySchema = z.object({
   phone: phoneSchema,
   code: z.string().length(6, 'Codul OTP trebuie să conțină 6 cifre'),
 })
+
+export const propertySchema = z.object({
+  title: z.string().min(5, 'Titlul trebuie să aibă cel puțin 5 caractere'),
+  description: z.string().max(2000, 'Descrierea este prea lungă').optional(),
+  location: z.string().min(2, 'Localitatea trebuie să aibă cel puțin 2 caractere'),
+  rent: z.coerce.number().int().min(1, 'Chiria trebuie să fie pozitivă').max(1_000_000, 'Chiria este prea mare'),
+  rooms: z.coerce.number().int().min(1).max(50).optional(),
+  surface: z.coerce.number().int().min(1).max(10_000).optional(),
+})
+
+export const propertyUpdateSchema = propertySchema.partial().extend({
+  status: z.enum(['DISPONIBILA', 'INCHIRIATA', 'INACTIVA']).optional(),
+})
+
+export const offerSchema = z.object({
+  propertyId: z.string().uuid('Proprietate invalidă'),
+  amount: z.coerce.number().int().min(1, 'Suma trebuie să fie pozitivă').max(1_000_000, 'Suma este prea mare'),
+})
+
+export const offerActionSchema = z.object({
+  action: z.enum(['accept', 'reject']),
+})
+
+export const profileUpdateSchema = z.object({
+  firstName: z.string().min(2, 'Prenumele trebuie să aibă cel puțin 2 caractere').optional(),
+  lastName: z.string().min(2, 'Numele de familie trebuie să aibă cel puțin 2 caractere').optional(),
+  phone: phoneSchema.optional(),
+})
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(8, 'Parola trebuie să aibă cel puțin 8 caractere'),
+  newPassword: z.string().min(8, 'Parola nouă trebuie să aibă cel puțin 8 caractere'),
+})
+
+export const adminUserUpdateSchema = z.object({
+  role: z.enum(['ADMIN', 'OWNER', 'CLIENT']).optional(),
+  isActive: z.boolean().optional(),
+})

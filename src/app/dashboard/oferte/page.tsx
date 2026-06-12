@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import StatusBadge from '@/components/dashboard/StatusBadge'
+import { OfferActions } from '@/components/dashboard/actions'
 import { getCurrentUser } from '@/lib/session'
 import { getOffers, type OfferView } from '@/lib/dashboardData'
 
@@ -23,6 +24,7 @@ function OfferList({ offers, emptyMessage }: { offers: OfferView[]; emptyMessage
             </div>
           </div>
           <p className="mt-3 text-sm text-[var(--muted)]">{offer.date}</p>
+          {offer.actionable ? <OfferActions offerId={offer.id} /> : null}
         </div>
       ))}
     </div>

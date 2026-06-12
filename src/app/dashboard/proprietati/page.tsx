@@ -1,9 +1,12 @@
 import { redirect } from 'next/navigation'
 import StatusBadge from '@/components/dashboard/StatusBadge'
+import PropertyForm from '@/components/dashboard/PropertyForm'
+import PhotoManager from '@/components/dashboard/PhotoManager'
+import { PropertyStatusToggle } from '@/components/dashboard/actions'
 import { getCurrentUser } from '@/lib/session'
 import { getProperties, type PropertyView } from '@/lib/dashboardData'
 
-function PropertyList({ properties, emptyMessage }: { properties: PropertyView[]; emptyMessage: string }) {
+function PropertyList({ properties, emptyMessage, manageable = false }: { properties: PropertyView[]; emptyMessage: string; manageable?: boolean }) {
   if (properties.length === 0) {
     return <p className="mt-6 rounded-[24px] border border-[var(--border)] bg-white p-5 text-sm text-[var(--muted)]">{emptyMessage}</p>
   }
@@ -23,6 +26,12 @@ function PropertyList({ properties, emptyMessage }: { properties: PropertyView[]
             <p className="text-sm text-[var(--muted)]">{property.rent}</p>
             <p className="text-sm text-[var(--muted)]">Actualizat: {property.updated}</p>
           </div>
+          {manageable ? (
+            <>
+              <PhotoManager propertyId={property.id} photos={property.photos} />
+              <PropertyStatusToggle propertyId={property.id} status={property.status} />
+            </>
+          ) : null}
         </div>
       ))}
     </div>
@@ -42,15 +51,19 @@ export default async function DashboardPropertiesPage() {
 
   return (
     <section className="space-y-8">
-      <div>
-        <p className="text-sm uppercase tracking-[0.28em] text-[var(--muted)]">Proprietăți</p>
-        <h1 className="mt-3 text-3xl font-semibold">Lista proprietăților tale</h1>
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-sm uppercase tracking-[0.28em] text-[var(--muted)]">Proprietăți</p>
+          <h1 className="mt-3 text-3xl font-semibold">Lista proprietăților tale</h1>
+        </div>
       </div>
+
+      <PropertyForm />
 
       <div className="grid gap-6 xl:grid-cols-2">
         <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">
           <h2 className="text-xl font-semibold">Proprietăți active</h2>
-          <PropertyList properties={owned} emptyMessage="Nu ai adăugat nicio proprietate încă." />
+          <PropertyList properties={owned} emptyMessage="Nu ai adăugat nicio proprietate încă." manageable />
         </div>
 
         <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">

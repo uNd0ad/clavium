@@ -1,4 +1,5 @@
 import { prisma } from './prisma'
+import { parsePhotos } from './storage'
 import type { SessionUser } from './session'
 
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info'
@@ -11,17 +12,22 @@ export type OfferView = {
   status: string
   statusVariant: BadgeVariant
   date: string
+  actionable: boolean
 }
 
 export type ContractView = {
   id: string
   property: string
   tenant: string
+  rent: string
   signedByOwner: boolean
   signedByClient: boolean
   qes: boolean
   status: string
   statusVariant: BadgeVariant
+  canSign: boolean
+  canPay: boolean
+  dueAmount: string | null
 }
 
 export type PropertyView = {
@@ -32,6 +38,7 @@ export type PropertyView = {
   status: string
   statusVariant: BadgeVariant
   updated: string
+  photos: string[]
 }
 
 export type PaymentView = {
@@ -50,6 +57,7 @@ export type NotificationView = {
   description: string
   date: string
   variant: BadgeVariant
+  read: boolean
 }
 
 export type OverviewData = {
@@ -68,11 +76,13 @@ const CONTRACT_STATUS: Record<string, { label: string; variant: BadgeVariant }> 
   IN_ASTEPTARE: { label: 'În așteptare', variant: 'warning' },
   SEMNAT: { label: 'Semnat', variant: 'info' },
   ACTIV: { label: 'Activ', variant: 'success' },
+  INCHEIAT: { label: 'Încheiat', variant: 'info' },
 }
 
 const PROPERTY_STATUS: Record<string, { label: string; variant: BadgeVariant }> = {
   DISPONIBILA: { label: 'Disponibilă', variant: 'success' },
   INCHIRIATA: { label: 'Închiriată', variant: 'warning' },
+  INACTIVA: { label: 'Inactivă', variant: 'danger' },
 }
 
 const PAYMENT_STATUS: Record<string, { label: string; variant: BadgeVariant }> = {
@@ -139,6 +149,7 @@ export async function getOffers(user: SessionUser): Promise<{ sent: OfferView[];
       status: label,
       statusVariant: variant,
       date: formatDate(offer.createdAt),
+      actionable: direction === 'received' && offer.status === 'TRIMISA' && (user.role !== 'ADMIN' ? offer.toUserId === user.id : true),
     }
   }
 
@@ -156,21 +167,35 @@ export async function getContracts(user: SessionUser): Promise<ContractView[]> {
         : user.role === 'OWNER'
           ? { ownerId: user.id }
           : { tenantId: user.id },
-    include: { property: true, tenant: true },
+    include: {
+      property: true,
+      tenant: true,
+      payments: { where: { type: 'CHIRIE', status: 'IN_CURS' }, orderBy: { dueDate: 'asc' }, take: 1 },
+    },
     orderBy: { createdAt: 'desc' },
   })
 
   return contracts.map((contract) => {
     const { label, variant } = CONTRACT_STATUS[contract.status] ?? { label: contract.status, variant: 'info' as BadgeVariant }
+    const signable = contract.status === 'IN_ASTEPTARE' || contract.status === 'SEMNAT'
+    const canSign =
+      signable &&
+      ((contract.ownerId === user.id && !contract.signedByOwner) ||
+        (contract.tenantId === user.id && !contract.signedByClient))
+    const due = contract.payments[0]
     return {
       id: contract.id,
       property: contract.property.title,
       tenant: `${contract.tenant.firstName} ${contract.tenant.lastName}`,
+      rent: formatRon(contract.rent),
       signedByOwner: contract.signedByOwner,
       signedByClient: contract.signedByClient,
       qes: contract.qes,
       status: label,
       statusVariant: variant,
+      canSign,
+      canPay: contract.status === 'ACTIV' && contract.tenantId === user.id && Boolean(due),
+      dueAmount: due ? formatRon(due.amount) : null,
     }
   })
 }
@@ -198,6 +223,7 @@ export async function getProperties(user: SessionUser): Promise<{ owned: Propert
       status: label,
       statusVariant: variant,
       updated: timeAgo(property.updatedAt),
+      photos: parsePhotos(property.photos),
     }
   }
 
@@ -257,6 +283,7 @@ export async function getNotifications(user: SessionUser): Promise<NotificationV
     description: notification.description,
     date: formatDate(notification.createdAt),
     variant: (notification.variant as BadgeVariant) || 'info',
+    read: notification.read,
   }))
 }
 

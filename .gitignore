@@ -32,3 +32,4 @@ package-lock.json
 
 # VS Code
 .vscode/
+public/uploads/

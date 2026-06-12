@@ -3,16 +3,19 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
-import { Menu, X, Home, ShoppingBag, FileText, Layers, CreditCard, User } from 'lucide-react'
+import { Menu, X, Home, ShoppingBag, FileText, Layers, CreditCard, User, ShieldCheck, Search } from 'lucide-react'
 import { dashboardNavItems, UserProfile } from '@/types/dashboard'
+import LogoutButton from './LogoutButton'
 
 const iconMap = {
   home: Home,
+  search: Search,
   offer: ShoppingBag,
   contracts: FileText,
   properties: Layers,
   payments: CreditCard,
   profile: User,
+  admin: ShieldCheck,
 } as const
 
 export default function MobileTopBar({ user }: { user: UserProfile }) {
@@ -41,6 +44,7 @@ export default function MobileTopBar({ user }: { user: UserProfile }) {
             </Link>
           )
         })}
+        <LogoutButton className="border border-[var(--border)] bg-white" />
       </div>
     </div>
   )

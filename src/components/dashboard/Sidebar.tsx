@@ -3,17 +3,20 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
-import { Home, ShoppingBag, FileText, Layers, CreditCard, User } from 'lucide-react'
+import { Home, ShoppingBag, FileText, Layers, CreditCard, User, ShieldCheck, Search } from 'lucide-react'
 import { dashboardNavItems, UserProfile } from '@/types/dashboard'
+import LogoutButton from './LogoutButton'
 import { ROLE_DESCRIPTIONS } from '@/lib/types/roles'
 
 const iconMap = {
   home: Home,
+  search: Search,
   offer: ShoppingBag,
   contracts: FileText,
   properties: Layers,
   payments: CreditCard,
   profile: User,
+  admin: ShieldCheck,
 } as const
 
 export default function Sidebar({ user }: { user: UserProfile }) {
@@ -53,9 +56,12 @@ export default function Sidebar({ user }: { user: UserProfile }) {
         })}
       </nav>
 
-      <div className="mt-auto rounded-[32px] border border-[var(--border)] bg-white p-5 text-sm text-[var(--text)]">
-        <p className="font-semibold">Tip utilizator</p>
-        <p className="mt-2 text-[13px] text-[var(--muted)]">Acest panou afișează informații și acțiuni disponibile pentru rolul tău.</p>
+      <div className="mt-auto space-y-3">
+        <div className="rounded-[32px] border border-[var(--border)] bg-white p-5 text-sm text-[var(--text)]">
+          <p className="font-semibold">Tip utilizator</p>
+          <p className="mt-2 text-[13px] text-[var(--muted)]">Acest panou afișează informații și acțiuni disponibile pentru rolul tău.</p>
+        </div>
+        <LogoutButton />
       </div>
     </aside>
   )

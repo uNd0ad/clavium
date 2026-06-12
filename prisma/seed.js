@@ -27,13 +27,25 @@ async function main() {
   const client = await upsertUser('Mihai', 'Popescu', 'client@clavium.ro', 'CLIENT', '0745123456')
 
   const dorobanti = await prisma.property.create({
-    data: { title: 'Apartament 2 camere Dorobanți', location: 'București', rent: 1800, status: 'INCHIRIATA', ownerId: owner.id },
+    data: {
+      title: 'Apartament 2 camere Dorobanți', location: 'București', rent: 1800, rooms: 2, surface: 56,
+      description: 'Apartament luminos lângă parcul Floreasca, complet mobilat și utilat, renovat în 2025.',
+      status: 'INCHIRIATA', ownerId: owner.id,
+    },
   })
   const tineretului = await prisma.property.create({
-    data: { title: 'Garsonieră Tineretului', location: 'București', rent: 1250, status: 'DISPONIBILA', ownerId: owner.id },
+    data: {
+      title: 'Garsonieră Tineretului', location: 'București', rent: 1250, rooms: 1, surface: 34,
+      description: 'Garsonieră modernă la 5 minute de metrou Tineretului, ideală pentru o persoană.',
+      status: 'DISPONIBILA', ownerId: owner.id,
+    },
   })
   const loft = await prisma.property.create({
-    data: { title: 'Loft Unirii', location: 'București', rent: 2150, status: 'DISPONIBILA', ownerId: owner.id },
+    data: {
+      title: 'Loft Unirii', location: 'București', rent: 2150, rooms: 2, surface: 78,
+      description: 'Loft spațios cu tavan înalt în centrul orașului, vedere panoramică.',
+      status: 'DISPONIBILA', ownerId: owner.id,
+    },
   })
 
   await prisma.savedProperty.create({ data: { userId: client.id, propertyId: loft.id } })
@@ -51,6 +63,8 @@ async function main() {
       propertyId: dorobanti.id,
       ownerId: owner.id,
       tenantId: client.id,
+      rent: 1800,
+      startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
       signedByOwner: true,
       signedByClient: true,
       qes: true,
@@ -62,6 +76,7 @@ async function main() {
       propertyId: tineretului.id,
       ownerId: owner.id,
       tenantId: client.id,
+      rent: 1200,
       signedByOwner: true,
       signedByClient: false,
       qes: false,
@@ -71,9 +86,9 @@ async function main() {
 
   await prisma.payment.createMany({
     data: [
-      { reference: 'TRX-0001', userId: client.id, contractId: contract.id, amount: 1800, type: 'CHIRIE', status: 'FINALIZATA' },
-      { reference: 'TRX-0002', userId: client.id, contractId: contract.id, amount: 90, type: 'COMISION', status: 'FINALIZATA' },
-      { reference: 'TRX-0003', userId: client.id, contractId: contract.id, amount: 1800, type: 'CHIRIE', status: 'IN_CURS' },
+      { reference: 'TRX-0001', userId: client.id, contractId: contract.id, amount: 1800, type: 'CHIRIE', status: 'FINALIZATA', paidAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 28) },
+      { reference: 'TRX-0002', userId: owner.id, contractId: contract.id, amount: 90, type: 'COMISION', status: 'FINALIZATA', paidAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 28) },
+      { reference: 'TRX-0003', userId: client.id, contractId: contract.id, amount: 1800, type: 'CHIRIE', status: 'IN_CURS', dueDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3) },
     ],
   })
 

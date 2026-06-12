@@ -30,12 +30,34 @@ model User {
   contractsAsTenant Contract[]      @relation("ContractsAsTenant")
   payments          Payment[]
   notifications     Notification[]
+  sessions          Session[]
+  emailTokens       EmailToken[]
+}
+
+model Session {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model EmailToken {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String    @unique
+  type      String // VERIFY_EMAIL | RESET_PASSWORD
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
 }
 
 model Otp {
   id        String   @id @default(uuid())
   email     String
-  code      String
+  code      String // hash sha256
   expiresAt DateTime
   createdAt DateTime @default(now())
 }
@@ -43,25 +65,29 @@ model Otp {
 model PhoneOtp {
   id         String    @id @default(uuid())
   phone      String
-  code       String
+  code       String // hash sha256
   expiresAt  DateTime
   verifiedAt DateTime?
   createdAt  DateTime  @default(now())
 }
 
 model Property {
-  id        String   @id @default(uuid())
-  title     String
-  location  String
-  rent      Int
-  status    String   @default("DISPONIBILA") // DISPONIBILA | INCHIRIATA
-  ownerId   String
-  owner     User     @relation("OwnedProperties", fields: [ownerId], references: [id])
-  savedBy   SavedProperty[]
-  offers    Offer[]
-  contracts Contract[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  location    String
+  rent        Int
+  rooms       Int?
+  surface     Int?
+  photos      String   @default("[]") // JSON: array de URL-uri /uploads/...
+  status      String   @default("DISPONIBILA") // DISPONIBILA | INCHIRIATA | INACTIVA
+  ownerId     String
+  owner       User     @relation("OwnedProperties", fields: [ownerId], references: [id])
+  savedBy     SavedProperty[]
+  offers      Offer[]
+  contracts   Contract[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model SavedProperty {
@@ -96,10 +122,13 @@ model Contract {
   owner          User      @relation("ContractsAsOwner", fields: [ownerId], references: [id])
   tenantId       String
   tenant         User      @relation("ContractsAsTenant", fields: [tenantId], references: [id])
+  rent           Int       @default(0)
+  months         Int       @default(12)
+  startDate      DateTime?
   signedByOwner  Boolean   @default(false)
   signedByClient Boolean   @default(false)
   qes            Boolean   @default(false)
-  status         String    @default("IN_ASTEPTARE") // IN_ASTEPTARE | SEMNAT | ACTIV
+  status         String    @default("IN_ASTEPTARE") // IN_ASTEPTARE | SEMNAT | ACTIV | INCHEIAT
   payments       Payment[]
   createdAt      DateTime  @default(now())
 }
@@ -114,6 +143,8 @@ model Payment {
   amount     Int
   type       String // CHIRIE | COMISION | REFUND
   status     String    @default("IN_CURS") // FINALIZATA | IN_CURS | ESUATA
+  dueDate    DateTime?
+  paidAt     DateTime?
   createdAt  DateTime  @default(now())
 }
 
@@ -124,5 +155,6 @@ model Notification {
   title       String
   description String
   variant     String   @default("info") // info | warning | danger | success
+  read        Boolean  @default(false)
   createdAt   DateTime @default(now())
 }

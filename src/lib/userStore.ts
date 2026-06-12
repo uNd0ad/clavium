@@ -1,4 +1,5 @@
 import { prisma } from './prisma'
+import { sha256 } from './hash'
 import type { User } from './types/auth'
 import type { UserRole } from './types/roles'
 import { ROLES, isValidRole } from './types/roles'
@@ -96,7 +97,7 @@ export async function storeOtpCode(email: string, code: string) {
   await prisma.otp.create({
     data: {
       email: email.toLowerCase(),
-      code,
+      code: sha256(code),
       expiresAt,
     },
   })
@@ -131,7 +132,7 @@ export async function storePhoneOtp(phone: string, code: string) {
   const expiresAt = new Date(Date.now() + 1000 * 60 * 10)
   await prisma.phoneOtp.deleteMany({ where: { phone: normalizePhone(phone) } })
   await prisma.phoneOtp.create({
-    data: { phone: normalizePhone(phone), code, expiresAt },
+    data: { phone: normalizePhone(phone), code: sha256(code), expiresAt },
   })
 }
 
@@ -143,7 +144,7 @@ export async function verifyPhoneOtp(phone: string, code: string): Promise<boole
     },
     orderBy: { createdAt: 'desc' },
   })
-  if (!entry || entry.code !== code) return false
+  if (!entry || entry.code !== sha256(code)) return false
   await prisma.phoneOtp.update({
     where: { id: entry.id },
     data: { verifiedAt: new Date() },

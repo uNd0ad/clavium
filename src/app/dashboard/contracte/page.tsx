@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import StatusBadge from '@/components/dashboard/StatusBadge'
+import { ContractActions } from '@/components/dashboard/actions'
 import { getCurrentUser } from '@/lib/session'
 import { getContracts } from '@/lib/dashboardData'
 
@@ -38,7 +39,7 @@ export default async function DashboardContractsPage() {
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div>
                     <p className="text-lg font-semibold">{contract.property}</p>
-                    <p className="mt-1 text-sm text-[var(--muted)]">Chiriaș: {contract.tenant}</p>
+                    <p className="mt-1 text-sm text-[var(--muted)]">Chiriaș: {contract.tenant} · Chirie: {contract.rent} / lună</p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     <StatusBadge label={contract.status} variant={contract.statusVariant} />
@@ -55,6 +56,12 @@ export default async function DashboardContractsPage() {
                     <p className="mt-2 font-semibold">{contract.signedByClient ? 'Semnat' : 'În așteptare'}</p>
                   </div>
                 </div>
+                <ContractActions
+                  contractId={contract.id}
+                  canSign={contract.canSign}
+                  canPay={contract.canPay}
+                  dueAmount={contract.dueAmount}
+                />
               </div>
             ))
           )}

@@ -18,6 +18,7 @@ export type User = {
 export type AuthPayload = {
   userId: string
   email: string
+  sessionId?: string
 }
 
 export type LoginRequest = {

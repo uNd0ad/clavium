@@ -89,6 +89,14 @@ export default function LoginPage() {
 
   return (
     <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-semibold text-[var(--text)]">Bine ai revenit</h1>
+        <p className="mt-2 text-[15px] text-[var(--muted)]">
+          Nu ai cont încă?{' '}
+          <a href="/auth/register" className="font-semibold text-[var(--brand)]">Înregistrează-te gratuit</a>
+        </p>
+      </div>
+
       <div className="flex flex-wrap items-center gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-4 text-[13px] text-[var(--muted)]">
         <button
           type="button"
@@ -113,6 +121,9 @@ export default function LoginPage() {
           <button type="submit" disabled={loading} className="btn-primary w-full py-4 text-[14px]">
             {loading ? 'Se conectează…' : 'Conectează-te'}
           </button>
+          <p className="text-sm text-[var(--muted)]">
+            <a href="/auth/reset-parola" className="font-semibold text-[var(--brand)]">Ai uitat parola?</a>
+          </p>
         </form>
       ) : (
         <div className="space-y-5">

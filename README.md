@@ -1,247 +1,206 @@
 # Clavium.ro — Imobiliare fără intermediari
 
-A modern Next.js real estate platform enabling direct property transactions without intermediaries. Features a responsive landing page with integrated authentication system.
+**Clavium** is a Romanian-language real estate platform that lets property owners and tenants transact **directly, without intermediaries**: discover properties, negotiate through offers, sign rental contracts online (with QES — qualified electronic signature), and handle rent payments — all in one place.
 
-## Stack
+Version: **0.4.0** · See [CHANGELOG.md](CHANGELOG.md) for release history.
 
-- **Framework**: Next.js 16 (App Router)
-- **React**: 18 with TypeScript
-- **Styling**: Tailwind CSS 3.4.1
-- **Database**: Prisma ORM + SQLite
-- **Authentication**: JWT (jose) + bcryptjs
-- **State Management**: Zustand
-- **Components**: Lucide React (icons)
+## What the platform does
 
-## Features
-
-### v0.2 — Major Update (Current)
-✅ **Authentication System**
-- User registration with multi-step wizard
-- Password-based login with email & password
-- OTP (One-Time Password) authentication
-- JWT token management with secure HTTP-only cookies
-- Logout functionality with session clearing
-- Auth middleware for protected routes
-
-✅ **User Management**
-- Prisma-backed user storage with SQLite
-- Password hashing with bcryptjs (10 rounds)
-- User session persistence via JWT tokens
-- OTP code generation (6-digit) with 10-minute expiration
-- User verification and authentication
-
-✅ **UI/UX Improvements**
-- Responsive navbar with mobile menu optimization
-- Mobile-optimized authentication pages
-- Auth-aware navigation (shows username or login/register)
-- Multi-step registration form with validation
-- Form error handling and user feedback
-- Accessible form components (FormField, OtpInput)
-- Fixed mobile navbar visibility and blur effects
-
-✅ **Developer Experience**
-- Fixed HMR (Hot Module Reload) origin configuration
-- NextAuth middleware integration
-- API routes with proper error handling
-- TypeScript validation schemas (Zod)
-- Environment configuration for local development
-
-### v0.1
-- Landing page with hero section
-- Navigation structure with multiple sections
-- Components: How It Works, Transaction Types, Ticker Bar, Signature, CTA
-- Tailwind styling with custom design system
-- Responsive design
-- Scroll reveal animations
-
-## Project Structure
+The product connects three kinds of users around a rental lifecycle:
 
 ```
-clavium/
-├── src/
-│   ├── app/
-│   │   ├── auth/
-│   │   │   ├── login/page.tsx          # Login (password + OTP)
-│   │   │   ├── register/page.tsx       # Registration wizard
-│   │   │   └── layout.tsx              # Auth layout
-│   │   ├── api/auth/
-│   │   │   ├── login/route.ts          # Login endpoint
-│   │   │   ├── register/route.ts       # Register endpoint
-│   │   │   ├── me/route.ts             # Current user endpoint
-│   │   │   ├── logout/route.ts         # Logout endpoint
-│   │   │   └── otp/
-│   │   │       ├── send/route.ts       # OTP request
-│   │   │       └── verify/route.ts     # OTP verification
-│   │   ├── globals.css                 # Global styles & themes
-│   │   ├── layout.tsx                  # Root layout
-│   │   └── page.tsx                    # Home page
-│   ├── components/
-│   │   ├── layout/
-│   │   │   ├── Navbar.tsx              # Responsive navbar
-│   │   │   └── Footer.tsx              # Footer
-│   │   ├── sections/
-│   │   │   ├── HeroSection.tsx
-│   │   │   ├── HowItWorksSection.tsx
-│   │   │   ├── SignatureSection.tsx
-│   │   │   ├── CtaSection.tsx
-│   │   │   ├── TickerBar.tsx
-│   │   │   └── TransactionTypesSection.tsx
-│   │   └── ui/
-│   │       ├── FormField.tsx           # Form input component
-│   │       └── OtpInput.tsx            # OTP code input
-│   ├── lib/
-│   │   ├── auth.ts                     # Auth logic & tokens
-│   │   ├── userStore.ts                # Prisma DB operations
-│   │   ├── validations.ts              # Schema validation
-│   │   └── constants.ts                # Constants
-│   ├── types/
-│   │   └── index.ts                    # TypeScript types
-│   └── middleware.ts                   # Auth middleware
-├── prisma/
-│   ├── schema.prisma                   # Data models
-│   └── dev.db                          # SQLite database
-├── public/                             # Static assets
-├── .env.local                          # Environment variables
-└── next.config.js                      # Next.js config
-
+Property listed → Offer sent → Offer accepted → Contract drafted
+   → Signed by both parties (QES) → Contract active → Rent payments tracked
 ```
 
-## Getting Started
+- A **Client** (chiriaș) finds a property, sends an offer with the amount they're willing to pay, signs the contract when the owner accepts, and pays rent through the platform.
+- An **Owner** (proprietar) lists properties, receives and answers offers, countersigns contracts, and tracks rent income and commissions.
+- An **Admin** oversees the whole platform: all properties, contracts, payments, and users.
+
+## User roles
+
+| Role | Who | What they see in the dashboard |
+|--------|--------------------------|----------------------------------------------------------------|
+| `CLIENT` | Tenant / property seeker | Own offers, own contracts, saved properties, payments made |
+| `OWNER` | Property owner | Own properties, received offers, contracts, rent income, fees |
+| `ADMIN` | Platform operator | Everything, platform-wide |
+
+Role choice happens at registration (Client or Proprietar). `ADMIN` cannot be self-assigned — it is rejected server-side and must be granted manually in the database. Role definitions and permissions live in [src/lib/types/roles.ts](src/lib/types/roles.ts); details in [src/lib/RBAC.md](src/lib/RBAC.md).
+
+## How it's intended to be used
+
+### 1. Landing page (`/`)
+Public marketing page: hero, how-it-works, transaction types, QES signature explanation, and calls to action leading to registration.
+
+### 2. Registration (`/auth/register`)
+A four-step wizard:
+1. **Informații cont** — pick account type (Client / Proprietar), name, email
+2. **Parolă** — minimum 8 characters, confirmed
+3. **Verificare telefon** — enter a Romanian mobile number (`07XX...`), receive a 6-digit OTP by SMS, verify it. Registration is refused server-side if the phone was not verified.
+4. **Finalizare** — review the summary and create the account
+
+On success a confirmation screen counts down 5 seconds, then redirects to the dashboard (already logged in via session cookie).
+
+### 3. Login (`/auth/login`)
+Two methods, selectable by tab:
+- **Parolă** — email + password
+- **OTP** — a 6-digit code tied to the email (no email service is connected yet, so in development the code is printed in the server console)
+
+Logged-in users who visit `/auth/*` are redirected away; anonymous visitors to `/dashboard/*` are redirected to login (see [src/proxy.ts](src/proxy.ts)).
+
+### 4. Dashboard (`/dashboard`)
+Server-rendered, role-aware, fed entirely from the database:
+
+| Page | Content |
+|----------------------------|------------------------------------------------------------------------------|
+| `/dashboard` | Stats (monthly income / payments, active contracts, new offers, properties), alerts computed from real state (missing signatures, failed payments), recent activity |
+| `/dashboard/oferte` | Offers sent and received, with amount and status (Trimisă / Acceptată / Respinsă) |
+| `/dashboard/contracte` | Contracts with per-party signature status (owner / client) and QES indicator |
+| `/dashboard/proprietati` | Owned properties and saved properties — **owners/admins only** |
+| `/dashboard/plati` | Payment summary (income, pending, fees) and transaction history — **owners/admins only** |
+| `/dashboard/profil` | Personal data, notifications, danger zone |
+
+Clients navigating to owner-only pages are redirected back to the overview.
+
+## Tech stack
+
+| Layer | Technology |
+|---------------|---------------------------------------------|
+| Framework | Next.js 16 (App Router, Turbopack) |
+| UI | React 19, Tailwind CSS 3.4, lucide-react |
+| Database | SQLite via Prisma ORM |
+| Auth | JWT (jose, HS256, 2h) in an HTTP-only cookie; bcryptjs password hashing |
+| Validation | Zod (Romanian error messages) |
+| SMS | SMSO.ro API (pluggable; console fallback in dev) |
+| State (client)| Zustand |
+
+## Getting started
 
 ### Prerequisites
 - Node.js 18+
-- npm or yarn
 
-### Installation
+### Setup
 
 ```bash
 cd clavium
 npm install
+npx prisma migrate dev   # create/update the SQLite database
+npm run db:seed          # optional: demo data (see below)
+npm run dev              # http://localhost:3000
 ```
 
-### Environment Setup
+### Environment (`.env`)
 
-Create `.env.local` in the `clavium` directory:
 ```env
-DATABASE_URL="file:./prisma/dev.db"
-JWT_SECRET="your-secret-key-here-minimum-32-characters"
-NODE_ENV="development"
+DATABASE_URL="file:./dev.db"
+JWT_SECRET="<random secret, 32+ chars in production>"
+
+# SMS via SMSO.ro — leave unset in dev to print OTP codes to the console
+SMS_API_URL="https://app.smso.ro/api/v1/"
+SMS_API_KEY="<your SMSO API key>"
+SMS_SENDER_ID="<numeric sender id from GET /api/v1/senders>"
 ```
 
-### Development
+### Demo accounts (after `npm run db:seed`)
 
-```bash
-npm run dev
+| Email | Role | Password |
+|---------------------|--------|------------|
+| `admin@clavium.ro` | ADMIN | `parola123` |
+| `owner@clavium.ro` | OWNER | `parola123` |
+| `client@clavium.ro` | CLIENT | `parola123` |
+
+The seed links them with demo properties, offers, an active contract, payments, and notifications, so every dashboard page has content.
+
+## Project structure
+
+```
+clavium/
+├── prisma/
+│   ├── schema.prisma            # User, Otp, PhoneOtp, Property, SavedProperty,
+│   │                            #   Offer, Contract, Payment, Notification
+│   ├── migrations/
+│   └── seed.js                  # demo data (npm run db:seed)
+├── src/
+│   ├── proxy.ts                 # route protection (auth redirects)
+│   ├── app/
+│   │   ├── page.tsx             # landing page
+│   │   ├── template.tsx         # page-transition animation wrapper
+│   │   ├── auth/                # login + registration wizard
+│   │   ├── dashboard/           # overview, oferte, contracte, proprietati,
+│   │   │                        #   plati, profil (all server-rendered from DB)
+│   │   └── api/auth/            # login, register, logout, me,
+│   │                            #   otp/* (email), phone-otp/* (SMS)
+│   ├── components/
+│   │   ├── layout/              # Navbar, Footer
+│   │   ├── sections/            # landing page sections
+│   │   ├── dashboard/           # Sidebar, MobileTopBar, StatusBadge
+│   │   └── ui/                  # FormField, OtpInput
+│   └── lib/
+│       ├── auth.ts              # tokens, login/register, OTP logic
+│       ├── session.ts           # getCurrentUser() for server components
+│       ├── dashboardData.ts     # role-aware dashboard queries
+│       ├── userStore.ts         # Prisma data access
+│       ├── sms.ts               # SMSO.ro integration / dev fallback
+│       ├── validations.ts       # Zod schemas
+│       └── rbac.ts              # role/permission checks
+└── CHANGELOG.md
 ```
 
-Visit `http://localhost:3000`
+## API endpoints
 
-### Build & Production
-
-```bash
-npm run build
-npm start
-```
-
-## Authentication
-
-### Registration Flow
-1. Navigate to `/auth/register`
-2. Step 1: Enter name & email
-3. Step 2: Set password (min 8 chars, must match confirmation)
-4. Step 3: Review account details
-5. Step 4: Confirmation — account created
-6. Auto-redirects to homepage with authenticated session
-
-### Login (Password)
-1. Go to `/auth/login`
-2. Select "Parolă" tab
-3. Enter email & password
-4. Redirects to homepage on success
-
-### Login (OTP)
-1. Go to `/auth/login`
-2. Select "OTP" tab
-3. Click "Trimite cod OTP" to receive 6-digit code
-4. Enter code & click "Verifică cod OTP"
-5. Redirects to homepage on success
-
-### Logout
-- Click "Deconectare" in navbar
-- Session cleared, redirected to homepage
-
-## API Endpoints
-
-### Auth Routes
 | Method | Endpoint | Purpose |
-|--------|----------|---------|
-| POST | `/api/auth/register` | Create new user account |
+|--------|----------------------------|--------------------------------------------------|
+| POST | `/api/auth/register` | Create account (requires verified phone) |
 | POST | `/api/auth/login` | Login with email & password |
-| GET | `/api/auth/me` | Get current authenticated user |
-| POST | `/api/auth/logout` | Clear session & logout |
+| GET | `/api/auth/me` | Current authenticated user |
+| POST | `/api/auth/logout` | Clear session |
+| POST | `/api/auth/otp/send` | Send email OTP (dev: printed in server console) |
+| POST | `/api/auth/otp/verify` | Verify email OTP and log in |
+| POST | `/api/auth/phone-otp/send` | Send SMS OTP for phone verification |
+| POST | `/api/auth/phone-otp/verify` | Verify SMS OTP (valid 30 min for registration) |
+| POST | `/api/auth/verify-email/send` | Resend email verification link |
+| GET | `/api/auth/verify-email/confirm` | Confirm email via token link |
+| POST | `/api/auth/reset/request` | Request password reset email |
+| POST | `/api/auth/reset/confirm` | Set new password via reset token |
+| POST | `/api/properties` | Create property (OWNER/ADMIN) |
+| PATCH | `/api/properties/[id]` | Update property / toggle listing status |
+| POST | `/api/properties/[id]/save` | Toggle saved property |
+| POST | `/api/offers` | Send offer (CLIENT) |
+| PATCH | `/api/offers/[id]` | Accept/reject offer (OWNER) — accept creates the contract |
+| POST | `/api/contracts/[id]/sign` | Sign contract (QES); both signatures activate it |
+| POST | `/api/contracts/[id]/pay` | Pay due rent (tenant); records commission, schedules next |
+| POST | `/api/notifications/read` | Mark notifications as read |
+| PATCH/DELETE | `/api/profile` | Update profile / deactivate account |
+| POST | `/api/profile/password` | Change password (revokes other sessions) |
+| GET | `/api/profile/export` | GDPR data export (JSON download) |
+| PATCH | `/api/admin/users/[id]` | Change role / activate-deactivate user (ADMIN) |
 
-### OTP Routes
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| POST | `/api/auth/otp/send` | Send OTP code to email |
-| POST | `/api/auth/otp/verify` | Verify OTP code |
+All endpoints return `{ error: "<human-readable message>" }` with status 400 on failure.
+Auth and OTP endpoints are rate limited (429 on abuse).
 
-## Database Schema
+## Security notes
 
-### User Model
-```prisma
-model User {
-  id        String    @id @default(cuid())
-  name      String
-  email     String    @unique
-  password  String    # bcryptjs hash
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  otps      Otp[]
-}
-```
-
-### Otp Model
-```prisma
-model Otp {
-  id        String    @id @default(cuid())
-  email     String
-  code      String
-  expiresAt DateTime
-  userId    String?
-  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-```
-
-## Key Technologies
-
-- **Next.js 16**: Server & client components, app router
-- **Prisma**: Type-safe ORM with automatic migrations
-- **SQLite**: Lightweight embedded database
-- **JWT (jose)**: Stateless token-based authentication
-- **bcryptjs**: Password hashing & verification
-- **Tailwind CSS**: Utility-first styling
-- **TypeScript**: Type safety across codebase
-- **Zod**: Schema validation
-
-## Development Notes
-
-- HMR is configured to accept `127.0.0.1` and `localhost`
-- JWT tokens expire after 2 hours
-- OTP codes expire after 10 minutes
-- Cookies are HTTP-only and sameSite='lax' for security
-- All passwords are hashed before storage
-- Email validation is performed on registration/login
+- Passwords hashed with bcryptjs (10 rounds); JWT expires after 2 hours; cookie is HTTP-only, `sameSite=lax`, `secure` in production.
+- `/dashboard` access verifies the JWT **and** the user in the database — a forged cookie is rejected.
+- OTP codes (email and SMS) expire after 10 minutes; phone verification stays valid 30 minutes to finish the registration form.
+- Public registration can only create `CLIENT` or `OWNER` accounts.
+- Keep `.env` out of version control (already gitignored) — it holds the JWT secret and the SMSO API key.
 
 ## Scripts
 
 ```bash
-npm run dev      # Start dev server with HMR
-npm run build    # Build for production
-npm start        # Run production server
-npm run lint     # Run ESLint
+npm run dev        # dev server with HMR
+npm run build      # production build
+npm start          # run production server
+npm run db:seed    # populate demo data
+npm run db:push    # push schema without a migration
+npx prisma studio  # browse the database
 ```
 
-## Git Status
+## Roadmap / not yet implemented
 
-All changes committed as **"Major update v0.2"** with full authentication system integration.
+The full production roadmap with current status lives in [TODO.md](TODO.md). As of v0.4.0 the
+marketplace flows (browsing, offers, contracts, signing, rent payments), security hardening, and
+the legal/GDPR layer are implemented. What remains is connecting real external providers
+(payments — Stripe/Netopia, QES — eIDAS provider, email — Resend/SendGrid, all pluggable in
+`src/lib/`), migrating SQLite → PostgreSQL, file storage for photos, monitoring, and E2E tests.

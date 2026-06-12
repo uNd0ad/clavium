@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
+import { useMemo, useRef, type KeyboardEvent } from 'react'
 
 interface OtpInputProps {
   value: string
@@ -9,21 +9,18 @@ interface OtpInputProps {
 }
 
 export default function OtpInput({ value, onChange, length = 6 }: OtpInputProps) {
-  const [digits, setDigits] = useState<string[]>([])
   const refs = useRef<Array<HTMLInputElement | null>>([])
-
-  useEffect(() => {
-    setDigits(value.split('').slice(0, length))
-  }, [value, length])
+  const digits = value.split('').slice(0, length)
 
   const boxes = useMemo(
     () => Array.from({ length }, (_, index) => ({ index, digit: digits[index] || '' })),
-    [digits, length]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [value, length]
   )
 
   const handleChange = (index: number, rawValue: string) => {
     const nextValue = rawValue.replace(/[^0-9]/g, '').slice(0, 1)
-    const nextDigits = [...boxes.map((box) => box.digit)]
+    const nextDigits = boxes.map((box) => box.digit)
     nextDigits[index] = nextValue
     onChange(nextDigits.join(''))
 
@@ -53,6 +50,7 @@ export default function OtpInput({ value, onChange, length = 6 }: OtpInputProps)
           value={digit}
           onChange={(event) => handleChange(index, event.target.value)}
           onKeyDown={(event) => handleKeyDown(index, event)}
+          aria-label={`Cifra ${index + 1} din ${length}`}
           className="h-14 w-full rounded-[18px] border border-[var(--border)] bg-white text-center text-[18px] font-semibold text-[var(--text)] outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[rgba(0,113,227,0.16)]"
         />
       ))}

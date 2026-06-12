@@ -1,15 +1,16 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import clsx from 'clsx'
 
 const links = [
-  { label: 'Proprietăți', href: '#proprietati' },
-  { label: 'Cum funcționează', href: '#cum-functioneaza' },
-  { label: 'Contracte', href: '#contracte' },
-  { label: 'Prețuri', href: '#preturi' },
+  { label: 'Proprietăți', href: '/proprietati' },
+  { label: 'Cum funcționează', href: '/#cum-functioneaza' },
+  { label: 'Contracte', href: '/#contracte' },
+  { label: 'Prețuri', href: '/#preturi' },
 ]
 
 export default function Navbar() {
@@ -55,9 +56,9 @@ export default function Navbar() {
         )}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
-          <a href="/" className="font-sans text-xl font-semibold tracking-wide text-[var(--text)] no-underline">
+          <Link href="/" className="font-sans text-xl font-semibold tracking-wide text-[var(--text)] no-underline">
             Clavium<span className="text-[var(--brand)]">.ro</span>
-          </a>
+          </Link>
 
           <div className="hidden lg:flex items-center gap-10">
             {links.map((l) => (

@@ -1,12 +1,14 @@
 {
   "name": "clavium",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "prisma": "prisma",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
@@ -28,14 +30,18 @@
     "zustand": "^4.5.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.5",
     "@types/bcryptjs": "^2.4.2",
     "@types/node": "^20",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.0.1",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.9",
     "postcss": "^8",
     "prisma": "^5.15.0",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.8"
   }
 }

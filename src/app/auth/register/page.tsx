@@ -29,6 +29,7 @@ export default function RegisterPage() {
   const [otp, setOtp] = useState('')
   const [otpSent, setOtpSent] = useState(false)
   const [phoneVerified, setPhoneVerified] = useState(false)
+  const [consent, setConsent] = useState(false)
   const [status, setStatus] = useState('Completează pașii pentru a crea contul.')
   const [loading, setLoading] = useState(false)
   const [registered, setRegistered] = useState(false)
@@ -121,6 +122,11 @@ export default function RegisterPage() {
       return
     }
 
+    if (!consent) {
+      setStatus('Trebuie să accepți termenii și politica de confidențialitate pentru a continua.')
+      return
+    }
+
     setLoading(true)
     setStatus('Se creează contul...')
 
@@ -160,13 +166,45 @@ export default function RegisterPage() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-semibold text-[var(--text)]">Creează-ți contul</h1>
+        <p className="mt-2 text-[15px] text-[var(--muted)]">
+          Ai deja cont?{' '}
+          <a href="/auth/login" className="font-semibold text-[var(--brand)]">Conectează-te</a>
+        </p>
+      </div>
+
       <div className="rounded-[24px] bg-[var(--surface)] p-5">
-        <div className="mb-6 flex items-center gap-4 overflow-x-auto pb-3">
-          {steps.map((label, index) => (
-            <div key={label} className={`min-w-[8rem] rounded-full border px-4 py-2 text-center text-[13px] font-semibold transition ${index === step ? 'border-[var(--brand)] bg-[var(--brand-soft)] text-[var(--text)]' : 'border-[var(--border)] text-[var(--muted)]'}`}>
-              {label}
-            </div>
-          ))}
+        <div className="mb-6 flex items-center gap-2 overflow-x-auto pb-3">
+          {steps.map((label, index) => {
+            const done = index < step
+            const active = index === step
+            return (
+              <div key={label} className="flex items-center gap-2">
+                <div
+                  className={`flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-[13px] font-semibold transition ${
+                    active
+                      ? 'border-[var(--brand)] bg-[var(--brand)] text-white'
+                      : done
+                        ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                        : 'border-[var(--border)] text-[var(--muted)]'
+                  }`}
+                >
+                  <span
+                    className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] ${
+                      active ? 'bg-white/20' : done ? 'bg-emerald-100' : 'bg-[var(--border)]/40'
+                    }`}
+                  >
+                    {done ? '✓' : index + 1}
+                  </span>
+                  <span className="whitespace-nowrap">{label}</span>
+                </div>
+                {index < steps.length - 1 ? (
+                  <span className={`h-px w-4 shrink-0 ${done ? 'bg-emerald-300' : 'bg-[var(--border)]'}`} />
+                ) : null}
+              </div>
+            )
+          })}
         </div>
 
         <div key={step} className="step-transition">
@@ -259,6 +297,19 @@ export default function RegisterPage() {
                 <p>Telefon: {phone || '—'} {phoneVerified ? '(verificat)' : ''}</p>
                 <p>Parolă: {password ? 'Setată' : 'Nedefinită'}</p>
               </div>
+              <label className="flex cursor-pointer items-start gap-3 rounded-[24px] border border-[var(--border)] bg-white p-5 text-sm leading-6 text-[var(--muted)]">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(event) => setConsent(event.target.checked)}
+                  className="mt-1 h-4 w-4 accent-[var(--brand)]"
+                />
+                <span>
+                  Am citit și accept{' '}
+                  <a href="/termeni" target="_blank" className="font-semibold text-[var(--brand)]">termenii și condițiile</a> și{' '}
+                  <a href="/confidentialitate" target="_blank" className="font-semibold text-[var(--brand)]">politica de confidențialitate</a>.
+                </span>
+              </label>
             </div>
           )}
         </div>
