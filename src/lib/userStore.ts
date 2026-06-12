@@ -33,7 +33,7 @@ export async function findUserByEmail(email: string): Promise<User | null> {
   }
 }
 
-export async function createUser(firstName: string, lastName: string, email: string, passwordHash: string, role?: UserRole): Promise<User> {
+export async function createUser(firstName: string, lastName: string, email: string, passwordHash: string, role?: UserRole, phone?: string): Promise<User> {
   const existing = await findUserByEmail(email)
   if (existing) {
     throw new Error('Există deja un cont cu acest email.')
@@ -46,6 +46,8 @@ export async function createUser(firstName: string, lastName: string, email: str
       email: email.toLowerCase(),
       passwordHash,
       role: role || ROLES.CLIENT,
+      phone: phone || null,
+      phoneVerified: Boolean(phone),
     },
   })
 
@@ -119,4 +121,48 @@ export async function invalidateOtp(email: string) {
 
 export async function clearExpiredOtps() {
   await prisma.otp.deleteMany({ where: { expiresAt: { lte: new Date() } } })
+}
+
+export function normalizePhone(phone: string) {
+  return phone.replace(/[\s.-]/g, '')
+}
+
+export async function storePhoneOtp(phone: string, code: string) {
+  const expiresAt = new Date(Date.now() + 1000 * 60 * 10)
+  await prisma.phoneOtp.deleteMany({ where: { phone: normalizePhone(phone) } })
+  await prisma.phoneOtp.create({
+    data: { phone: normalizePhone(phone), code, expiresAt },
+  })
+}
+
+export async function verifyPhoneOtp(phone: string, code: string): Promise<boolean> {
+  const entry = await prisma.phoneOtp.findFirst({
+    where: {
+      phone: normalizePhone(phone),
+      expiresAt: { gt: new Date() },
+    },
+    orderBy: { createdAt: 'desc' },
+  })
+  if (!entry || entry.code !== code) return false
+  await prisma.phoneOtp.update({
+    where: { id: entry.id },
+    data: { verifiedAt: new Date() },
+  })
+  return true
+}
+
+export async function isPhoneVerified(phone: string): Promise<boolean> {
+  const entry = await prisma.phoneOtp.findFirst({
+    where: {
+      phone: normalizePhone(phone),
+      verifiedAt: { not: null },
+      // verificarea rămâne valabilă 30 de minute, cât durează completarea formularului
+      createdAt: { gt: new Date(Date.now() - 1000 * 60 * 30) },
+    },
+  })
+  return Boolean(entry)
+}
+
+export async function consumePhoneOtp(phone: string) {
+  await prisma.phoneOtp.deleteMany({ where: { phone: normalizePhone(phone) } })
 }

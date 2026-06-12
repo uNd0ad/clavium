@@ -16,10 +16,20 @@ model User {
   passwordHash  String
   role          String   @default("CLIENT")
   emailVerified Boolean  @default(false)
+  phoneVerified Boolean  @default(false)
   isActive      Boolean  @default(true)
   avatar        String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  properties        Property[]      @relation("OwnedProperties")
+  savedProperties   SavedProperty[]
+  offersSent        Offer[]         @relation("OffersSent")
+  offersReceived    Offer[]         @relation("OffersReceived")
+  contractsAsOwner  Contract[]      @relation("ContractsAsOwner")
+  contractsAsTenant Contract[]      @relation("ContractsAsTenant")
+  payments          Payment[]
+  notifications     Notification[]
 }
 
 model Otp {
@@ -28,4 +38,91 @@ model Otp {
   code      String
   expiresAt DateTime
   createdAt DateTime @default(now())
+}
+
+model PhoneOtp {
+  id         String    @id @default(uuid())
+  phone      String
+  code       String
+  expiresAt  DateTime
+  verifiedAt DateTime?
+  createdAt  DateTime  @default(now())
+}
+
+model Property {
+  id        String   @id @default(uuid())
+  title     String
+  location  String
+  rent      Int
+  status    String   @default("DISPONIBILA") // DISPONIBILA | INCHIRIATA
+  ownerId   String
+  owner     User     @relation("OwnedProperties", fields: [ownerId], references: [id])
+  savedBy   SavedProperty[]
+  offers    Offer[]
+  contracts Contract[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SavedProperty {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, propertyId])
+}
+
+model Offer {
+  id         String   @id @default(uuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+  fromUserId String
+  fromUser   User     @relation("OffersSent", fields: [fromUserId], references: [id])
+  toUserId   String
+  toUser     User     @relation("OffersReceived", fields: [toUserId], references: [id])
+  amount     Int
+  status     String   @default("TRIMISA") // TRIMISA | ACCEPTATA | RESPINSA
+  createdAt  DateTime @default(now())
+}
+
+model Contract {
+  id             String    @id @default(uuid())
+  propertyId     String
+  property       Property  @relation(fields: [propertyId], references: [id])
+  ownerId        String
+  owner          User      @relation("ContractsAsOwner", fields: [ownerId], references: [id])
+  tenantId       String
+  tenant         User      @relation("ContractsAsTenant", fields: [tenantId], references: [id])
+  signedByOwner  Boolean   @default(false)
+  signedByClient Boolean   @default(false)
+  qes            Boolean   @default(false)
+  status         String    @default("IN_ASTEPTARE") // IN_ASTEPTARE | SEMNAT | ACTIV
+  payments       Payment[]
+  createdAt      DateTime  @default(now())
+}
+
+model Payment {
+  id         String    @id @default(uuid())
+  reference  String    @unique
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  contractId String?
+  contract   Contract? @relation(fields: [contractId], references: [id])
+  amount     Int
+  type       String // CHIRIE | COMISION | REFUND
+  status     String    @default("IN_CURS") // FINALIZATA | IN_CURS | ESUATA
+  createdAt  DateTime  @default(now())
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  title       String
+  description String
+  variant     String   @default("info") // info | warning | danger | success
+  createdAt   DateTime @default(now())
 }

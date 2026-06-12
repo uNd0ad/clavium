@@ -8,7 +8,13 @@ import {
   storeOtpCode,
   getOtpCode,
   clearExpiredOtps,
+  storePhoneOtp,
+  verifyPhoneOtp,
+  isPhoneVerified,
+  consumePhoneOtp,
+  normalizePhone,
 } from './userStore'
+import { sendSms } from './sms'
 import { JWT_SECRET } from './constants'
 import { ROLES } from './types/roles'
 import type {
@@ -44,8 +50,32 @@ export async function verifyToken(token: string): Promise<AuthPayload | null> {
 }
 
 export async function registerUser(data: RegisterRequest) {
+  if (data.phone) {
+    const verified = await isPhoneVerified(data.phone)
+    if (!verified) {
+      throw new Error('Numărul de telefon nu a fost verificat prin OTP.')
+    }
+  }
   const passwordHash = await hash(data.password, 10)
-  return await createUser(data.firstName, data.lastName, data.email, passwordHash, data.role)
+  const user = await createUser(data.firstName, data.lastName, data.email, passwordHash, data.role, data.phone ? normalizePhone(data.phone) : undefined)
+  if (data.phone) {
+    await consumePhoneOtp(data.phone)
+  }
+  return user
+}
+
+export async function sendPhoneOtpCode(phone: string) {
+  const code = String(Math.floor(100000 + Math.random() * 900000))
+  await storePhoneOtp(phone, code)
+  await sendSms(phone, `Codul tău de verificare Clavium este: ${code}`)
+  return code
+}
+
+export async function verifyPhoneOtpCode(phone: string, code: string) {
+  const valid = await verifyPhoneOtp(phone, code)
+  if (!valid) {
+    throw new Error('Cod OTP invalid sau expirat.')
+  }
 }
 
 export async function loginUser(data: LoginRequest) {

@@ -114,6 +114,39 @@ body, button, input, textarea, select {
   }
 }
 
+/* Tranziție la navigarea între pagini — template.tsx se remontează la fiecare rută. */
+.page-transition {
+  animation: page-fade-in 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Tranziție între pașii formularelor (elementul primește key={step}). */
+.step-transition {
+  animation: page-fade-in 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition,
+  .step-transition,
+  .reveal {
+    animation: none;
+    transition: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 .reveal {
   opacity: 0;
   transform: translateY(24px);

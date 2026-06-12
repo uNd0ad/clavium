@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { registerSchema } from '@/lib/validations'
 import { createToken, registerUser } from '@/lib/auth'
 import { COOKIE_NAME } from '@/lib/constants'
+import { errorMessage } from '@/lib/apiError'
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,6 +25,6 @@ export async function POST(request: NextRequest) {
 
     return response
   } catch (error) {
-    return NextResponse.json({ error: (error as Error).message }, { status: 400 })
+    return NextResponse.json({ error: errorMessage(error) }, { status: 400 })
   }
 }

@@ -1,7 +1,16 @@
+import { redirect } from 'next/navigation'
 import StatusBadge from '@/components/dashboard/StatusBadge'
-import { dashboardMockUser, dashboardProfileNotifications } from '@/types/dashboard'
+import { getCurrentUser } from '@/lib/session'
+import { getNotifications } from '@/lib/dashboardData'
 
-export default function DashboardProfilePage() {
+export default async function DashboardProfilePage() {
+  const user = await getCurrentUser()
+  if (!user) {
+    redirect('/auth/login')
+  }
+
+  const notifications = await getNotifications(user)
+
   return (
     <section className="space-y-8">
       <div>
@@ -15,19 +24,19 @@ export default function DashboardProfilePage() {
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <div className="rounded-[24px] bg-white p-5">
               <p className="text-sm text-[var(--muted)]">Nume complet</p>
-              <p className="mt-2 font-semibold">{dashboardMockUser.firstName} {dashboardMockUser.lastName}</p>
+              <p className="mt-2 font-semibold">{user.firstName} {user.lastName}</p>
             </div>
             <div className="rounded-[24px] bg-white p-5">
               <p className="text-sm text-[var(--muted)]">Email</p>
-              <p className="mt-2 font-semibold">{dashboardMockUser.email}</p>
+              <p className="mt-2 font-semibold">{user.email}</p>
             </div>
             <div className="rounded-[24px] bg-white p-5">
               <p className="text-sm text-[var(--muted)]">Telefon</p>
-              <p className="mt-2 font-semibold">{dashboardMockUser.phone}</p>
+              <p className="mt-2 font-semibold">{user.phone || '—'}</p>
             </div>
             <div className="rounded-[24px] bg-white p-5">
               <p className="text-sm text-[var(--muted)]">Rol</p>
-              <p className="mt-2 font-semibold">{dashboardMockUser.role}</p>
+              <p className="mt-2 font-semibold">{user.role}</p>
             </div>
           </div>
         </div>
@@ -35,13 +44,19 @@ export default function DashboardProfilePage() {
         <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">
           <h2 className="text-xl font-semibold">Notificări</h2>
           <div className="mt-6 space-y-4">
-            {dashboardProfileNotifications.map((notification) => (
-              <div key={notification.title} className="rounded-[24px] border border-[var(--border)] bg-white p-5">
-                <p className="font-semibold">{notification.title}</p>
-                <p className="mt-2 text-sm text-[var(--muted)]">{notification.description}</p>
-                <p className="mt-3 text-xs uppercase tracking-[0.16em] text-[var(--muted)]">{notification.date}</p>
-              </div>
-            ))}
+            {notifications.length === 0 ? (
+              <p className="rounded-[24px] border border-[var(--border)] bg-white p-5 text-sm text-[var(--muted)]">
+                Nu ai notificări noi.
+              </p>
+            ) : (
+              notifications.map((notification) => (
+                <div key={notification.id} className="rounded-[24px] border border-[var(--border)] bg-white p-5">
+                  <p className="font-semibold">{notification.title}</p>
+                  <p className="mt-2 text-sm text-[var(--muted)]">{notification.description}</p>
+                  <p className="mt-3 text-xs uppercase tracking-[0.16em] text-[var(--muted)]">{notification.date}</p>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

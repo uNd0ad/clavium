@@ -79,7 +79,7 @@ export default function LoginPage() {
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
       setStatus(`Autentificare reușită. Bun venit, ${data.user.firstName}!`)
-      router.push('/')
+      router.push('/dashboard')
     } catch (error) {
       setStatus((error as Error).message)
     } finally {

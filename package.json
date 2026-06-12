@@ -1,6 +1,6 @@
 {
   "name": "clavium",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,25 +9,29 @@
     "lint": "next lint",
     "prisma": "prisma",
     "db:push": "prisma db push",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "db:seed": "node prisma/seed.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "dependencies": {
     "@prisma/client": "^5.15.0",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
     "jose": "^5.2.0",
-    "lucide-react": "^0.383.0",
+    "lucide-react": "^1.17.0",
     "next": "^16.2.7",
-    "react": "^18",
-    "react-dom": "^18",
-    "zustand": "^4.5.0",
-    "zod": "^3.23.2"
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "zod": "^3.23.2",
+    "zustand": "^4.5.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.0.1",
     "postcss": "^8",
     "prisma": "^5.15.0",

@@ -31,6 +31,7 @@ export type RegisterRequest = {
   email: string
   password: string
   role?: UserRole
+  phone?: string
 }
 
 export type OtpSendRequest = {
