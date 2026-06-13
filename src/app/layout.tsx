@@ -1,12 +1,15 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { Toaster } from 'sonner'
 import CookieBanner from '@/components/layout/CookieBanner'
 import './globals.css'
 
 // Font servit local prin next/font — fără request către Google Fonts CDN (și pentru GDPR).
+// Doar greutățile folosite efectiv în aplicație (400/500/600). latin-ext e necesar
+// pentru diacriticele românești (ș, ț). Mai puține fișiere de font = build/dev mai ușor.
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
-  weight: ['300', '400', '500', '600', '700', '800'],
+  weight: ['400', '500', '600'],
   variable: '--font-inter',
   display: 'swap',
 })
@@ -31,6 +34,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {children}
         <CookieBanner />
+        <Toaster
+          position="bottom-right"
+          richColors
+          closeButton
+          toastOptions={{ style: { borderRadius: '18px', fontFamily: 'var(--font-inter)' } }}
+        />
       </body>
     </html>
   )

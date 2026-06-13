@@ -1,4 +1,6 @@
 import { redirect } from 'next/navigation'
+import DashboardHeader from '@/components/dashboard/DashboardHeader'
+import EmptyState from '@/components/dashboard/EmptyState'
 import PropertyCard from '@/components/properties/PropertyCard'
 import PropertyFiltersForm from '@/components/properties/PropertyFiltersForm'
 import ListingActions from '@/components/properties/ListingActions'
@@ -18,34 +20,41 @@ export default async function DashboardSearchPage({ searchParams }: { searchPara
     prisma.savedProperty.findMany({ where: { userId: user.id }, select: { propertyId: true } }),
   ])
   const savedIds = new Set(saved.map((entry) => entry.propertyId))
+  const hasFilters = Boolean(filters.q || filters.minRent || filters.maxRent || filters.rooms || filters.sort)
 
   return (
     <section className="space-y-8">
-      <div>
-        <p className="text-sm uppercase tracking-[0.28em] text-[var(--muted)]">Caută</p>
-        <h1 className="mt-3 text-3xl font-semibold">Proprietăți disponibile</h1>
-        <p className="mt-2 text-sm text-[var(--muted)]">
-          Filtrează, salvează și trimite oferte direct din listă.
-        </p>
-      </div>
+      <DashboardHeader
+        eyebrow="Caută"
+        title="Proprietăți"
+        accent="disponibile"
+        description="Filtrează, salvează și trimite oferte direct din listă."
+      />
 
       <PropertyFiltersForm filters={filters} />
 
       {properties.length === 0 ? (
-        <p className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-8 text-[15px] text-[var(--muted)]">
-          Nicio proprietate nu corespunde căutării. Încearcă alte filtre.
-        </p>
+        <EmptyState
+          message="Nicio proprietate nu corespunde căutării. Încearcă alte filtre."
+          cta={hasFilters ? { label: 'Resetează filtrele', href: '/dashboard/cauta' } : undefined}
+          className="p-8 text-[15px]"
+        />
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {properties.map((property) => (
-            <PropertyCard key={property.id} property={property}>
-              <ListingActions
-                propertyId={property.id}
-                initialSaved={savedIds.has(property.id)}
-                canOffer={user.role === 'CLIENT'}
-              />
-            </PropertyCard>
-          ))}
+        <div className="space-y-6">
+          <p className="text-[13px] uppercase tracking-[0.18em] text-[var(--muted)]">
+            {properties.length} {properties.length === 1 ? 'proprietate disponibilă' : 'proprietăți disponibile'}
+          </p>
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {properties.map((property) => (
+              <PropertyCard key={property.id} property={property}>
+                <ListingActions
+                  propertyId={property.id}
+                  initialSaved={savedIds.has(property.id)}
+                  canOffer={user.role === 'CLIENT'}
+                />
+              </PropertyCard>
+            ))}
+          </div>
         </div>
       )}
     </section>

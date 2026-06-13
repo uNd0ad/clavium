@@ -2,10 +2,11 @@
 
 import { useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import FormField from '@/components/ui/FormField'
 import OtpInput from '@/components/ui/OtpInput'
-
-const defaultMessage = 'Alege metoda de autentificare.'
+import Button from '@/components/ui/Button'
+import { useCooldown } from '@/hooks/useCooldown'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -13,14 +14,13 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [otp, setOtp] = useState('')
-  const [status, setStatus] = useState(defaultMessage)
   const [loading, setLoading] = useState(false)
+  const [otpSent, setOtpSent] = useState(false)
+  const resendCooldown = useCooldown(30)
 
   const handlePasswordSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setLoading(true)
-    setStatus('Se verifică...')
-
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -29,14 +29,13 @@ export default function LoginPage() {
       })
       const data = await response.json()
       if (!response.ok) {
-        setStatus(data.error || 'Nu există un cont cu această adresă de email sau parola este incorectă.')
-        setLoading(false)
+        toast.error(data.error || 'Email sau parolă incorectă.')
         return
       }
-      setStatus(`Bine ai venit, ${data.user.firstName}!`)
+      toast.success(`Bine ai venit, ${data.user.firstName}!`)
       router.push('/dashboard')
     } catch (error) {
-      setStatus((error as Error).message)
+      toast.error((error as Error).message)
     } finally {
       setLoading(false)
     }
@@ -44,12 +43,10 @@ export default function LoginPage() {
 
   const handleOtpSend = async () => {
     if (!email) {
-      setStatus('Completează adresa de email înainte de a trimite OTP.')
+      toast.error('Completează adresa de email înainte de a trimite codul.')
       return
     }
     setLoading(true)
-    setStatus('Se trimite codul...')
-
     try {
       const response = await fetch('/api/auth/otp/send', {
         method: 'POST',
@@ -58,9 +55,11 @@ export default function LoginPage() {
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
-      setStatus('Codul OTP a fost trimis. Verifică inbox-ul sau continuă să introduci codul.')
+      setOtpSent(true)
+      resendCooldown.start()
+      toast.success('Cod trimis. Verifică inbox-ul și introdu cele 6 cifre.')
     } catch (error) {
-      setStatus((error as Error).message)
+      toast.error((error as Error).message)
     } finally {
       setLoading(false)
     }
@@ -68,8 +67,6 @@ export default function LoginPage() {
 
   const handleOtpVerify = async () => {
     setLoading(true)
-    setStatus('Se verifică codul OTP...')
-
     try {
       const response = await fetch('/api/auth/otp/verify', {
         method: 'POST',
@@ -78,10 +75,10 @@ export default function LoginPage() {
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
-      setStatus(`Autentificare reușită. Bun venit, ${data.user.firstName}!`)
+      toast.success(`Autentificare reușită. Bun venit, ${data.user.firstName}!`)
       router.push('/dashboard')
     } catch (error) {
-      setStatus((error as Error).message)
+      toast.error((error as Error).message)
     } finally {
       setLoading(false)
     }
@@ -116,25 +113,25 @@ export default function LoginPage() {
 
       {mode === 'password' ? (
         <form onSubmit={handlePasswordSubmit} className="space-y-5">
-          <FormField label="Email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="exemplu@domeniu.ro" />
-          <FormField label="Parolă" type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="••••••••" />
-          <button type="submit" disabled={loading} className="btn-primary w-full py-4 text-[14px]">
-            {loading ? 'Se conectează…' : 'Conectează-te'}
-          </button>
+          <FormField label="Email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="exemplu@domeniu.ro" />
+          <FormField label="Parolă" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="••••••••" />
+          <Button type="submit" loading={loading} className="w-full py-4 text-[14px]">
+            Conectează-te
+          </Button>
           <p className="text-sm text-[var(--muted)]">
             <a href="/auth/reset-parola" className="font-semibold text-[var(--brand)]">Ai uitat parola?</a>
           </p>
         </form>
       ) : (
         <div className="space-y-5">
-          <FormField label="Email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="exemplu@domeniu.ro" />
+          <FormField label="Email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="exemplu@domeniu.ro" />
           <div className="grid gap-4 sm:grid-cols-2">
-            <button type="button" onClick={handleOtpSend} disabled={loading} className="btn-outline w-full py-4 text-[14px]">
-              {loading ? 'Se trimite…' : 'Trimite cod OTP'}
-            </button>
-            <button type="button" onClick={handleOtpVerify} disabled={loading || otp.length < 6} className="btn-primary w-full py-4 text-[14px]">
-              {loading ? 'Se verifică…' : 'Verifică cod OTP'}
-            </button>
+            <Button type="button" variant="outline" loading={loading} disabled={resendCooldown.active} onClick={handleOtpSend} className="w-full py-4 text-[14px]">
+              {resendCooldown.active ? `Retrimite în ${resendCooldown.remaining}s` : otpSent ? 'Retrimite codul' : 'Trimite cod OTP'}
+            </Button>
+            <Button type="button" loading={loading} disabled={otp.length < 6} onClick={handleOtpVerify} className="w-full py-4 text-[14px]">
+              Verifică cod OTP
+            </Button>
           </div>
           <div>
             <label className="mb-2 block text-[13px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
@@ -144,10 +141,6 @@ export default function LoginPage() {
           </div>
         </div>
       )}
-
-      <p className="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--muted)]">
-        {status}
-      </p>
     </div>
   )
 }

@@ -2,9 +2,12 @@
 
 import { useEffect, useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { Home, KeyRound } from 'lucide-react'
 import FormField from '@/components/ui/FormField'
 import OtpInput from '@/components/ui/OtpInput'
+import Button from '@/components/ui/Button'
+import { useCooldown } from '@/hooks/useCooldown'
 import type { UserRole } from '@/lib/types/roles'
 
 const steps = ['Informații cont', 'Parolă', 'Verificare telefon', 'Finalizare']
@@ -30,10 +33,10 @@ export default function RegisterPage() {
   const [otpSent, setOtpSent] = useState(false)
   const [phoneVerified, setPhoneVerified] = useState(false)
   const [consent, setConsent] = useState(false)
-  const [status, setStatus] = useState('Completează pașii pentru a crea contul.')
   const [loading, setLoading] = useState(false)
   const [registered, setRegistered] = useState(false)
   const [countdown, setCountdown] = useState(REDIRECT_SECONDS)
+  const resendCooldown = useCooldown(30)
 
   useEffect(() => {
     if (!registered) return
@@ -47,18 +50,17 @@ export default function RegisterPage() {
 
   const handleNext = () => {
     if (step === 0 && (!firstName || !lastName || !email)) {
-      setStatus('Completează prenumele, numele de familie și email-ul pentru a continua.')
+      toast.error('Completează prenumele, numele de familie și email-ul pentru a continua.')
       return
     }
     if (step === 1 && (password.length < 8 || password !== confirmPassword)) {
-      setStatus('Parola trebuie să aibă cel puțin 8 caractere și să se potrivească.')
+      toast.error('Parola trebuie să aibă cel puțin 8 caractere și să se potrivească.')
       return
     }
     if (step === 2 && !phoneVerified) {
-      setStatus('Verifică numărul de telefon prin codul OTP înainte de a continua.')
+      toast.error('Verifică numărul de telefon prin codul OTP înainte de a continua.')
       return
     }
-    setStatus('')
     setStep(Math.min(step + 1, steps.length - 1))
   }
 
@@ -66,12 +68,10 @@ export default function RegisterPage() {
 
   const handleSendPhoneOtp = async () => {
     if (!phone) {
-      setStatus('Completează numărul de telefon înainte de a trimite codul.')
+      toast.error('Completează numărul de telefon înainte de a trimite codul.')
       return
     }
     setLoading(true)
-    setStatus('Se trimite codul prin SMS...')
-
     try {
       const response = await fetch('/api/auth/phone-otp/send', {
         method: 'POST',
@@ -81,9 +81,10 @@ export default function RegisterPage() {
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
       setOtpSent(true)
-      setStatus('Codul a fost trimis prin SMS. Introdu cele 6 cifre.')
+      resendCooldown.start()
+      toast.success('Cod trimis prin SMS. Introdu cele 6 cifre.')
     } catch (error) {
-      setStatus((error as Error).message)
+      toast.error((error as Error).message)
     } finally {
       setLoading(false)
     }
@@ -91,8 +92,6 @@ export default function RegisterPage() {
 
   const handleVerifyPhoneOtp = async () => {
     setLoading(true)
-    setStatus('Se verifică codul...')
-
     try {
       const response = await fetch('/api/auth/phone-otp/verify', {
         method: 'POST',
@@ -102,9 +101,9 @@ export default function RegisterPage() {
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
       setPhoneVerified(true)
-      setStatus('Numărul de telefon a fost verificat. Poți continua.')
+      toast.success('Numărul de telefon a fost verificat ✓')
     } catch (error) {
-      setStatus((error as Error).message)
+      toast.error((error as Error).message)
     } finally {
       setLoading(false)
     }
@@ -123,13 +122,11 @@ export default function RegisterPage() {
     }
 
     if (!consent) {
-      setStatus('Trebuie să accepți termenii și politica de confidențialitate pentru a continua.')
+      toast.error('Trebuie să accepți termenii și politica de confidențialitate pentru a continua.')
       return
     }
 
     setLoading(true)
-    setStatus('Se creează contul...')
-
     try {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
@@ -138,10 +135,10 @@ export default function RegisterPage() {
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
-      setStatus(`Cont creat! Bine ai venit, ${data.user.firstName}.`)
+      toast.success(`Cont creat! Bine ai venit, ${data.user.firstName}.`)
       setRegistered(true)
     } catch (error) {
-      setStatus((error as Error).message)
+      toast.error((error as Error).message)
     } finally {
       setLoading(false)
     }
@@ -181,13 +178,17 @@ export default function RegisterPage() {
             const active = index === step
             return (
               <div key={label} className="flex items-center gap-2">
-                <div
+                <button
+                  type="button"
+                  disabled={!done}
+                  onClick={() => done && setStep(index)}
+                  title={done ? `Înapoi la „${label}”` : undefined}
                   className={`flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-[13px] font-semibold transition ${
                     active
                       ? 'border-[var(--brand)] bg-[var(--brand)] text-white'
                       : done
-                        ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                        : 'border-[var(--border)] text-[var(--muted)]'
+                        ? 'cursor-pointer border-emerald-200 bg-emerald-50 text-emerald-700 hover:border-emerald-400'
+                        : 'cursor-default border-[var(--border)] text-[var(--muted)]'
                   }`}
                 >
                   <span
@@ -198,7 +199,7 @@ export default function RegisterPage() {
                     {done ? '✓' : index + 1}
                   </span>
                   <span className="whitespace-nowrap">{label}</span>
-                </div>
+                </button>
                 {index < steps.length - 1 ? (
                   <span className={`h-px w-4 shrink-0 ${done ? 'bg-emerald-300' : 'bg-[var(--border)]'}`} />
                 ) : null}
@@ -236,8 +237,24 @@ export default function RegisterPage() {
 
           {step === 1 && (
             <div className="space-y-5">
-              <FormField label="Parolă" type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="••••••••" />
-              <FormField label="Confirmă parola" type="password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="••••••••" />
+              <FormField
+                label="Parolă"
+                type="password"
+                autoComplete="new-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="••••••••"
+                error={password && password.length < 8 ? 'Parola trebuie să aibă cel puțin 8 caractere.' : undefined}
+              />
+              <FormField
+                label="Confirmă parola"
+                type="password"
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                placeholder="••••••••"
+                error={confirmPassword && confirmPassword !== password ? 'Parolele nu se potrivesc.' : undefined}
+              />
             </div>
           )}
 
@@ -262,9 +279,9 @@ export default function RegisterPage() {
                 </p>
               ) : (
                 <>
-                  <button type="button" onClick={handleSendPhoneOtp} disabled={loading} className="btn-outline w-full py-4 text-[14px]">
-                    {loading ? 'Se trimite…' : otpSent ? 'Retrimite codul SMS' : 'Trimite cod SMS'}
-                  </button>
+                  <Button type="button" variant="outline" loading={loading} disabled={resendCooldown.active} onClick={handleSendPhoneOtp} className="w-full py-4 text-[14px]">
+                    {resendCooldown.active ? `Retrimite în ${resendCooldown.remaining}s` : otpSent ? 'Retrimite codul SMS' : 'Trimite cod SMS'}
+                  </Button>
                   {otpSent ? (
                     <div className="space-y-4">
                       <div>
@@ -273,9 +290,9 @@ export default function RegisterPage() {
                         </label>
                         <OtpInput value={otp} onChange={setOtp} />
                       </div>
-                      <button type="button" onClick={handleVerifyPhoneOtp} disabled={loading || otp.length < 6} className="btn-primary w-full py-4 text-[14px]">
-                        {loading ? 'Se verifică…' : 'Verifică codul'}
-                      </button>
+                      <Button type="button" loading={loading} disabled={otp.length < 6} onClick={handleVerifyPhoneOtp} className="w-full py-4 text-[14px]">
+                        Verifică codul
+                      </Button>
                     </div>
                   ) : null}
                 </>
@@ -316,17 +333,13 @@ export default function RegisterPage() {
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <button type="button" onClick={handleBack} disabled={step === 0 || loading} className="btn-outline w-full py-4 text-[14px] sm:w-auto">
+        <Button type="button" variant="outline" onClick={handleBack} disabled={step === 0 || loading} className="w-full py-4 text-[14px] sm:w-auto">
           Înapoi
-        </button>
-        <button type="submit" disabled={loading} className="btn-primary w-full py-4 text-[14px] sm:w-auto">
+        </Button>
+        <Button type="submit" loading={loading} className="w-full py-4 text-[14px] sm:w-auto">
           {step === 3 ? 'Creează cont' : 'Continuă'}
-        </button>
+        </Button>
       </div>
-
-      <p className="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--muted)]">
-        {status}
-      </p>
     </form>
   )
 }

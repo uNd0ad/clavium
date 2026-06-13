@@ -33,11 +33,16 @@ export default async function PropertiesPage({ searchParams }: { searchParams: P
             Nicio proprietate nu corespunde căutării. Încearcă alte filtre.
           </p>
         ) : (
-          <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {properties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
-            ))}
-          </div>
+          <>
+            <p className="mt-10 text-[13px] uppercase tracking-[0.18em] text-[var(--muted)]">
+              {properties.length} {properties.length === 1 ? 'proprietate disponibilă' : 'proprietăți disponibile'}
+            </p>
+            <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {properties.map((property) => (
+                <PropertyCard key={property.id} property={property} />
+              ))}
+            </div>
+          </>
         )}
       </main>
       <Footer />

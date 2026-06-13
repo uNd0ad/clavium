@@ -18,7 +18,7 @@ export type UserProfile = {
 
 export const dashboardNavItems: DashboardNavItem[] = [
   { label: 'Overview', href: '/dashboard', roles: ['ADMIN', 'OWNER', 'CLIENT'], icon: 'home' },
-  { label: 'Caută', href: '/dashboard/cauta', roles: ['CLIENT'], icon: 'search' },
+  { label: 'Caută', href: '/dashboard/cauta', roles: ['ADMIN', 'OWNER', 'CLIENT'], icon: 'search' },
   { label: 'Oferte', href: '/dashboard/oferte', roles: ['ADMIN', 'OWNER', 'CLIENT'], icon: 'offer' },
   { label: 'Contracte', href: '/dashboard/contracte', roles: ['ADMIN', 'OWNER', 'CLIENT'], icon: 'contracts' },
   { label: 'Proprietăți', href: '/dashboard/proprietati', roles: ['ADMIN', 'OWNER'], icon: 'properties' },

@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
-import { Menu, X, Home, ShoppingBag, FileText, Layers, CreditCard, User, ShieldCheck, Search } from 'lucide-react'
+import { Menu, X, Home, ShoppingBag, FileText, Layers, CreditCard, User, ShieldCheck, Search, Bell } from 'lucide-react'
 import { dashboardNavItems, UserProfile } from '@/types/dashboard'
 import LogoutButton from './LogoutButton'
+import { useUnreadCount } from './NotificationContext'
 
 const iconMap = {
   home: Home,
@@ -20,6 +21,7 @@ const iconMap = {
 
 export default function MobileTopBar({ user }: { user: UserProfile }) {
   const [open, setOpen] = useState(false)
+  const unread = useUnreadCount()
   const items = dashboardNavItems.filter((item) => item.roles.includes(user.role))
 
   return (
@@ -29,9 +31,23 @@ export default function MobileTopBar({ user }: { user: UserProfile }) {
           <p className="text-[13px] uppercase tracking-[0.28em] text-[var(--muted)]">Dashboard</p>
           <p className="text-base font-semibold">Bun venit, {user.firstName}</p>
         </div>
-        <button onClick={() => setOpen(!open)} className="rounded-full border border-[var(--border)] p-3 text-[var(--text)]">
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
+        <div className="flex items-center gap-2">
+          {unread > 0 ? (
+            <Link
+              href="/dashboard/profil"
+              aria-label={`${unread} notificări necitite`}
+              className="relative rounded-full border border-[var(--border)] p-3 text-[var(--brand)]"
+            >
+              <Bell size={20} />
+              <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[var(--brand)] px-1 text-[10px] font-semibold text-white">
+                {unread > 99 ? '99+' : unread}
+              </span>
+            </Link>
+          ) : null}
+          <button onClick={() => setOpen(!open)} className="rounded-full border border-[var(--border)] p-3 text-[var(--text)]">
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </div>
 
       <div className={clsx('mt-4 space-y-3 transition-all duration-300', open ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden')}>

@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { Bookmark, BookmarkCheck } from 'lucide-react'
 import FormField from '@/components/ui/FormField'
+import Button from '@/components/ui/Button'
 
 type PropertyActionsProps = {
   propertyId: string
@@ -17,7 +19,6 @@ export default function PropertyActions({ propertyId, initialSaved, isAuthentica
   const router = useRouter()
   const [saved, setSaved] = useState(initialSaved)
   const [amount, setAmount] = useState('')
-  const [status, setStatus] = useState('')
   const [loading, setLoading] = useState(false)
 
   const handleSave = async () => {
@@ -25,15 +26,19 @@ export default function PropertyActions({ propertyId, initialSaved, isAuthentica
       router.push('/auth/login')
       return
     }
+    // Optimist: schimbăm starea imediat și revenim dacă cererea eșuează.
+    const previous = saved
+    setSaved(!saved)
     setLoading(true)
     try {
       const response = await fetch(`/api/properties/${propertyId}/save`, { method: 'POST' })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
       setSaved(data.saved)
-      setStatus(data.saved ? 'Proprietate salvată.' : 'Proprietate eliminată din salvate.')
+      toast.success(data.saved ? 'Proprietate salvată.' : 'Eliminată din salvate.')
     } catch (error) {
-      setStatus((error as Error).message)
+      setSaved(previous)
+      toast.error((error as Error).message)
     } finally {
       setLoading(false)
     }
@@ -45,7 +50,6 @@ export default function PropertyActions({ propertyId, initialSaved, isAuthentica
       return
     }
     setLoading(true)
-    setStatus('Se trimite oferta...')
     try {
       const response = await fetch('/api/offers', {
         method: 'POST',
@@ -54,10 +58,10 @@ export default function PropertyActions({ propertyId, initialSaved, isAuthentica
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
-      setStatus('Oferta a fost trimisă! Proprietarul va fi notificat.')
+      toast.success('Ofertă trimisă! Proprietarul a fost notificat.')
       setAmount('')
     } catch (error) {
-      setStatus((error as Error).message)
+      toast.error((error as Error).message)
     } finally {
       setLoading(false)
     }
@@ -65,10 +69,10 @@ export default function PropertyActions({ propertyId, initialSaved, isAuthentica
 
   return (
     <div className="space-y-5 rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">
-      <button type="button" onClick={handleSave} disabled={loading} className="btn-outline w-full py-4 text-[14px]">
+      <Button type="button" variant="outline" loading={loading} onClick={handleSave} className="w-full py-4 text-[14px]">
         {saved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
         {saved ? 'Salvată' : 'Salvează proprietatea'}
-      </button>
+      </Button>
 
       {canOffer && available ? (
         <div className="space-y-4">
@@ -80,9 +84,9 @@ export default function PropertyActions({ propertyId, initialSaved, isAuthentica
             onChange={(event) => setAmount(event.target.value)}
             placeholder="1800"
           />
-          <button type="button" onClick={handleOffer} disabled={loading || !amount} className="btn-primary w-full py-4 text-[14px]">
-            {loading ? 'Se trimite…' : 'Trimite oferta'}
-          </button>
+          <Button type="button" loading={loading} disabled={!amount} onClick={handleOffer} className="w-full py-4 text-[14px]">
+            Trimite oferta
+          </Button>
         </div>
       ) : null}
 
@@ -94,10 +98,6 @@ export default function PropertyActions({ propertyId, initialSaved, isAuthentica
         <p className="text-sm text-[var(--muted)]">
           <a href="/auth/login" className="font-semibold text-[var(--brand)]">Autentifică-te</a> pentru a salva sau a trimite o ofertă.
         </p>
-      ) : null}
-
-      {status ? (
-        <p className="rounded-[24px] border border-[var(--border)] bg-white p-4 text-sm text-[var(--muted)]">{status}</p>
       ) : null}
     </div>
   )

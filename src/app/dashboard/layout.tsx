@@ -2,7 +2,9 @@ import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import Sidebar from '@/components/dashboard/Sidebar'
 import MobileTopBar from '@/components/dashboard/MobileTopBar'
+import { NotificationProvider } from '@/components/dashboard/NotificationContext'
 import { getCurrentUser } from '@/lib/session'
+import { prisma } from '@/lib/prisma'
 
 export const metadata: Metadata = {
   title: 'Clavium Dashboard',
@@ -15,13 +17,20 @@ export default async function DashboardLayout({ children }: { children: React.Re
     redirect('/auth/login')
   }
 
+  const unreadCount = await prisma.notification.count({
+    where: { userId: user.id, read: false },
+  })
+
   return (
-    <div className="min-h-screen bg-[var(--surface)] text-[var(--text)]">
-      <MobileTopBar user={user} />
-      <div className="mx-auto flex min-h-[calc(100vh-88px)] max-w-[1400px] gap-6 px-4 py-6 lg:px-8">
-        <Sidebar user={user} />
-        <main className="flex-1 rounded-[32px] border border-[var(--border)] bg-white p-6 shadow-sm">{children}</main>
+    <NotificationProvider initialCount={unreadCount}>
+      <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+        <MobileTopBar user={user} />
+        <div className="mx-auto flex min-h-[calc(100vh-88px)] max-w-[1400px] gap-6 px-4 py-6 lg:px-8">
+          <Sidebar user={user} />
+          {/* Conținutul curge direct pe fundalul gri (ca homepage); cardurile secțiunilor plutesc deasupra. */}
+          <main className="min-w-0 flex-1">{children}</main>
+        </div>
       </div>
-    </div>
+    </NotificationProvider>
   )
 }

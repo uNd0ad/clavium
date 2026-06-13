@@ -1,6 +1,6 @@
 {
   "name": "clavium",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -26,6 +26,7 @@
     "next": "^16.2.7",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "sonner": "^2.0.7",
     "zod": "^3.23.2",
     "zustand": "^4.5.0"
   },

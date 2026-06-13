@@ -50,6 +50,18 @@ body, button, input, textarea, select {
   color: white;
 }
 
+/* Inel de focus vizibil doar la navigarea cu tastatura (nu și la click). */
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+summary:focus-visible,
+[role='button']:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -77,6 +89,16 @@ body, button, input, textarea, select {
   .btn-primary:hover {
     background: var(--brand-dark);
     transform: translateY(-1px);
+  }
+  .btn-primary:active,
+  .btn-outline:active,
+  .btn-outline-light:active {
+    transform: translateY(0) scale(0.97);
+  }
+  .btn-primary:disabled,
+  .btn-outline:disabled,
+  .btn-outline-light:disabled {
+    transform: none;
   }
 
   .btn-outline {

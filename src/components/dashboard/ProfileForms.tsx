@@ -2,7 +2,10 @@
 
 import { useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import FormField from '@/components/ui/FormField'
+import Button from '@/components/ui/Button'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 
 type ProfileFormsProps = {
   firstName: string
@@ -18,21 +21,20 @@ export default function ProfileForms({ firstName: initialFirst, lastName: initia
   const [phone, setPhone] = useState(initialPhone)
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
-  const [status, setStatus] = useState('')
   const [loading, setLoading] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
-  const post = async (url: string, init: RequestInit, success: string) => {
+  const post = async (url: string, init: RequestInit, success?: string) => {
     setLoading(true)
-    setStatus('')
     try {
       const response = await fetch(url, init)
       const data = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
-      setStatus(success)
+      if (success) toast.success(success)
       router.refresh()
       return true
     } catch (error) {
-      setStatus((error as Error).message)
+      toast.error((error as Error).message)
       return false
     } finally {
       setLoading(false)
@@ -73,9 +75,10 @@ export default function ProfileForms({ firstName: initialFirst, lastName: initia
     post('/api/auth/verify-email/send', { method: 'POST' }, 'Email de verificare trimis. Verifică inbox-ul (sau consola serverului în dev).')
 
   const handleDeactivate = async () => {
-    if (!window.confirm('Sigur vrei să dezactivezi contul? Nu te vei mai putea autentifica.')) return
-    const ok = await post('/api/profile', { method: 'DELETE' }, '')
+    const ok = await post('/api/profile', { method: 'DELETE' })
     if (ok) {
+      setConfirmOpen(false)
+      toast.success('Contul a fost dezactivat.')
       router.push('/')
     }
   }
@@ -85,9 +88,9 @@ export default function ProfileForms({ firstName: initialFirst, lastName: initia
       {!emailVerified ? (
         <div className="flex flex-wrap items-center justify-between gap-4 rounded-[24px] border border-amber-200 bg-amber-50 p-5 text-sm">
           <p className="font-semibold text-amber-800">Adresa de email nu este verificată.</p>
-          <button type="button" onClick={handleResendVerification} disabled={loading} className="btn-outline px-5 py-2.5 text-[12px]">
+          <Button type="button" variant="outline" loading={loading} onClick={handleResendVerification} className="px-5 py-2.5 text-[12px]">
             Retrimite emailul de verificare
-          </button>
+          </Button>
         </div>
       ) : null}
 
@@ -99,9 +102,9 @@ export default function ProfileForms({ firstName: initialFirst, lastName: initia
         </div>
         <FormField label="Telefon" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="07XX XXX XXX" />
         <p className="text-[13px] text-[var(--muted)]">Schimbarea numărului de telefon necesită o nouă verificare OTP.</p>
-        <button type="submit" disabled={loading} className="btn-primary px-6 py-3 text-[13px]">
-          {loading ? 'Se salvează…' : 'Salvează modificările'}
-        </button>
+        <Button type="submit" loading={loading} className="px-6 py-3 text-[13px]">
+          Salvează modificările
+        </Button>
       </form>
 
       <form onSubmit={handlePassword} className="space-y-4 rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">
@@ -110,9 +113,9 @@ export default function ProfileForms({ firstName: initialFirst, lastName: initia
           <FormField label="Parola actuală" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
           <FormField label="Parola nouă" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
         </div>
-        <button type="submit" disabled={loading || newPassword.length < 8} className="btn-primary px-6 py-3 text-[13px]">
-          {loading ? 'Se schimbă…' : 'Schimbă parola'}
-        </button>
+        <Button type="submit" loading={loading} disabled={newPassword.length < 8} className="px-6 py-3 text-[13px]">
+          Schimbă parola
+        </Button>
       </form>
 
       <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">
@@ -126,14 +129,22 @@ export default function ProfileForms({ firstName: initialFirst, lastName: initia
       <div className="rounded-[32px] border border-rose-200 bg-rose-50/50 p-6">
         <h2 className="text-xl font-semibold text-rose-800">Danger zone</h2>
         <p className="mt-2 text-sm text-[var(--muted)]">Dezactivarea contului este permanentă — nu te vei mai putea autentifica.</p>
-        <button type="button" onClick={handleDeactivate} disabled={loading} className="mt-4 rounded-full border border-rose-300 bg-white px-6 py-3 text-[13px] font-semibold uppercase tracking-[0.08em] text-rose-800 transition hover:bg-rose-100">
+        <button type="button" onClick={() => setConfirmOpen(true)} disabled={loading} className="mt-4 rounded-full border border-rose-300 bg-white px-6 py-3 text-[13px] font-semibold uppercase tracking-[0.08em] text-rose-800 transition hover:bg-rose-100">
           Dezactivează contul
         </button>
       </div>
 
-      {status ? (
-        <p className="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--muted)]">{status}</p>
-      ) : null}
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Dezactivează contul"
+        description="Ești sigur? Contul va fi dezactivat permanent și nu te vei mai putea autentifica."
+        confirmLabel="Da, dezactivează"
+        cancelLabel="Renunță"
+        destructive
+        loading={loading}
+        onConfirm={handleDeactivate}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </div>
   )
 }

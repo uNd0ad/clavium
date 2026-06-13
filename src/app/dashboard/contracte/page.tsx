@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import StatusBadge from '@/components/dashboard/StatusBadge'
 import { ContractActions } from '@/components/dashboard/actions'
 import { getCurrentUser } from '@/lib/session'
@@ -14,12 +15,14 @@ export default async function DashboardContractsPage() {
 
   return (
     <section className="space-y-8">
-      <div>
-        <p className="text-sm uppercase tracking-[0.28em] text-[var(--muted)]">Contracte</p>
-        <h1 className="mt-3 text-3xl font-semibold">Contracte active și semnate</h1>
-      </div>
+      <DashboardHeader
+        eyebrow="Contracte"
+        title="Contracte active"
+        accent="și semnate"
+        description="Verifică semnăturile și statutul fiecărui contract."
+      />
 
-      <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">
+      <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold">Verifică statutul semnăturilor</h2>

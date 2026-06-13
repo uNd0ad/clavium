@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef, type KeyboardEvent } from 'react'
+import { useMemo, useRef, type ClipboardEvent, type KeyboardEvent } from 'react'
 
 interface OtpInputProps {
   value: string
@@ -35,6 +35,16 @@ export default function OtpInput({ value, onChange, length = 6 }: OtpInputProps)
     }
   }
 
+  // Lipirea unui cod întreg (din SMS/email) completează toate căsuțele odată.
+  const handlePaste = (event: ClipboardEvent<HTMLInputElement>) => {
+    event.preventDefault()
+    const pasted = event.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, length)
+    if (!pasted) return
+    onChange(pasted)
+    const focusIndex = Math.min(pasted.length, length - 1)
+    refs.current[focusIndex]?.focus()
+  }
+
   return (
     <div className="grid grid-cols-6 gap-3">
       {boxes.map(({ index, digit }) => (
@@ -46,10 +56,12 @@ export default function OtpInput({ value, onChange, length = 6 }: OtpInputProps)
           type="text"
           inputMode="numeric"
           pattern="[0-9]*"
+          autoComplete={index === 0 ? 'one-time-code' : 'off'}
           maxLength={1}
           value={digit}
           onChange={(event) => handleChange(index, event.target.value)}
           onKeyDown={(event) => handleKeyDown(index, event)}
+          onPaste={handlePaste}
           aria-label={`Cifra ${index + 1} din ${length}`}
           className="h-14 w-full rounded-[18px] border border-[var(--border)] bg-white text-center text-[18px] font-semibold text-[var(--text)] outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[rgba(0,113,227,0.16)]"
         />

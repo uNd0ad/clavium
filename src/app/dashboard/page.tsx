@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import StatusBadge from '@/components/dashboard/StatusBadge'
 import { getCurrentUser } from '@/lib/session'
 import { getOverview } from '@/lib/dashboardData'
@@ -13,25 +14,24 @@ export default async function DashboardPage() {
 
   return (
     <section className="space-y-8">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <p className="text-sm uppercase tracking-[0.28em] text-[var(--muted)]">Dashboard</p>
-          <h1 className="mt-3 text-3xl font-semibold">Bun venit, {user.firstName}</h1>
-        </div>
-      </div>
+      <DashboardHeader
+        eyebrow="Dashboard"
+        title={`Bun venit, ${user.firstName}`}
+        description="Tabloul de bord cu oferte, contracte, plăți și activitatea ta recentă."
+      />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {stats.map((item) => (
-          <div key={item.label} className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">
-            <p className="text-sm text-[var(--muted)]">{item.label}</p>
-            <p className="mt-3 text-3xl font-semibold">{item.value}</p>
+          <div key={item.label} className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
+            <p className="text-[13px] uppercase tracking-[0.18em] text-[var(--muted)]">{item.label}</p>
+            <p className="mt-3 text-[32px] font-semibold tracking-[-0.02em]">{item.value}</p>
             {item.highlight ? <p className="mt-4 text-sm text-[var(--muted)]">{item.highlight}</p> : null}
           </div>
         ))}
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
-        <div className="space-y-6 rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">
+        <div className="space-y-6 rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold">Alerte</h2>
@@ -60,7 +60,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">
+        <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold">Activitate recentă</h2>

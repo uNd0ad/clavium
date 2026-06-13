@@ -2,129 +2,138 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import Button from '@/components/ui/Button'
+import { useUnreadCount, useSetUnreadCount } from './NotificationContext'
 
 function useAction() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
 
-  const run = async (url: string, init?: RequestInit) => {
+  const run = async (url: string, init?: RequestInit, success?: string) => {
     setLoading(true)
-    setError('')
     try {
       const response = await fetch(url, init)
       const data = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
+      if (success) toast.success(success)
       router.refresh()
       return true
     } catch (err) {
-      setError((err as Error).message)
+      toast.error((err as Error).message)
       return false
     } finally {
       setLoading(false)
     }
   }
 
-  return { run, loading, error }
+  return { run, loading }
 }
 
 export function OfferActions({ offerId }: { offerId: string }) {
-  const { run, loading, error } = useAction()
+  const { run, loading } = useAction()
 
   const act = (action: 'accept' | 'reject') =>
-    run(`/api/offers/${offerId}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action }),
-    })
+    run(
+      `/api/offers/${offerId}`,
+      {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      },
+      action === 'accept' ? 'Ofertă acceptată — contractul a fost creat.' : 'Ofertă respinsă.'
+    )
 
   return (
-    <div className="mt-4 space-y-2">
-      <div className="flex flex-wrap gap-3">
-        <button type="button" onClick={() => act('accept')} disabled={loading} className="btn-primary px-5 py-2.5 text-[12px]">
-          Acceptă
-        </button>
-        <button type="button" onClick={() => act('reject')} disabled={loading} className="btn-outline px-5 py-2.5 text-[12px]">
-          Respinge
-        </button>
-      </div>
-      {error ? <p className="text-sm text-rose-600">{error}</p> : null}
+    <div className="mt-4 flex flex-wrap gap-3">
+      <Button type="button" loading={loading} onClick={() => act('accept')} className="px-5 py-2.5 text-[12px]">
+        Acceptă
+      </Button>
+      <Button type="button" variant="outline" disabled={loading} onClick={() => act('reject')} className="px-5 py-2.5 text-[12px]">
+        Respinge
+      </Button>
     </div>
   )
 }
 
 export function ContractActions({ contractId, canSign, canPay, dueAmount }: { contractId: string; canSign: boolean; canPay: boolean; dueAmount: string | null }) {
-  const { run, loading, error } = useAction()
+  const { run, loading } = useAction()
 
-  if (!canSign && !canPay) return error ? <p className="mt-3 text-sm text-rose-600">{error}</p> : null
+  if (!canSign && !canPay) return null
 
   return (
-    <div className="mt-4 space-y-2">
-      <div className="flex flex-wrap gap-3">
-        {canSign ? (
-          <button
-            type="button"
-            onClick={() => run(`/api/contracts/${contractId}/sign`, { method: 'POST' })}
-            disabled={loading}
-            className="btn-primary px-5 py-2.5 text-[12px]"
-          >
-            {loading ? 'Se semnează…' : 'Semnează cu QES'}
-          </button>
-        ) : null}
-        {canPay ? (
-          <button
-            type="button"
-            onClick={() => run(`/api/contracts/${contractId}/pay`, { method: 'POST' })}
-            disabled={loading}
-            className="btn-primary px-5 py-2.5 text-[12px]"
-          >
-            {loading ? 'Se procesează…' : `Plătește chiria (${dueAmount})`}
-          </button>
-        ) : null}
-      </div>
-      {error ? <p className="text-sm text-rose-600">{error}</p> : null}
+    <div className="mt-4 flex flex-wrap gap-3">
+      {canSign ? (
+        <Button
+          type="button"
+          loading={loading}
+          onClick={() => run(`/api/contracts/${contractId}/sign`, { method: 'POST' }, 'Contract semnat cu QES.')}
+          className="px-5 py-2.5 text-[12px]"
+        >
+          Semnează cu QES
+        </Button>
+      ) : null}
+      {canPay ? (
+        <Button
+          type="button"
+          loading={loading}
+          onClick={() => run(`/api/contracts/${contractId}/pay`, { method: 'POST' }, 'Plata chiriei a fost efectuată.')}
+          className="px-5 py-2.5 text-[12px]"
+        >
+          {`Plătește chiria (${dueAmount})`}
+        </Button>
+      ) : null}
     </div>
   )
 }
 
 export function PropertyStatusToggle({ propertyId, status }: { propertyId: string; status: string }) {
-  const { run, loading, error } = useAction()
+  const { run, loading } = useAction()
   if (status === 'Închiriată') return null
   const inactive = status === 'Inactivă'
 
   return (
     <div className="mt-3">
-      <button
+      <Button
         type="button"
+        variant="outline"
+        loading={loading}
         onClick={() =>
-          run(`/api/properties/${propertyId}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: inactive ? 'DISPONIBILA' : 'INACTIVA' }),
-          })
+          run(
+            `/api/properties/${propertyId}`,
+            {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: inactive ? 'DISPONIBILA' : 'INACTIVA' }),
+            },
+            inactive ? 'Listare reactivată.' : 'Listare dezactivată.'
+          )
         }
-        disabled={loading}
-        className="btn-outline px-5 py-2.5 text-[12px]"
+        className="px-5 py-2.5 text-[12px]"
       >
         {inactive ? 'Reactivează listarea' : 'Dezactivează listarea'}
-      </button>
-      {error ? <p className="mt-2 text-sm text-rose-600">{error}</p> : null}
+      </Button>
     </div>
   )
 }
 
 export function MarkNotificationsRead({ hasUnread }: { hasUnread: boolean }) {
   const { run, loading } = useAction()
+  const count = useUnreadCount()
+  const setUnread = useSetUnreadCount()
   if (!hasUnread) return null
 
+  const markRead = async () => {
+    // Optimist: ascundem badge-ul imediat; revenim dacă cererea eșuează.
+    const previous = count
+    setUnread(0)
+    const ok = await run('/api/notifications/read', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }, 'Notificări marcate ca citite.')
+    if (!ok) setUnread(previous)
+  }
+
   return (
-    <button
-      type="button"
-      onClick={() => run('/api/notifications/read', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })}
-      disabled={loading}
-      className="btn-outline px-5 py-2.5 text-[12px]"
-    >
+    <Button type="button" variant="outline" loading={loading} onClick={markRead} className="px-5 py-2.5 text-[12px]">
       Marchează tot ca citit
-    </button>
+    </Button>
   )
 }

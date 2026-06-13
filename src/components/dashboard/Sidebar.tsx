@@ -6,6 +6,7 @@ import clsx from 'clsx'
 import { Home, ShoppingBag, FileText, Layers, CreditCard, User, ShieldCheck, Search } from 'lucide-react'
 import { dashboardNavItems, UserProfile } from '@/types/dashboard'
 import LogoutButton from './LogoutButton'
+import NotificationTab from './NotificationTab'
 import { ROLE_DESCRIPTIONS } from '@/lib/types/roles'
 
 const iconMap = {
@@ -37,6 +38,7 @@ export default function Sidebar({ user }: { user: UserProfile }) {
       </div>
 
       <nav className="space-y-2">
+        <NotificationTab />
         {items.map((item) => {
           const Icon = iconMap[item.icon]
           const active = pathname === item.href

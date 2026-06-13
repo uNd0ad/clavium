@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.5.0 — 2026-06-13
+
+Pas major de UX: feedback modern, interacțiuni instant și un dashboard în limbajul vizual al homepage-ului. Vezi [UX-REVIEW.md](UX-REVIEW.md) pentru analiza completă care a stat la baza acestor schimbări.
+
+### Limbajul vizual al homepage-ului în dashboard
+- Antet comun de pagină (`DashboardHeader`): eyebrow `section-label` cu liniuța brand, titlu mare cu tracking strâns și accent colorat — aplicat pe toate cele 8 pagini de dashboard. Layout-ul a rămas neschimbat.
+- Fundalul dashboardului trece pe gri (`--bg`, ca homepage), iar cardurile secțiunilor plutesc deasupra cu umbra `surface-card`; etichetele de statistici devin uppercase cu tracking.
+
+### Feedback și interacțiuni (UX batch 1–3)
+- **Toast-uri (sonner)** înlocuiesc casetele de status gri în toate formularele și acțiunile (login, register, resetare parolă, profil, proprietăți, oferte, contracte, plăți, admin, fotografii). Succes și eroare sunt distincte și se auto-închid.
+- **Dialog de confirmare stilizat** (`ConfirmDialog`) în locul `window.confirm` la dezactivarea contului — backdrop, Escape, focus pe acțiune.
+- **Buton cu stare de încărcare** (`Button` + `Spinner`) consistent peste tot, fără salt de lățime.
+- **Actualizări optimiste**: salvarea proprietăților comută instant (revine la eroare); „marchează tot ca citit” golește badge-ul imediat.
+- **OTP**: lipirea unui cod întreg completează toate căsuțele; `autocomplete="one-time-code"` pentru autofill; cooldown de 30s la retrimitere.
+- **Formulare**: toggle arată/ascunde parola pe toate câmpurile de parolă; validare inline la înregistrare (parole care nu se potrivesc / prea scurte); pașii completați din wizard sunt clicabili.
+- **Stări goale cu acțiune** (`EmptyState`): căutarea fără rezultate oferă „Resetează filtrele”, listele goale trimit la „Caută proprietăți”.
+- **Accesibilitate/polish**: inel de focus vizibil la tastatură, stare `:active` la butoane, contoare de rezultate pe paginile de căutare.
+
+### Notificări
+- Tab de notificări în dashboard (sidebar + clopoțel pe mobil) care apare doar când există notificări necitite și dispare după citire. Numărătoarea necitite vine din `/api/notifications/unread`, cu sondaj unic partajat (60s, pauză când tab-ul nu e vizibil).
+
+### Navigație și acces
+- Tab-ul „Caută” este disponibil pentru toate rolurile (client, proprietar, admin); buton de deconectare în dashboard (sidebar + meniu mobil).
+
+### Performanță
+- Fontul Inter încarcă doar greutățile folosite (400/500/600), reducând fișierele procesate la build/dev.
+
 ## 0.4.0 — 2026-06-13
 
 ### Fotografii, căutare pentru clienți și UX (follow-up 0.4)

@@ -1,12 +1,14 @@
 import { redirect } from 'next/navigation'
+import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import StatusBadge from '@/components/dashboard/StatusBadge'
+import EmptyState from '@/components/dashboard/EmptyState'
 import { OfferActions } from '@/components/dashboard/actions'
 import { getCurrentUser } from '@/lib/session'
 import { getOffers, type OfferView } from '@/lib/dashboardData'
 
-function OfferList({ offers, emptyMessage }: { offers: OfferView[]; emptyMessage: string }) {
+function OfferList({ offers, emptyMessage, emptyCta }: { offers: OfferView[]; emptyMessage: string; emptyCta?: { label: string; href: string } }) {
   if (offers.length === 0) {
-    return <p className="mt-6 rounded-[24px] border border-[var(--border)] bg-white p-5 text-sm text-[var(--muted)]">{emptyMessage}</p>
+    return <EmptyState message={emptyMessage} cta={emptyCta} className="mt-6 p-5" />
   }
 
   return (
@@ -41,19 +43,25 @@ export default async function DashboardOffersPage() {
 
   return (
     <section className="space-y-8">
-      <div>
-        <p className="text-sm uppercase tracking-[0.28em] text-[var(--muted)]">Oferte</p>
-        <h1 className="mt-3 text-3xl font-semibold">Gestionare oferte</h1>
-      </div>
+      <DashboardHeader
+        eyebrow="Oferte"
+        title="Gestionează"
+        accent="ofertele tale"
+        description="Urmărește ce ai trimis și răspunde ofertelor primite."
+      />
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">
+        <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
           <h2 className="text-xl font-semibold">Oferte trimise</h2>
           <p className="mt-2 text-sm text-[var(--muted)]">Urmărește ofertele trimise și starea lor curentă.</p>
-          <OfferList offers={sent} emptyMessage="Nu ai trimis nicio ofertă încă." />
+          <OfferList
+            offers={sent}
+            emptyMessage="Nu ai trimis nicio ofertă încă."
+            emptyCta={user.role === 'CLIENT' ? { label: 'Caută proprietăți', href: '/dashboard/cauta' } : undefined}
+          />
         </div>
 
-        <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">
+        <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
           <h2 className="text-xl font-semibold">Oferte primite</h2>
           <p className="mt-2 text-sm text-[var(--muted)]">Răspunde rapid ofertelor primite.</p>
           <OfferList offers={received} emptyMessage="Nu ai primit nicio ofertă încă." />

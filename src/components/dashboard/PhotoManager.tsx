@@ -3,28 +3,28 @@
 import { useRef, useState, type ChangeEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { toast } from 'sonner'
 import { ImagePlus, X } from 'lucide-react'
 
 export default function PhotoManager({ propertyId, photos }: { propertyId: string; photos: string[] }) {
   const router = useRouter()
   const inputRef = useRef<HTMLInputElement>(null)
-  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   const upload = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
     if (!files || files.length === 0) return
     setLoading(true)
-    setError('')
     try {
       const form = new FormData()
       Array.from(files).forEach((file) => form.append('photos', file))
       const response = await fetch(`/api/properties/${propertyId}/photos`, { method: 'POST', body: form })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
+      toast.success(files.length > 1 ? 'Fotografii încărcate.' : 'Fotografie încărcată.')
       router.refresh()
     } catch (err) {
-      setError((err as Error).message)
+      toast.error((err as Error).message)
     } finally {
       setLoading(false)
       if (inputRef.current) inputRef.current.value = ''
@@ -33,7 +33,6 @@ export default function PhotoManager({ propertyId, photos }: { propertyId: strin
 
   const remove = async (url: string) => {
     setLoading(true)
-    setError('')
     try {
       const response = await fetch(`/api/properties/${propertyId}/photos`, {
         method: 'DELETE',
@@ -42,9 +41,10 @@ export default function PhotoManager({ propertyId, photos }: { propertyId: strin
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
+      toast.success('Fotografie ștearsă.')
       router.refresh()
     } catch (err) {
-      setError((err as Error).message)
+      toast.error((err as Error).message)
     } finally {
       setLoading(false)
     }
@@ -78,7 +78,6 @@ export default function PhotoManager({ propertyId, photos }: { propertyId: strin
         </button>
         <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" multiple hidden onChange={upload} />
       </div>
-      {error ? <p className="mt-2 text-sm text-rose-600">{error}</p> : null}
     </div>
   )
 }

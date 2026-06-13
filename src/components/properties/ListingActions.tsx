@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { Bookmark, BookmarkCheck, Send } from 'lucide-react'
 
 // Acțiuni compacte pe cardul din listă: salvare + ofertă rapidă.
@@ -9,20 +10,24 @@ export default function ListingActions({ propertyId, initialSaved, canOffer }: {
   const router = useRouter()
   const [saved, setSaved] = useState(initialSaved)
   const [amount, setAmount] = useState('')
-  const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
   const toggleSave = async () => {
+    // Optimist: schimbăm starea imediat și revenim dacă cererea eșuează.
+    const previous = saved
+    const next = !saved
+    setSaved(next)
     setLoading(true)
-    setMessage('')
     try {
       const response = await fetch(`/api/properties/${propertyId}/save`, { method: 'POST' })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
       setSaved(data.saved)
+      toast.success(data.saved ? 'Proprietate salvată.' : 'Eliminată din salvate.')
       router.refresh()
     } catch (error) {
-      setMessage((error as Error).message)
+      setSaved(previous)
+      toast.error((error as Error).message)
     } finally {
       setLoading(false)
     }
@@ -30,7 +35,6 @@ export default function ListingActions({ propertyId, initialSaved, canOffer }: {
 
   const sendOffer = async () => {
     setLoading(true)
-    setMessage('')
     try {
       const response = await fetch('/api/offers', {
         method: 'POST',
@@ -39,10 +43,10 @@ export default function ListingActions({ propertyId, initialSaved, canOffer }: {
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
-      setMessage('Ofertă trimisă ✓')
+      toast.success('Ofertă trimisă! Proprietarul a fost notificat.')
       setAmount('')
     } catch (error) {
-      setMessage((error as Error).message)
+      toast.error((error as Error).message)
     } finally {
       setLoading(false)
     }
@@ -81,7 +85,6 @@ export default function ListingActions({ propertyId, initialSaved, canOffer }: {
           </div>
         ) : null}
       </div>
-      {message ? <p className="text-[12px] text-[var(--muted)]">{message}</p> : null}
     </div>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import StatusBadge from '@/components/dashboard/StatusBadge'
 
 export type AdminUserRow = {
@@ -18,12 +19,10 @@ const ROLES = ['CLIENT', 'OWNER', 'ADMIN'] as const
 
 export default function AdminUsersTable({ users }: { users: AdminUserRow[] }) {
   const router = useRouter()
-  const [status, setStatus] = useState('')
   const [busyId, setBusyId] = useState<string | null>(null)
 
   const update = async (id: string, body: { role?: string; isActive?: boolean }) => {
     setBusyId(id)
-    setStatus('')
     try {
       const response = await fetch(`/api/admin/users/${id}`, {
         method: 'PATCH',
@@ -32,10 +31,10 @@ export default function AdminUsersTable({ users }: { users: AdminUserRow[] }) {
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
-      setStatus('Utilizator actualizat.')
+      toast.success('Utilizator actualizat.')
       router.refresh()
     } catch (error) {
-      setStatus((error as Error).message)
+      toast.error((error as Error).message)
     } finally {
       setBusyId(null)
     }
@@ -76,7 +75,6 @@ export default function AdminUsersTable({ users }: { users: AdminUserRow[] }) {
           </div>
         </div>
       ))}
-      {status ? <p className="text-sm text-[var(--muted)]">{status}</p> : null}
     </div>
   )
 }

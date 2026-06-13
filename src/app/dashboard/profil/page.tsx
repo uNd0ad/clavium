@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import ProfileForms from '@/components/dashboard/ProfileForms'
 import { MarkNotificationsRead } from '@/components/dashboard/actions'
 import { getCurrentUser } from '@/lib/session'
@@ -15,10 +16,12 @@ export default async function DashboardProfilePage({ searchParams }: { searchPar
 
   return (
     <section className="space-y-8">
-      <div>
-        <p className="text-sm uppercase tracking-[0.28em] text-[var(--muted)]">Profil</p>
-        <h1 className="mt-3 text-3xl font-semibold">Setările contului</h1>
-      </div>
+      <DashboardHeader
+        eyebrow="Profil"
+        title="Setările"
+        accent="contului"
+        description="Date personale, securitate și notificări."
+      />
 
       {emailStatus === 'verificat' ? (
         <p className="rounded-[24px] border border-emerald-200 bg-emerald-50 p-5 text-sm font-semibold text-emerald-800">
@@ -33,7 +36,7 @@ export default async function DashboardProfilePage({ searchParams }: { searchPar
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <div className="space-y-6">
-          <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">
+          <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
             <h2 className="text-xl font-semibold">Date personale</h2>
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               <div className="rounded-[24px] bg-white p-5">
@@ -63,7 +66,7 @@ export default async function DashboardProfilePage({ searchParams }: { searchPar
           />
         </div>
 
-        <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 self-start">
+        <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)] self-start">
           <div className="flex items-center justify-between gap-4">
             <h2 className="text-xl font-semibold">Notificări</h2>
             <MarkNotificationsRead hasUnread={hasUnread} />

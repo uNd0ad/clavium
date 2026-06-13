@@ -2,8 +2,10 @@
 
 import { useRef, useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { Plus, ImagePlus } from 'lucide-react'
 import FormField from '@/components/ui/FormField'
+import Button from '@/components/ui/Button'
 
 export default function PropertyForm() {
   const router = useRouter()
@@ -14,7 +16,6 @@ export default function PropertyForm() {
   const [rooms, setRooms] = useState('')
   const [surface, setSurface] = useState('')
   const [description, setDescription] = useState('')
-  const [status, setStatus] = useState('')
   const [loading, setLoading] = useState(false)
   const photosRef = useRef<HTMLInputElement>(null)
   const [photoCount, setPhotoCount] = useState(0)
@@ -22,7 +23,6 @@ export default function PropertyForm() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setLoading(true)
-    setStatus('Se adaugă proprietatea...')
 
     try {
       const response = await fetch('/api/properties', {
@@ -42,23 +42,22 @@ export default function PropertyForm() {
 
       const files = photosRef.current?.files
       if (files && files.length > 0) {
-        setStatus('Se încarcă fotografiile...')
         const form = new FormData()
         Array.from(files).forEach((file) => form.append('photos', file))
         const photoResponse = await fetch(`/api/properties/${data.property.id}/photos`, { method: 'POST', body: form })
         if (!photoResponse.ok) {
           const photoData = await photoResponse.json().catch(() => ({}))
-          setStatus(`Proprietatea a fost adăugată, dar fotografiile nu au putut fi încărcate: ${photoData.error ?? 'eroare'}`)
+          toast.warning(`Proprietatea a fost adăugată, dar fotografiile nu au putut fi încărcate: ${photoData.error ?? 'eroare'}`)
         }
       }
 
-      setStatus('Proprietatea a fost adăugată!')
+      toast.success('Proprietatea a fost adăugată!')
       setTitle(''); setLocation(''); setRent(''); setRooms(''); setSurface(''); setDescription('')
       setPhotoCount(0)
       setOpen(false)
       router.refresh()
     } catch (error) {
-      setStatus((error as Error).message)
+      toast.error((error as Error).message)
     } finally {
       setLoading(false)
     }
@@ -66,12 +65,9 @@ export default function PropertyForm() {
 
   if (!open) {
     return (
-      <div className="flex items-center gap-4">
-        <button type="button" onClick={() => setOpen(true)} className="btn-primary px-6 py-3 text-[13px]">
-          <Plus size={16} /> Adaugă proprietate
-        </button>
-        {status ? <p className="text-sm text-[var(--muted)]">{status}</p> : null}
-      </div>
+      <Button type="button" onClick={() => setOpen(true)} className="px-6 py-3 text-[13px]">
+        <Plus size={16} /> Adaugă proprietate
+      </Button>
     )
   }
 
@@ -114,14 +110,13 @@ export default function PropertyForm() {
         />
       </div>
       <div className="flex flex-wrap gap-3">
-        <button type="submit" disabled={loading} className="btn-primary px-6 py-3 text-[13px]">
-          {loading ? 'Se salvează…' : 'Publică proprietatea'}
-        </button>
-        <button type="button" onClick={() => setOpen(false)} disabled={loading} className="btn-outline px-6 py-3 text-[13px]">
+        <Button type="submit" loading={loading} className="px-6 py-3 text-[13px]">
+          Publică proprietatea
+        </Button>
+        <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading} className="px-6 py-3 text-[13px]">
           Renunță
-        </button>
+        </Button>
       </div>
-      {status ? <p className="text-sm text-[var(--muted)]">{status}</p> : null}
     </form>
   )
 }
