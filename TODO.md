@@ -8,7 +8,7 @@ externe reale (plăți, QES, email/SMS în producție), migrarea infrastructurii
 ## Milestone 0.4 — Fluxurile de bază ale marketplace-ului ✅
 
 - [x] **Browsing public de proprietăți** — `/proprietati` cu filtre (căutare, chirie min/max), pagini de detaliu, metadata SEO
-- [x] **CRUD proprietăți pentru owneri** — adăugare/dezactivare/reactivare din dashboard *(upload de fotografii încă nu — necesită storage extern)*
+- [x] **CRUD proprietăți pentru owneri** — adăugare/dezactivare/reactivare din dashboard, cu upload de fotografii
 - [x] **Salvare proprietăți** — toggle pe pagina proprietății, vizibile în dashboard
 - [x] **Flux de oferte** — trimitere de pe pagina proprietății; acceptare/respingere din dashboard; la acceptare se creează contractul și se resping ofertele concurente
 - [x] **Generare contract** — automat la acceptarea ofertei, cu chiria din ofertă *(PDF descărcabil încă nu)*
@@ -16,10 +16,10 @@ externe reale (plăți, QES, email/SMS în producție), migrarea infrastructurii
 - [x] **Notificări funcționale** — generate de evenimente reale, cu marcare ca citite
 - [x] **Editare profil** — nume/telefon, schimbare parolă, export GDPR, dezactivare cont
 - [x] **Panou de administrare** — statistici, schimbare roluri (inclusiv ADMIN), dezactivare conturi
-- [ ] **Buton de deconectare în dashboard** — sidebar + meniul mobil (azi logout există doar în navbar-ul paginii publice)
-- [ ] **Listări de proprietăți pentru clienți în dashboard** — secțiune de browsing în dashboardul clientului (azi doar pagina publică `/proprietati`), cu filtre extinse: localitate, chirie min/max, număr de camere, suprafață, sortare după preț/dată; salvare și trimitere ofertă direct din listă
-- [ ] **Fix design pe paginile de login/register** — revizuire vizuală a paginilor de autentificare
-- [ ] **Fotografii pentru proprietăți** — upload la creare/editare (owner), galerie pe pagina de detaliu, thumbnail în listări și dashboard; necesită storage (local în dev, S3/R2 în producție) + `next/image` pentru optimizare
+- [x] **Buton de deconectare în dashboard** — în sidebar și în meniul mobil
+- [x] **Listări de proprietăți pentru clienți în dashboard** — `/dashboard/cauta` cu filtre extinse (localitate, chirie min/max, camere, sortare preț/dată) și salvare + trimitere ofertă direct din listă
+- [x] **Fix design pe paginile de login/register** — layout nou, titluri per pagină, stepper cu numerotare și bife
+- [x] **Fotografii pentru proprietăți** — upload la creare/editare (owner), galerie pe pagina de detaliu, thumbnail în listări și dashboard, optimizate cu `next/image` *(storage local pe disc — S3/R2 pentru producție, vezi secțiunea Infrastructură)*
 
 ## Milestone 0.5 — Bani și semnătură calificată (parțial)
 
@@ -46,7 +46,7 @@ externe reale (plăți, QES, email/SMS în producție), migrarea infrastructurii
 ## Infrastructură și operare
 
 - [ ] **SQLite → PostgreSQL** (Neon/Supabase/RDS) — schema Prisma e pregătită, doar provider + migrare
-- [ ] **Storage fișiere** — S3/R2 pentru fotografii proprietăți și PDF-uri contracte
+- [ ] **Storage fișiere în producție** — azi fotografiile se salvează local pe disc (`src/lib/storage.ts`, `public/uploads`); de înlocuit cu S3/R2 (păstrând semnăturile din `storage.ts`) + storage pentru PDF-uri contracte
 - [ ] **Medii separate** — dev/staging/producție cu secrets manager
 - [x] **CI** — GitHub Actions: lint + typecheck + teste + build pe push/PR
 - [ ] **CD** — deploy automat (Vercel sau container)

@@ -2,6 +2,12 @@
 
 ## 0.4.0 — 2026-06-13
 
+### Fotografii, căutare pentru clienți și UX (follow-up 0.4)
+- Fotografii pentru proprietăți: upload la creare/editare de către owner (max 8, JPEG/PNG/WebP, 5 MB), galerie pe pagina de detaliu, thumbnail în listări și dashboard, optimizate cu `next/image`. Storage local pluggable (`src/lib/storage.ts`, `public/uploads`), gata de înlocuit cu S3/R2 în producție.
+- Pagină de căutare pentru clienți în dashboard (`/dashboard/cauta`) cu filtre extinse (localitate, chirie min/max, camere, sortare după preț/dată) și salvare + trimitere ofertă direct din listă.
+- Buton de deconectare în dashboard (sidebar + meniul mobil).
+- Redesign al paginilor de login/register: layout nou cu beneficii reale, titluri și cross-link per pagină, stepper de înregistrare cu numerotare și bife.
+
 ### Marketplace funcțional (milestone 0.4)
 - Browsing public `/proprietati` cu filtre (căutare, chirie min/max) și pagini de detaliu cu descriere, caracteristici și proprietar.
 - CRUD proprietăți pentru owneri din dashboard (adăugare cu descriere/camere/suprafață, dezactivare/reactivare listare).
