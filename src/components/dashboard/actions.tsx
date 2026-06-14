@@ -1,36 +1,38 @@
 'use client'
 
-import { useState } from 'react'
+import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import Button from '@/components/ui/Button'
 import { useUnreadCount, useSetUnreadCount } from './NotificationContext'
+import { respondToOfferAction } from '@/app/actions/offers'
+import { signContractAction, payRentAction } from '@/app/actions/contracts'
+import { updatePropertyStatusAction } from '@/app/actions/properties'
+import { markNotificationsReadAction } from '@/app/actions/notifications'
+
+type ActionResult = { ok: boolean; error?: string }
+type RunOptions = { success?: string; successAction?: { label: string; href: string } }
 
 function useAction() {
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
+  const [loading, startTransition] = useTransition()
 
-  const run = async (url: string, init?: RequestInit, success?: string, successAction?: { label: string; href: string }) => {
-    setLoading(true)
-    try {
-      const response = await fetch(url, init)
-      const data = await response.json().catch(() => ({}))
-      if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
-      if (success) {
-        toast.success(
-          success,
-          successAction ? { action: { label: successAction.label, onClick: () => router.push(successAction.href) } } : undefined
-        )
-      }
-      router.refresh()
-      return true
-    } catch (err) {
-      toast.error((err as Error).message)
-      return false
-    } finally {
-      setLoading(false)
-    }
-  }
+  const run = (action: () => Promise<ActionResult>, opts?: RunOptions) =>
+    new Promise<boolean>((resolve) => {
+      startTransition(async () => {
+        const res = await action()
+        if (res.ok) {
+          if (opts?.success) {
+            const sa = opts.successAction
+            toast.success(opts.success, sa ? { action: { label: sa.label, onClick: () => router.push(sa.href) } } : undefined)
+          }
+          resolve(true)
+        } else {
+          toast.error(res.error || 'A apărut o eroare.')
+          resolve(false)
+        }
+      })
+    })
 
   return { run, loading }
 }
@@ -39,16 +41,10 @@ export function OfferActions({ offerId }: { offerId: string }) {
   const { run, loading } = useAction()
 
   const act = (action: 'accept' | 'reject') =>
-    run(
-      `/api/offers/${offerId}`,
-      {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action }),
-      },
-      action === 'accept' ? 'Ofertă acceptată — contractul a fost creat.' : 'Ofertă respinsă.',
-      action === 'accept' ? { label: 'Vezi contractul', href: '/dashboard/contracte' } : undefined
-    )
+    run(() => respondToOfferAction(offerId, action), {
+      success: action === 'accept' ? 'Ofertă acceptată — contractul a fost creat.' : 'Ofertă respinsă.',
+      successAction: action === 'accept' ? { label: 'Vezi contractul', href: '/dashboard/contracte' } : undefined,
+    })
 
   return (
     <div className="mt-4 flex flex-wrap gap-3">
@@ -79,7 +75,7 @@ export function ContractActions({ contractId, canSign, canPay, dueAmount }: { co
           <Button
             type="button"
             loading={loading}
-            onClick={() => run(`/api/contracts/${contractId}/sign`, { method: 'POST' }, 'Contract semnat cu QES.')}
+            onClick={() => run(() => signContractAction(contractId), { success: 'Contract semnat cu QES.' })}
             className="px-5 py-2.5 text-[12px]"
           >
             Semnează cu QES
@@ -89,7 +85,7 @@ export function ContractActions({ contractId, canSign, canPay, dueAmount }: { co
           <Button
             type="button"
             loading={loading}
-            onClick={() => run(`/api/contracts/${contractId}/pay`, { method: 'POST' }, 'Plata chiriei a fost efectuată.')}
+            onClick={() => run(() => payRentAction(contractId), { success: 'Plata chiriei a fost efectuată.' })}
             className="px-5 py-2.5 text-[12px]"
           >
             {`Plătește chiria (${dueAmount})`}
@@ -112,15 +108,9 @@ export function PropertyStatusToggle({ propertyId, status }: { propertyId: strin
         variant="outline"
         loading={loading}
         onClick={() =>
-          run(
-            `/api/properties/${propertyId}`,
-            {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ status: inactive ? 'DISPONIBILA' : 'INACTIVA' }),
-            },
-            inactive ? 'Listare reactivată.' : 'Listare dezactivată.'
-          )
+          run(() => updatePropertyStatusAction(propertyId, inactive ? 'DISPONIBILA' : 'INACTIVA'), {
+            success: inactive ? 'Listare reactivată.' : 'Listare dezactivată.',
+          })
         }
         className="px-5 py-2.5 text-[12px]"
       >
@@ -140,7 +130,7 @@ export function MarkNotificationsRead({ hasUnread }: { hasUnread: boolean }) {
     // Optimist: ascundem badge-ul imediat; revenim dacă cererea eșuează.
     const previous = count
     setUnread(0)
-    const ok = await run('/api/notifications/read', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }, 'Notificări marcate ca citite.')
+    const ok = await run(() => markNotificationsReadAction(), { success: 'Notificări marcate ca citite.' })
     if (!ok) setUnread(previous)
   }
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0 — 2026-06-14
+
+### Migrare la Server Actions
+- Mutațiile (proprietăți, oferte, contracte, notificări, profil, admin) au fost mutate din rute API în Server Actions (`src/app/actions/`), abordarea idiomatică Next 16 / React 19.
+- Componentele client apelează acțiunile prin `useTransition` în loc de `fetch`; `router.refresh()` a fost înlocuit cu `revalidatePath` în acțiuni. Comportamentul (toast-uri, actualizări optimiste) este identic.
+- 12 rute API de mutație au fost eliminate. Rămân pe rute: tot `/api/auth/*` (cookie-uri, redirect, rate limit) și endpoint-urile GET `notifications/unread` și `profile/export`.
+- Helper nou `requireActionUser` pentru autentificare/roluri în context de acțiune.
+
 ## 0.5.1 — 2026-06-14
 
 ### Experiența cu fotografii

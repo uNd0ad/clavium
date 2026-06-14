@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import FormField from '@/components/ui/FormField'
 import Button from '@/components/ui/Button'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import { updateProfileAction, changePasswordAction, deactivateAccountAction } from '@/app/actions/profile'
 
 type ProfileFormsProps = {
   firstName: string
@@ -24,45 +25,27 @@ export default function ProfileForms({ firstName: initialFirst, lastName: initia
   const [loading, setLoading] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
 
-  const post = async (url: string, init: RequestInit, success?: string) => {
+  const runAction = async (action: () => Promise<{ ok: boolean; error?: string }>, success?: string) => {
     setLoading(true)
-    try {
-      const response = await fetch(url, init)
-      const data = await response.json().catch(() => ({}))
-      if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
+    const res = await action()
+    if (res.ok) {
       if (success) toast.success(success)
-      router.refresh()
-      return true
-    } catch (error) {
-      toast.error((error as Error).message)
-      return false
-    } finally {
-      setLoading(false)
+    } else {
+      toast.error(res.error || 'A apărut o eroare.')
     }
+    setLoading(false)
+    return res.ok
   }
 
   const handleProfile = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    post(
-      '/api/profile',
-      {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ firstName, lastName, phone: phone || undefined }),
-      },
-      'Profilul a fost actualizat.'
-    )
+    runAction(() => updateProfileAction({ firstName, lastName, phone: phone || undefined }), 'Profilul a fost actualizat.')
   }
 
   const handlePassword = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const ok = await post(
-      '/api/profile/password',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      },
+    const ok = await runAction(
+      () => changePasswordAction({ currentPassword, newPassword }),
       'Parola a fost schimbată. Celelalte sesiuni au fost deconectate.'
     )
     if (ok) {
@@ -71,11 +54,23 @@ export default function ProfileForms({ firstName: initialFirst, lastName: initia
     }
   }
 
-  const handleResendVerification = () =>
-    post('/api/auth/verify-email/send', { method: 'POST' }, 'Email de verificare trimis. Verifică inbox-ul (sau consola serverului în dev).')
+  // Retrimiterea emailului de verificare rămâne pe ruta de auth (trimite email + rate limit).
+  const handleResendVerification = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch('/api/auth/verify-email/send', { method: 'POST' })
+      const data = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
+      toast.success('Email de verificare trimis. Verifică inbox-ul (sau consola serverului în dev).')
+    } catch (error) {
+      toast.error((error as Error).message)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleDeactivate = async () => {
-    const ok = await post('/api/profile', { method: 'DELETE' })
+    const ok = await runAction(() => deactivateAccountAction())
     if (ok) {
       setConfirmOpen(false)
       toast.success('Contul a fost dezactivat.')

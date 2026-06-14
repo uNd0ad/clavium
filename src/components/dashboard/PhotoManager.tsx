@@ -1,13 +1,12 @@
 'use client'
 
 import { useRef, useState, type ChangeEvent } from 'react'
-import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { toast } from 'sonner'
 import { ImagePlus, X } from 'lucide-react'
+import { uploadPhotosAction, deletePhotoAction } from '@/app/actions/properties'
 
 export default function PhotoManager({ propertyId, photos }: { propertyId: string; photos: string[] }) {
-  const router = useRouter()
   const inputRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
 
@@ -15,39 +14,21 @@ export default function PhotoManager({ propertyId, photos }: { propertyId: strin
     const files = event.target.files
     if (!files || files.length === 0) return
     setLoading(true)
-    try {
-      const form = new FormData()
-      Array.from(files).forEach((file) => form.append('photos', file))
-      const response = await fetch(`/api/properties/${propertyId}/photos`, { method: 'POST', body: form })
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
-      toast.success(files.length > 1 ? 'Fotografii încărcate.' : 'Fotografie încărcată.')
-      router.refresh()
-    } catch (err) {
-      toast.error((err as Error).message)
-    } finally {
-      setLoading(false)
-      if (inputRef.current) inputRef.current.value = ''
-    }
+    const form = new FormData()
+    Array.from(files).forEach((file) => form.append('photos', file))
+    const res = await uploadPhotosAction(propertyId, form)
+    if (res.ok) toast.success(files.length > 1 ? 'Fotografii încărcate.' : 'Fotografie încărcată.')
+    else toast.error(res.error)
+    setLoading(false)
+    if (inputRef.current) inputRef.current.value = ''
   }
 
   const remove = async (url: string) => {
     setLoading(true)
-    try {
-      const response = await fetch(`/api/properties/${propertyId}/photos`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
-      })
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
-      toast.success('Fotografie ștearsă.')
-      router.refresh()
-    } catch (err) {
-      toast.error((err as Error).message)
-    } finally {
-      setLoading(false)
-    }
+    const res = await deletePhotoAction(propertyId, url)
+    if (res.ok) toast.success('Fotografie ștearsă.')
+    else toast.error(res.error)
+    setLoading(false)
   }
 
   return (

@@ -1,14 +1,13 @@
 'use client'
 
 import { useRef, useState, type FormEvent } from 'react'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Plus, ImagePlus } from 'lucide-react'
 import FormField from '@/components/ui/FormField'
 import Button from '@/components/ui/Button'
+import { createPropertyAction, uploadPhotosAction } from '@/app/actions/properties'
 
 export default function PropertyForm() {
-  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [title, setTitle] = useState('')
   const [location, setLocation] = useState('')
@@ -24,43 +23,35 @@ export default function PropertyForm() {
     event.preventDefault()
     setLoading(true)
 
-    try {
-      const response = await fetch('/api/properties', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title,
-          location,
-          rent: Number(rent),
-          rooms: rooms ? Number(rooms) : undefined,
-          surface: surface ? Number(surface) : undefined,
-          description: description || undefined,
-        }),
-      })
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
-
-      const files = photosRef.current?.files
-      if (files && files.length > 0) {
-        const form = new FormData()
-        Array.from(files).forEach((file) => form.append('photos', file))
-        const photoResponse = await fetch(`/api/properties/${data.property.id}/photos`, { method: 'POST', body: form })
-        if (!photoResponse.ok) {
-          const photoData = await photoResponse.json().catch(() => ({}))
-          toast.warning(`Proprietatea a fost adăugată, dar fotografiile nu au putut fi încărcate: ${photoData.error ?? 'eroare'}`)
-        }
-      }
-
-      toast.success('Proprietatea a fost adăugată!')
-      setTitle(''); setLocation(''); setRent(''); setRooms(''); setSurface(''); setDescription('')
-      setPhotoCount(0)
-      setOpen(false)
-      router.refresh()
-    } catch (error) {
-      toast.error((error as Error).message)
-    } finally {
+    const res = await createPropertyAction({
+      title,
+      location,
+      rent,
+      rooms: rooms || undefined,
+      surface: surface || undefined,
+      description: description || undefined,
+    })
+    if (!res.ok) {
+      toast.error(res.error)
       setLoading(false)
+      return
     }
+
+    const files = photosRef.current?.files
+    if (files && files.length > 0) {
+      const form = new FormData()
+      Array.from(files).forEach((file) => form.append('photos', file))
+      const photoRes = await uploadPhotosAction(res.propertyId, form)
+      if (!photoRes.ok) {
+        toast.warning(`Proprietatea a fost adăugată, dar fotografiile nu au putut fi încărcate: ${photoRes.error}`)
+      }
+    }
+
+    toast.success('Proprietatea a fost adăugată!')
+    setTitle(''); setLocation(''); setRent(''); setRooms(''); setSurface(''); setDescription('')
+    setPhotoCount(0)
+    setOpen(false)
+    setLoading(false)
   }
 
   if (!open) {

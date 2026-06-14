@@ -6,6 +6,8 @@ import { toast } from 'sonner'
 import { Bookmark, BookmarkCheck } from 'lucide-react'
 import FormField from '@/components/ui/FormField'
 import Button from '@/components/ui/Button'
+import { toggleSaveAction } from '@/app/actions/properties'
+import { createOfferAction } from '@/app/actions/offers'
 
 type PropertyActionsProps = {
   propertyId: string
@@ -30,18 +32,15 @@ export default function PropertyActions({ propertyId, initialSaved, isAuthentica
     const previous = saved
     setSaved(!saved)
     setLoading(true)
-    try {
-      const response = await fetch(`/api/properties/${propertyId}/save`, { method: 'POST' })
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
-      setSaved(data.saved)
-      toast.success(data.saved ? 'Proprietate salvată.' : 'Eliminată din salvate.')
-    } catch (error) {
+    const res = await toggleSaveAction(propertyId)
+    if (res.ok) {
+      setSaved(res.saved)
+      toast.success(res.saved ? 'Proprietate salvată.' : 'Eliminată din salvate.')
+    } else {
       setSaved(previous)
-      toast.error((error as Error).message)
-    } finally {
-      setLoading(false)
+      toast.error(res.error)
     }
+    setLoading(false)
   }
 
   const handleOffer = async () => {
@@ -50,21 +49,14 @@ export default function PropertyActions({ propertyId, initialSaved, isAuthentica
       return
     }
     setLoading(true)
-    try {
-      const response = await fetch('/api/offers', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ propertyId, amount: Number(amount) }),
-      })
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
+    const res = await createOfferAction({ propertyId, amount: Number(amount) })
+    if (res.ok) {
       toast.success('Ofertă trimisă! Proprietarul a fost notificat.')
       setAmount('')
-    } catch (error) {
-      toast.error((error as Error).message)
-    } finally {
-      setLoading(false)
+    } else {
+      toast.error(res.error)
     }
+    setLoading(false)
   }
 
   return (

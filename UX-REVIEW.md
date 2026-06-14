@@ -212,10 +212,9 @@ Ordered by **impact ÷ effort**. The first three deliver the biggest "smooth and
 11. **Search UX**: result count, reset filters, debounced URL filtering, pagination.
 
 ### Larger investments (worth it for production)
-12. **Migrate forms/mutations to Next Server Actions + `useActionState`/`useFormStatus`** — removes
-    the manual `fetch + useState + router.refresh` boilerplate in ~11 components, gives built-in
-    pending/error states, and is the idiomatic React 19 / Next 16 approach. This is the single
-    biggest structural cleanup.
+12. ~~**Migrate forms/mutations to Next Server Actions**~~ — ✅ **Done (v0.6.0).** Mutations moved to
+    `src/app/actions/`, clients call them via `useTransition`, `router.refresh` → `revalidatePath`,
+    12 API routes removed. Toasts + optimistic updates preserved.
 13. **Guided flows / onboarding** (next-step prompts after offer→contract→sign→pay).
 14. **Photo UX**: drag-drop, reorder, progress, client-side resize, lightbox.
 15. **Component library adoption** (shadcn/ui on Radix) so dialogs, dropdowns, tooltips, tabs are

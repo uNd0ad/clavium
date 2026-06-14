@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import StatusBadge from '@/components/dashboard/StatusBadge'
+import { updateUserAction } from '@/app/actions/admin'
 
 export type AdminUserRow = {
   id: string
@@ -18,26 +18,14 @@ export type AdminUserRow = {
 const ROLES = ['CLIENT', 'OWNER', 'ADMIN'] as const
 
 export default function AdminUsersTable({ users }: { users: AdminUserRow[] }) {
-  const router = useRouter()
   const [busyId, setBusyId] = useState<string | null>(null)
 
   const update = async (id: string, body: { role?: string; isActive?: boolean }) => {
     setBusyId(id)
-    try {
-      const response = await fetch(`/api/admin/users/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      })
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
-      toast.success('Utilizator actualizat.')
-      router.refresh()
-    } catch (error) {
-      toast.error((error as Error).message)
-    } finally {
-      setBusyId(null)
-    }
+    const res = await updateUserAction(id, body)
+    if (res.ok) toast.success('Utilizator actualizat.')
+    else toast.error(res.error)
+    setBusyId(null)
   }
 
   return (
