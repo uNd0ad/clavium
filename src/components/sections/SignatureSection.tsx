@@ -41,7 +41,7 @@ export default function SignatureSection() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 reveal reveal-delay-3">
               {FEATURES.map(({ icon: Icon, label, desc }) => (
                 <div key={label} className="flex gap-4">
-                  <div className="w-10 h-10 flex items-center justify-center rounded-[18px] border border-[var(--border)] bg-white">
+                  <div className="w-10 h-10 flex items-center justify-center rounded-[18px] border border-[var(--border)] bg-[var(--card)]">
                     <Icon size={16} className="text-[var(--brand)]" />
                   </div>
                   <div>

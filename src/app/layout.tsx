@@ -28,9 +28,15 @@ export const metadata: Metadata = {
   },
 }
 
+// Aplică tema salvată (sau preferința sistemului) înainte de paint, ca să nu apară un flash.
+const themeScript = `(function(){try{var e=localStorage.getItem('theme');var d=e?e==='dark':matchMedia('(prefers-color-scheme: dark)').matches;var c=document.documentElement.classList;d?c.add('dark'):c.remove('dark');}catch(_){}})();`
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ro" className={inter.variable}>
+    <html lang="ro" className={inter.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body>
         {children}
         <CookieBanner />

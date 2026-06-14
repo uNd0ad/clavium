@@ -47,7 +47,7 @@ export default function PhotoManager({ propertyId, photos }: { propertyId: strin
               onClick={() => remove(url)}
               disabled={loading}
               aria-label="Șterge fotografia"
-              className="absolute right-1 top-1 hidden rounded-full bg-white/90 p-0.5 text-rose-700 shadow group-hover:block"
+              className="absolute right-1 top-1 hidden rounded-full bg-[var(--card)] p-0.5 text-rose-700 shadow group-hover:block"
             >
               <X size={13} />
             </button>

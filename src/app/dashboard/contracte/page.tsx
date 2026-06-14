@@ -33,12 +33,12 @@ export default async function DashboardContractsPage() {
 
         <div className="mt-6 space-y-4">
           {contracts.length === 0 ? (
-            <p className="rounded-[24px] border border-[var(--border)] bg-white p-5 text-sm text-[var(--muted)]">
+            <p className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5 text-sm text-[var(--muted)]">
               Nu ai niciun contract încă. Contractele tale vor apărea aici după prima ofertă acceptată.
             </p>
           ) : (
             contracts.map((contract) => (
-              <div key={contract.id} className="rounded-[24px] border border-[var(--border)] bg-white p-5">
+              <div key={contract.id} className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div>
                     <p className="text-lg font-semibold">{contract.property}</p>

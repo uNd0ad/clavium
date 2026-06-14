@@ -31,7 +31,7 @@ export default function CookieBanner() {
   if (consented) return null
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-[60] mx-auto max-w-2xl rounded-[24px] border border-[var(--border)] bg-white p-5 shadow-[var(--shadow)]">
+    <div className="fixed bottom-4 left-4 right-4 z-[60] mx-auto max-w-2xl rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5 shadow-[var(--shadow)]">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm leading-6 text-[var(--muted)]">
           Folosim un singur cookie strict necesar pentru autentificare. Fără tracking, fără publicitate.{' '}

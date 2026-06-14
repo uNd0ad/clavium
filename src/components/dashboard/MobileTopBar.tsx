@@ -6,6 +6,7 @@ import clsx from 'clsx'
 import { Menu, X, Home, ShoppingBag, FileText, Layers, CreditCard, User, ShieldCheck, Search, Bell } from 'lucide-react'
 import { dashboardNavItems, UserProfile } from '@/types/dashboard'
 import LogoutButton from './LogoutButton'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 import { useUnreadCount } from './NotificationContext'
 
 const iconMap = {
@@ -32,6 +33,7 @@ export default function MobileTopBar({ user }: { user: UserProfile }) {
           <p className="text-base font-semibold">Bun venit, {user.firstName}</p>
         </div>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           {unread > 0 ? (
             <Link
               href="/dashboard/profil"
@@ -54,13 +56,13 @@ export default function MobileTopBar({ user }: { user: UserProfile }) {
         {items.map((item) => {
           const Icon = iconMap[item.icon]
           return (
-            <Link key={item.href} href={item.href} className="flex items-center gap-3 rounded-3xl border border-[var(--border)] bg-white px-4 py-3 text-sm font-medium text-[var(--text)]">
+            <Link key={item.href} href={item.href} className="flex items-center gap-3 rounded-3xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm font-medium text-[var(--text)]">
               <Icon size={18} className="text-[var(--muted)]" />
               {item.label}
             </Link>
           )
         })}
-        <LogoutButton className="border border-[var(--border)] bg-white" />
+        <LogoutButton className="border border-[var(--border)] bg-[var(--card)]" />
       </div>
     </div>
   )

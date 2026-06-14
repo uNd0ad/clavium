@@ -43,7 +43,7 @@ export default async function DashboardPage() {
           </div>
           <div className="space-y-4">
             {alerts.length === 0 ? (
-              <p className="rounded-[24px] border border-[var(--border)] bg-white p-5 text-sm text-[var(--muted)]">
+              <p className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5 text-sm text-[var(--muted)]">
                 Nu ai alerte active. Totul este la zi.
               </p>
             ) : (
@@ -51,7 +51,7 @@ export default async function DashboardPage() {
                 <Link
                   key={alert.id}
                   href={alert.href}
-                  className="group block rounded-[24px] border border-[var(--border)] bg-white p-5 transition hover:border-[var(--brand)]"
+                  className="group block rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5 transition hover:border-[var(--brand)]"
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div>
@@ -78,12 +78,12 @@ export default async function DashboardPage() {
           </div>
           <div className="mt-5 space-y-4">
             {activity.length === 0 ? (
-              <p className="rounded-[24px] border border-[var(--border)] bg-white p-4 text-sm text-[var(--muted)]">
+              <p className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-4 text-sm text-[var(--muted)]">
                 Nicio activitate încă. Acțiunile tale vor apărea aici.
               </p>
             ) : (
               activity.map((item) => (
-                <div key={item.id} className="rounded-[24px] border border-[var(--border)] bg-white p-4">
+                <div key={item.id} className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-4">
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="font-semibold">{item.title}</p>

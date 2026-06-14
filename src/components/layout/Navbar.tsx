@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import clsx from 'clsx'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 const links = [
   { label: 'Proprietăți', href: '/proprietati' },
@@ -51,8 +52,8 @@ export default function Navbar() {
         className={clsx(
           'fixed top-0 left-0 right-0 z-50 transition-all duration-500 shadow-sm',
           scrolled
-            ? 'bg-white/95 backdrop-blur-md border-b border-[var(--border)] py-4'
-            : 'bg-white/95 lg:bg-transparent lg:backdrop-blur-none lg:py-7 py-4 backdrop-blur-sm'
+            ? 'bg-[var(--card)] backdrop-blur-md border-b border-[var(--border)] py-4'
+            : 'bg-[var(--card)] lg:bg-transparent lg:backdrop-blur-none lg:py-7 py-4 backdrop-blur-sm'
         )}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
@@ -81,6 +82,7 @@ export default function Navbar() {
           </div>
 
           <div className="hidden lg:flex items-center gap-4">
+            <ThemeToggle />
             {currentUser ? (
               <>
                 <span className="text-[12px] tracking-[0.08em] uppercase text-[var(--text)]">
@@ -102,19 +104,22 @@ export default function Navbar() {
             )}
           </div>
 
-          <button
-            className="lg:hidden p-2 text-[var(--text)]"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Meniu"
-          >
-            {menuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
+          <div className="flex items-center gap-2 lg:hidden">
+            <ThemeToggle />
+            <button
+              className="p-2 text-[var(--text)]"
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Meniu"
+            >
+              {menuOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
         </div>
       </nav>
 
       <div
         className={clsx(
-          'fixed inset-0 z-40 bg-white/85 backdrop-blur-xl flex flex-col justify-center px-8 transition-all duration-500 lg:hidden',
+          'fixed inset-0 z-40 bg-[var(--card)] backdrop-blur-xl flex flex-col justify-center px-8 transition-all duration-500 lg:hidden',
           menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         )}
       >

@@ -3,6 +3,7 @@ import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import StatusBadge from '@/components/dashboard/StatusBadge'
 import EmptyState from '@/components/dashboard/EmptyState'
 import PropertyForm from '@/components/dashboard/PropertyForm'
+import PropertyEditForm from '@/components/dashboard/PropertyEditForm'
 import PhotoManager from '@/components/dashboard/PhotoManager'
 import { PropertyStatusToggle } from '@/components/dashboard/actions'
 import { getCurrentUser } from '@/lib/session'
@@ -16,7 +17,7 @@ function PropertyList({ properties, emptyMessage, emptyCta, manageable = false }
   return (
     <div className="mt-6 space-y-4">
       {properties.map((property) => (
-        <div key={property.id} className="rounded-[24px] border border-[var(--border)] bg-white p-5">
+        <div key={property.id} className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="font-semibold">{property.title}</p>
@@ -31,6 +32,17 @@ function PropertyList({ properties, emptyMessage, emptyCta, manageable = false }
           {manageable ? (
             <>
               <PhotoManager propertyId={property.id} photos={property.photos} />
+              {property.status === 'Disponibilă' ? (
+                <PropertyEditForm
+                  propertyId={property.id}
+                  title={property.title}
+                  location={property.location}
+                  rent={property.rentValue}
+                  rooms={property.rooms}
+                  surface={property.surface}
+                  description={property.description}
+                />
+              ) : null}
               <PropertyStatusToggle propertyId={property.id} status={property.status} />
             </>
           ) : null}

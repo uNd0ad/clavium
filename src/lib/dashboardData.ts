@@ -39,6 +39,11 @@ export type PropertyView = {
   statusVariant: BadgeVariant
   updated: string
   photos: string[]
+  // Valori brute pentru editare (folosite în dashboardul proprietarului).
+  rentValue: number
+  rooms: number | null
+  surface: number | null
+  description: string
 }
 
 export type PaymentView = {
@@ -224,6 +229,10 @@ export async function getProperties(user: SessionUser): Promise<{ owned: Propert
       statusVariant: variant,
       updated: timeAgo(property.updatedAt),
       photos: parsePhotos(property.photos),
+      rentValue: property.rent,
+      rooms: property.rooms,
+      surface: property.surface,
+      description: property.description ?? '',
     }
   }
 

@@ -53,7 +53,7 @@ export default function HeroSection() {
                   { label: 'Digital complet', value: '24 h' },
                   { label: 'Contract legal', value: 'QES & eIDAS' },
                 ].map((item) => (
-                  <div key={item.label} className="rounded-[24px] border border-[var(--border)] bg-white/80 p-5">
+                  <div key={item.label} className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
                     <div className="text-[14px] uppercase tracking-[0.18em] text-[var(--muted)] mb-2">
                       {item.label}
                     </div>
@@ -64,7 +64,7 @@ export default function HeroSection() {
                 ))}
               </div>
 
-              <div className="mt-10 rounded-[28px] border border-[var(--border)] bg-white/95 p-5 shadow-[0_16px_40px_rgba(15,23,42,0.08)]">
+              <div className="mt-10 rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-5 shadow-[0_16px_40px_rgba(15,23,42,0.08)]">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="relative">
                     <label className="text-[11px] uppercase tracking-[0.22em] text-[var(--muted)] mb-2 block">
@@ -74,7 +74,7 @@ export default function HeroSection() {
                       <select
                         value={txType}
                         onChange={(e) => setTxType(e.target.value)}
-                        className="appearance-none w-full rounded-[18px] border border-[var(--border)] bg-white px-4 py-3 text-[14px] text-[var(--text)] outline-none"
+                        className="appearance-none w-full rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[14px] text-[var(--text)] outline-none"
                       >
                         {TRANSACTION_TYPES.map((t) => (
                           <option key={t}>{t}</option>
@@ -92,7 +92,7 @@ export default function HeroSection() {
                       <select
                         value={propType}
                         onChange={(e) => setPropType(e.target.value)}
-                        className="appearance-none w-full rounded-[18px] border border-[var(--border)] bg-white px-4 py-3 text-[14px] text-[var(--text)] outline-none"
+                        className="appearance-none w-full rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[14px] text-[var(--text)] outline-none"
                       >
                         {PROPERTY_TYPES.map((t) => (
                           <option key={t}>{t}</option>
@@ -112,7 +112,7 @@ export default function HeroSection() {
                     <input
                       type="text"
                       placeholder="Oraș sau cartier..."
-                      className="w-full rounded-[18px] border border-[var(--border)] bg-white px-4 py-3 pl-11 text-[14px] text-[var(--text)] outline-none"
+                      className="w-full rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 pl-11 text-[14px] text-[var(--text)] outline-none"
                     />
                   </div>
                 </div>

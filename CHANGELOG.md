@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.6.1 — 2026-06-14
+
+### Suită de teste
+- Harness de testare cu bază de date izolată (`prisma/test.db`) și mock-uri pentru API-urile Next (`getCurrentUser`, `next/cache`, `next/headers`).
+- Test de integrare pentru tot ciclul de viață prin server actions: proprietate → ofertă → contract → semnare → plată (cu comision și următoarea scadență).
+- Teste pentru paznicii de autentificare și roluri (auth, rol greșit, auto-ofertă, ofertă dublă, semnare/plată de către persoane neîndreptățite, acțiuni de admin) și operații pe proprietăți (salvare, editare, dezactivare, respingere ofertă). 27 de teste în total.
+
+### Mod întunecat (dark mode)
+- Comutator soare/lună în navbar, sidebar, bara mobilă și paginile de auth; tema persistă în `localStorage` și respectă preferința sistemului, cu script no-flash înainte de paint.
+- Implementat prin redefinirea tokenilor CSS sub `html.dark`; suprafețele `bg-white` mutate pe tokenul `--card`.
+
+### Editarea proprietăților
+- Buton „Editează" pe proprietățile disponibile ale proprietarului — formular inline pre-completat, salvat prin `updatePropertyAction` (cu verificare de proprietar și validare).
+
+### Note
+- Backlog nou de îmbunătățiri mici de UX: [qol.md](qol.md).
+
 ## 0.6.0 — 2026-06-14
 
 ### Migrare la Server Actions

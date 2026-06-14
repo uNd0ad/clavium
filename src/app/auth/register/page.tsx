@@ -220,7 +220,7 @@ export default function RegisterPage() {
                       key={option.value}
                       type="button"
                       onClick={() => setRole(option.value)}
-                      className={`rounded-[24px] border p-5 text-left transition ${selected ? 'border-[var(--brand)] bg-[var(--brand-soft)]' : 'border-[var(--border)] bg-white hover:border-[var(--brand)]'}`}
+                      className={`rounded-[24px] border p-5 text-left transition ${selected ? 'border-[var(--brand)] bg-[var(--brand-soft)]' : 'border-[var(--border)] bg-[var(--card)] hover:border-[var(--brand)]'}`}
                     >
                       <Icon size={22} className={selected ? 'text-[var(--brand)]' : 'text-[var(--muted)]'} />
                       <p className="mt-3 font-semibold">{option.title}</p>
@@ -305,7 +305,7 @@ export default function RegisterPage() {
               <p className="text-[15px] text-[var(--muted)] leading-7">
                 Verifică datele și continuă pentru a finaliza înregistrarea.
               </p>
-              <div className="rounded-[24px] border border-[var(--border)] bg-white p-5 text-sm text-[var(--text)]">
+              <div className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5 text-sm text-[var(--text)]">
                 <p className="font-semibold">Rezumat cont</p>
                 <p className="mt-3">Tip cont: {role === 'OWNER' ? 'Proprietar' : 'Client'}</p>
                 <p>Prenume: {firstName || '—'}</p>
@@ -314,7 +314,7 @@ export default function RegisterPage() {
                 <p>Telefon: {phone || '—'} {phoneVerified ? '(verificat)' : ''}</p>
                 <p>Parolă: {password ? 'Setată' : 'Nedefinită'}</p>
               </div>
-              <label className="flex cursor-pointer items-start gap-3 rounded-[24px] border border-[var(--border)] bg-white p-5 text-sm leading-6 text-[var(--muted)]">
+              <label className="flex cursor-pointer items-start gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5 text-sm leading-6 text-[var(--muted)]">
                 <input
                   type="checkbox"
                   checked={consent}

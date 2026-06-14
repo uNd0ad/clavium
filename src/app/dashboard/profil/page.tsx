@@ -39,19 +39,19 @@ export default async function DashboardProfilePage({ searchParams }: { searchPar
           <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
             <h2 className="text-xl font-semibold">Date personale</h2>
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-[24px] bg-white p-5">
+              <div className="rounded-[24px] bg-[var(--card)] p-5">
                 <p className="text-sm text-[var(--muted)]">Nume complet</p>
                 <p className="mt-2 font-semibold">{user.firstName} {user.lastName}</p>
               </div>
-              <div className="rounded-[24px] bg-white p-5">
+              <div className="rounded-[24px] bg-[var(--card)] p-5">
                 <p className="text-sm text-[var(--muted)]">Email {user.emailVerified ? '✓' : '(neverificat)'}</p>
                 <p className="mt-2 font-semibold">{user.email}</p>
               </div>
-              <div className="rounded-[24px] bg-white p-5">
+              <div className="rounded-[24px] bg-[var(--card)] p-5">
                 <p className="text-sm text-[var(--muted)]">Telefon</p>
                 <p className="mt-2 font-semibold">{user.phone || '—'}</p>
               </div>
-              <div className="rounded-[24px] bg-white p-5">
+              <div className="rounded-[24px] bg-[var(--card)] p-5">
                 <p className="text-sm text-[var(--muted)]">Rol</p>
                 <p className="mt-2 font-semibold">{user.role}</p>
               </div>
@@ -73,14 +73,14 @@ export default async function DashboardProfilePage({ searchParams }: { searchPar
           </div>
           <div className="mt-6 space-y-4">
             {notifications.length === 0 ? (
-              <p className="rounded-[24px] border border-[var(--border)] bg-white p-5 text-sm text-[var(--muted)]">
+              <p className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5 text-sm text-[var(--muted)]">
                 Nu ai notificări noi.
               </p>
             ) : (
               notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`rounded-[24px] border p-5 ${notification.read ? 'border-[var(--border)] bg-white opacity-70' : 'border-[var(--brand)]/30 bg-white'}`}
+                  className={`rounded-[24px] border p-5 ${notification.read ? 'border-[var(--border)] bg-[var(--card)] opacity-70' : 'border-[var(--brand)]/30 bg-[var(--card)]'}`}
                 >
                   <p className="font-semibold">
                     {notification.read ? null : <span className="mr-2 inline-block h-2 w-2 rounded-full bg-[var(--brand)]" />}

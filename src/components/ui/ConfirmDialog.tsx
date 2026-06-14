@@ -57,7 +57,7 @@ export default function ConfirmDialog({
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-md rounded-[28px] border border-[var(--border)] bg-white p-7 shadow-[var(--shadow)]"
+        className="w-full max-w-md rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-7 shadow-[var(--shadow)]"
         onClick={(event) => event.stopPropagation()}
       >
         <h2 id="confirm-title" className="text-xl font-semibold text-[var(--text)]">

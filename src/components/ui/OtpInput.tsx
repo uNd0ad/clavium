@@ -63,7 +63,7 @@ export default function OtpInput({ value, onChange, length = 6 }: OtpInputProps)
           onKeyDown={(event) => handleKeyDown(index, event)}
           onPaste={handlePaste}
           aria-label={`Cifra ${index + 1} din ${length}`}
-          className="h-14 w-full rounded-[18px] border border-[var(--border)] bg-white text-center text-[18px] font-semibold text-[var(--text)] outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[rgba(0,113,227,0.16)]"
+          className="h-14 w-full rounded-[18px] border border-[var(--border)] bg-[var(--card)] text-center text-[18px] font-semibold text-[var(--text)] outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[rgba(0,113,227,0.16)]"
         />
       ))}
     </div>

@@ -1,7 +1,7 @@
 import type { PropertyFilters } from '@/lib/propertyQuery'
 
 const inputClass =
-  'rounded-[18px] border border-[var(--border)] bg-white px-4 py-3 text-[14px] outline-none transition focus:border-[var(--brand)]'
+  'rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[14px] outline-none transition focus:border-[var(--brand)]'
 
 // Formular GET — filtrele trăiesc în URL, deci sunt shareable și SSR-friendly.
 export default function PropertyFiltersForm({ filters, action }: { filters: PropertyFilters; action?: string }) {

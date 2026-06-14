@@ -31,7 +31,7 @@ export default function AdminUsersTable({ users }: { users: AdminUserRow[] }) {
   return (
     <div className="space-y-4">
       {users.map((user) => (
-        <div key={user.id} className="rounded-[24px] border border-[var(--border)] bg-white p-5">
+        <div key={user.id} className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="font-semibold">
@@ -45,7 +45,7 @@ export default function AdminUsersTable({ users }: { users: AdminUserRow[] }) {
                 value={user.role}
                 disabled={user.isSelf || busyId === user.id}
                 onChange={(event) => update(user.id, { role: event.target.value })}
-                className="rounded-full border border-[var(--border)] bg-white px-4 py-2 text-[13px] font-semibold outline-none transition focus:border-[var(--brand)]"
+                className="rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-[13px] font-semibold outline-none transition focus:border-[var(--brand)]"
               >
                 {ROLES.map((role) => (
                   <option key={role} value={role}>{role}</option>

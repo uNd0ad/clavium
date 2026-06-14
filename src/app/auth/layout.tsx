@@ -1,6 +1,7 @@
 import type { PropsWithChildren } from 'react'
 import Link from 'next/link'
 import { ShieldCheck, FileSignature, Wallet, ArrowLeft } from 'lucide-react'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 const highlights = [
   {
@@ -61,17 +62,20 @@ export default function AuthLayout({ children }: PropsWithChildren) {
           </p>
         </aside>
 
-        <div className="flex flex-1 flex-col rounded-[32px] bg-white p-6 shadow-[0_30px_80px_rgba(15,23,42,0.08)] sm:p-8 lg:p-12">
+        <div className="flex flex-1 flex-col rounded-[32px] bg-[var(--card)] p-6 shadow-[0_30px_80px_rgba(15,23,42,0.08)] sm:p-8 lg:p-12">
           <div className="mb-8 flex items-center justify-between gap-4">
             <Link href="/" className="font-sans text-lg font-semibold tracking-wide text-[var(--text)] no-underline lg:hidden">
               Clavium<span className="text-[var(--brand)]">.ro</span>
             </Link>
-            <Link
-              href="/"
-              className="ml-auto inline-flex items-center gap-2 text-[13px] font-semibold text-[var(--muted)] transition hover:text-[var(--brand)]"
-            >
-              <ArrowLeft size={15} /> Înapoi la site
-            </Link>
+            <div className="ml-auto flex items-center gap-3">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 text-[13px] font-semibold text-[var(--muted)] transition hover:text-[var(--brand)]"
+              >
+                <ArrowLeft size={15} /> Înapoi la site
+              </Link>
+              <ThemeToggle />
+            </div>
           </div>
           {children}
         </div>

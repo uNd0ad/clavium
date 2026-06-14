@@ -14,7 +14,7 @@ function OfferList({ offers, emptyMessage, emptyCta }: { offers: OfferView[]; em
   return (
     <div className="mt-6 space-y-4">
       {offers.map((offer) => (
-        <div key={offer.id} className="rounded-[24px] border border-[var(--border)] bg-white p-5">
+        <div key={offer.id} className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="font-semibold">{offer.property}</p>

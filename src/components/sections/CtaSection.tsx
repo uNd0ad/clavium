@@ -10,7 +10,7 @@ export default function CtaSection() {
   return (
     <section className="bg-[var(--brand-soft)] py-24 lg:py-28" ref={ref}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12 text-center">
-        <div className="mb-10 inline-flex items-center justify-center gap-3 rounded-full border border-[var(--brand)]/20 bg-white/70 px-5 py-2 text-[12px] uppercase tracking-[0.18em] text-[var(--brand)]">
+        <div className="mb-10 inline-flex items-center justify-center gap-3 rounded-full border border-[var(--brand)]/20 bg-[var(--card)] px-5 py-2 text-[12px] uppercase tracking-[0.18em] text-[var(--brand)]">
           <span className="h-2.5 w-2.5 rounded-full bg-[var(--brand)] animate-pulse" />
           Disponibil acum · Înregistrare gratuită
         </div>

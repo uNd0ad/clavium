@@ -59,6 +59,24 @@ export async function updatePropertyStatusAction(propertyId: string, status: str
   }
 }
 
+// Editarea detaliilor unei proprietăți (titlu, locație, chirie, camere, suprafață, descriere).
+export async function updatePropertyAction(propertyId: string, input: unknown) {
+  try {
+    const user = await requireActionUser(['OWNER', 'ADMIN'])
+    const property = await prisma.property.findUnique({ where: { id: propertyId } })
+    if (!property) return { ok: false as const, error: 'Proprietatea nu există.' }
+    if (user.role !== 'ADMIN' && property.ownerId !== user.id) {
+      return { ok: false as const, error: 'Nu ai permisiunea necesară.' }
+    }
+    const data = propertyUpdateSchema.parse(input)
+    await prisma.property.update({ where: { id: propertyId }, data })
+    revalidateProperties()
+    return { ok: true as const }
+  } catch (err) {
+    return { ok: false as const, error: errorMessage(err) }
+  }
+}
+
 export async function toggleSaveAction(propertyId: string) {
   try {
     const user = await requireActionUser()

@@ -9,6 +9,7 @@
   --bg: #f4f5f7;
   --surface: rgba(255,255,255,0.88);
   --surface-strong: #ffffff;
+  --card: #ffffff;
   --text: #111115;
   --muted: #6b6b74;
   --border: rgba(60,60,67,0.18);
@@ -16,6 +17,25 @@
   --brand-soft: rgba(0,113,227,0.12);
   --brand-dark: #0048b8;
   --shadow: 0 32px 80px rgba(15,23,42,0.08);
+  --scrollbar: rgba(17,17,21,0.22);
+  color-scheme: light;
+}
+
+/* Mod întunecat: redefinim doar tokenii — restul UI-ului folosește deja var(...). */
+html.dark {
+  --bg: #0d0d10;
+  --surface: #16161b;
+  --surface-strong: #1b1b21;
+  --card: #1b1b21;
+  --text: #f2f2f5;
+  --muted: #9a9aa6;
+  --border: rgba(255,255,255,0.12);
+  --brand: #3b9bff;
+  --brand-soft: rgba(59,155,255,0.16);
+  --brand-dark: #2b86ec;
+  --shadow: 0 24px 60px rgba(0,0,0,0.55);
+  --scrollbar: rgba(255,255,255,0.18);
+  color-scheme: dark;
 }
 
 *, *::before, *::after {
@@ -70,7 +90,7 @@ summary:focus-visible,
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(17,17,21,0.22);
+  background: var(--scrollbar);
   border-radius: 9999px;
 }
 
@@ -102,7 +122,7 @@ summary:focus-visible,
   }
 
   .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-[var(--border)] bg-white/90 text-[var(--text)] px-6 py-3 text-[13px] font-semibold uppercase tracking-[0.08em] transition duration-300 ease-out-expo;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-[var(--border)] bg-[var(--card)] text-[var(--text)] px-6 py-3 text-[13px] font-semibold uppercase tracking-[0.08em] transition duration-300 ease-out-expo;
   }
   .btn-outline:hover {
     border-color: rgba(0,113,227,0.25);

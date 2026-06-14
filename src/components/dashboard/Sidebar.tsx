@@ -7,6 +7,7 @@ import { Home, ShoppingBag, FileText, Layers, CreditCard, User, ShieldCheck, Sea
 import { dashboardNavItems, UserProfile } from '@/types/dashboard'
 import LogoutButton from './LogoutButton'
 import NotificationTab from './NotificationTab'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 import { ROLE_DESCRIPTIONS } from '@/lib/types/roles'
 
 const iconMap = {
@@ -59,11 +60,16 @@ export default function Sidebar({ user }: { user: UserProfile }) {
       </nav>
 
       <div className="mt-auto space-y-3">
-        <div className="rounded-[32px] border border-[var(--border)] bg-white p-5 text-sm text-[var(--text)]">
+        <div className="rounded-[32px] border border-[var(--border)] bg-[var(--card)] p-5 text-sm text-[var(--text)]">
           <p className="font-semibold">Tip utilizator</p>
           <p className="mt-2 text-[13px] text-[var(--muted)]">Acest panou afișează informații și acțiuni disponibile pentru rolul tău.</p>
         </div>
-        <LogoutButton />
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            <LogoutButton />
+          </div>
+          <ThemeToggle />
+        </div>
       </div>
     </aside>
   )

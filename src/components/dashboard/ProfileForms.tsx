@@ -124,7 +124,7 @@ export default function ProfileForms({ firstName: initialFirst, lastName: initia
       <div className="rounded-[32px] border border-rose-200 bg-rose-50/50 p-6">
         <h2 className="text-xl font-semibold text-rose-800">Danger zone</h2>
         <p className="mt-2 text-sm text-[var(--muted)]">Dezactivarea contului este permanentă — nu te vei mai putea autentifica.</p>
-        <button type="button" onClick={() => setConfirmOpen(true)} disabled={loading} className="mt-4 rounded-full border border-rose-300 bg-white px-6 py-3 text-[13px] font-semibold uppercase tracking-[0.08em] text-rose-800 transition hover:bg-rose-100">
+        <button type="button" onClick={() => setConfirmOpen(true)} disabled={loading} className="mt-4 rounded-full border border-rose-300 bg-[var(--card)] px-6 py-3 text-[13px] font-semibold uppercase tracking-[0.08em] text-rose-800 transition hover:bg-rose-100">
           Dezactivează contul
         </button>
       </div>

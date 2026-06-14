@@ -23,7 +23,7 @@ const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
           <input
             ref={ref}
             type={inputType}
-            className={`w-full rounded-[18px] border border-[var(--border)] bg-white px-4 py-3 ${isPassword ? 'pr-12' : ''} text-[14px] text-[var(--text)] outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[rgba(0,113,227,0.16)] ${className}`}
+            className={`w-full rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 ${isPassword ? 'pr-12' : ''} text-[14px] text-[var(--text)] outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[rgba(0,113,227,0.16)] ${className}`}
             {...props}
           />
           {isPassword ? (
