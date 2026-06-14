@@ -100,7 +100,25 @@ export async function registerUser(data: RegisterRequest) {
     }
   }
   const passwordHash = await hash(data.password, 10)
-  const user = await createUser(data.firstName, data.lastName, data.email, passwordHash, data.role, data.phone ? normalizePhone(data.phone) : undefined)
+  const company =
+    data.accountType === 'COMPANY'
+      ? {
+          name: data.companyName ?? '',
+          cui: data.companyCui ?? '',
+          reg: data.companyReg ?? '',
+          address: data.companyAddress,
+          vatPayer: Boolean(data.companyVatPayer),
+        }
+      : undefined
+  const user = await createUser(
+    data.firstName,
+    data.lastName,
+    data.email,
+    passwordHash,
+    data.role,
+    data.phone ? normalizePhone(data.phone) : undefined,
+    company
+  )
   if (data.phone) {
     await consumePhoneOtp(data.phone)
   }

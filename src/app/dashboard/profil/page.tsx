@@ -40,7 +40,7 @@ export default async function DashboardProfilePage({ searchParams }: { searchPar
             <h2 className="text-xl font-semibold">Date personale</h2>
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               <div className="rounded-[24px] bg-[var(--card)] p-5">
-                <p className="text-sm text-[var(--muted)]">Nume complet</p>
+                <p className="text-sm text-[var(--muted)]">{user.accountType === 'COMPANY' ? 'Reprezentant legal' : 'Nume complet'}</p>
                 <p className="mt-2 font-semibold">{user.firstName} {user.lastName}</p>
               </div>
               <div className="rounded-[24px] bg-[var(--card)] p-5">
@@ -57,6 +57,36 @@ export default async function DashboardProfilePage({ searchParams }: { searchPar
               </div>
             </div>
           </div>
+
+          {user.accountType === 'COMPANY' ? (
+            <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
+              <h2 className="text-xl font-semibold">Date firmă</h2>
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[24px] bg-[var(--card)] p-5">
+                  <p className="text-sm text-[var(--muted)]">Denumire</p>
+                  <p className="mt-2 font-semibold">{user.companyName || '—'}</p>
+                </div>
+                <div className="rounded-[24px] bg-[var(--card)] p-5">
+                  <p className="text-sm text-[var(--muted)]">CUI / CIF</p>
+                  <p className="mt-2 font-semibold">{user.companyCui || '—'}</p>
+                </div>
+                <div className="rounded-[24px] bg-[var(--card)] p-5">
+                  <p className="text-sm text-[var(--muted)]">Nr. înregistrare</p>
+                  <p className="mt-2 font-semibold">{user.companyReg || '—'}</p>
+                </div>
+                <div className="rounded-[24px] bg-[var(--card)] p-5">
+                  <p className="text-sm text-[var(--muted)]">TVA</p>
+                  <p className="mt-2 font-semibold">{user.companyVatPayer ? 'Plătitor' : 'Neplătitor'}</p>
+                </div>
+                {user.companyAddress ? (
+                  <div className="rounded-[24px] bg-[var(--card)] p-5 sm:col-span-2">
+                    <p className="text-sm text-[var(--muted)]">Sediu</p>
+                    <p className="mt-2 font-semibold">{user.companyAddress}</p>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
 
           <ProfileForms
             firstName={user.firstName}

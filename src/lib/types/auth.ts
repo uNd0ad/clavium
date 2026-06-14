@@ -1,5 +1,15 @@
 import type { UserRole } from './roles'
 
+export type AccountType = 'PERSON' | 'COMPANY'
+
+export type CompanyInput = {
+  name: string
+  cui: string
+  reg: string
+  address?: string
+  vatPayer: boolean
+}
+
 export type User = {
   id: string
   firstName: string
@@ -11,6 +21,12 @@ export type User = {
   emailVerified: boolean
   isActive: boolean
   avatar?: string | null
+  accountType: AccountType
+  companyName?: string | null
+  companyCui?: string | null
+  companyReg?: string | null
+  companyAddress?: string | null
+  companyVatPayer: boolean
   createdAt: string
   updatedAt: string
 }
@@ -27,12 +43,18 @@ export type LoginRequest = {
 }
 
 export type RegisterRequest = {
+  accountType?: AccountType
   firstName: string
   lastName: string
   email: string
   password: string
   role?: UserRole
   phone?: string
+  companyName?: string
+  companyCui?: string
+  companyReg?: string
+  companyAddress?: string
+  companyVatPayer?: boolean
 }
 
 export type OtpSendRequest = {

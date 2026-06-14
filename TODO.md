@@ -50,16 +50,16 @@ ofertei; nu există un document propriu-zis. Acest milestone adaugă fluxul comp
 - [ ] **Descărcare** — ambele părți descarcă contractul (preview nesemnat / final semnat),
   similar cu exportul GDPR.
 
-## Înregistrare pentru firme (persoane juridice) (planificat)
+## Înregistrare pentru firme (persoane juridice) (parțial)
 
-Azi înregistrarea (`/auth/register`) creează doar persoane fizice (prenume, nume, email, telefon).
-Pentru a permite și firme (proprietari sau chiriași persoane juridice):
+Înregistrarea (`/auth/register`) suportă acum atât persoane fizice, cât și juridice.
 
-- [ ] **Tip cont la înregistrare** — alegere persoană fizică / persoană juridică, pe lângă rol
-  (Client/Proprietar). *(Wizard-ul de register are deja pasul de alegere rol în `src/app/auth/register/page.tsx` — se extinde cu tipul de entitate.)*
-- [ ] **Date firmă** — denumire, CUI/CIF, nr. înregistrare ORC (J…), adresă sediu, reprezentant
-  legal, plătitor de TVA (da/nu). *(Model nou `Company` legat de `User`, sau câmpuri pe `User`; ajustare la `registerSchema` din `src/lib/validations.ts`.)*
-- [ ] **Validare fiscală** — format + checksum CUI, format J-number; (opțional) verificare la ANAF.
+- [x] **Tip cont la înregistrare** — comutator persoană fizică / juridică în wizard, pe lângă rol
+  (Client/Proprietar). — `src/app/auth/register/page.tsx`
+- [x] **Date firmă** — denumire, CUI/CIF, nr. înregistrare ORC (J…), adresă sediu, plătitor de TVA;
+  câmpuri pe `User` (`accountType`, `company*`); firstName/lastName = reprezentant legal. Afișate în profil.
+- [x] **Validare fiscală** — checksum CUI + format J-number (`src/lib/fiscalCode.ts`, testate).
+  *(verificare la ANAF — opțional, încă nu)*
 - [ ] **Folosire în contracte și facturi** — datele firmei apar ca parte în contractul generat
   (vezi „Generator de contracte") și pe facturile de comision / e-Factura.
 - [ ] **KYC pentru firme** — verificarea identității și a împuternicirii reprezentantului legal

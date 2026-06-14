@@ -35,6 +35,22 @@ describe('registerSchema', () => {
     expect(() => registerSchema.parse({ ...valid, phone: undefined })).toThrow()
     expect(() => registerSchema.parse({ ...valid, password: 'scurt' })).toThrow()
   })
+
+  it('persoană fizică implicit, fără cerințe de firmă', () => {
+    expect(registerSchema.parse(valid).accountType).toBe('PERSON')
+  })
+
+  it('pentru persoană juridică cere denumire + CUI + nr. înregistrare valide', () => {
+    const company = { ...valid, accountType: 'COMPANY' as const }
+    // lipsesc datele firmei → eșuează
+    expect(() => registerSchema.parse(company)).toThrow()
+    // date firmă valide → trece
+    const ok = registerSchema.parse({ ...company, companyName: 'Exemplu SRL', companyCui: '13548146', companyReg: 'J40/1234/2020' })
+    expect(ok.accountType).toBe('COMPANY')
+    expect(ok.companyName).toBe('Exemplu SRL')
+    // CUI invalid → eșuează
+    expect(() => registerSchema.parse({ ...company, companyName: 'X SRL', companyCui: '13548147', companyReg: 'J40/1/2020' })).toThrow()
+  })
 })
 
 describe('loginSchema', () => {

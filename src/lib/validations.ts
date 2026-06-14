@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { ROLES } from './types/roles'
+import { isValidCui, isValidRegNumber } from './fiscalCode'
 
 // Roluri permise la înregistrare publică — ADMIN se acordă doar manual.
 const registrationRoleEnum = z.enum(['OWNER', 'CLIENT'])
@@ -14,14 +15,34 @@ export const loginSchema = z.object({
   password: z.string().min(8, 'Parola trebuie să aibă cel puțin 8 caractere'),
 })
 
-export const registerSchema = z.object({
-  firstName: z.string().min(2, 'Prenumele trebuie să aibă cel puțin 2 caractere'),
-  lastName: z.string().min(2, 'Numele de familie trebuie să aibă cel puțin 2 caractere'),
-  email: z.string().email('Adresa de email nu este validă'),
-  password: z.string().min(8, 'Parola trebuie să aibă cel puțin 8 caractere'),
-  role: registrationRoleEnum.optional().default(ROLES.CLIENT),
-  phone: phoneSchema,
-})
+export const registerSchema = z
+  .object({
+    accountType: z.enum(['PERSON', 'COMPANY']).optional().default('PERSON'),
+    firstName: z.string().min(2, 'Prenumele trebuie să aibă cel puțin 2 caractere'),
+    lastName: z.string().min(2, 'Numele de familie trebuie să aibă cel puțin 2 caractere'),
+    email: z.string().email('Adresa de email nu este validă'),
+    password: z.string().min(8, 'Parola trebuie să aibă cel puțin 8 caractere'),
+    role: registrationRoleEnum.optional().default(ROLES.CLIENT),
+    phone: phoneSchema,
+    // Câmpuri de firmă — obligatorii doar pentru persoană juridică (validate mai jos).
+    companyName: z.string().trim().optional(),
+    companyCui: z.string().trim().optional(),
+    companyReg: z.string().trim().optional(),
+    companyAddress: z.string().trim().optional(),
+    companyVatPayer: z.boolean().optional().default(false),
+  })
+  .superRefine((data, ctx) => {
+    if (data.accountType !== 'COMPANY') return
+    if (!data.companyName || data.companyName.length < 2) {
+      ctx.addIssue({ code: 'custom', path: ['companyName'], message: 'Denumirea firmei este obligatorie' })
+    }
+    if (!data.companyCui || !isValidCui(data.companyCui)) {
+      ctx.addIssue({ code: 'custom', path: ['companyCui'], message: 'CUI/CIF invalid' })
+    }
+    if (!data.companyReg || !isValidRegNumber(data.companyReg)) {
+      ctx.addIssue({ code: 'custom', path: ['companyReg'], message: 'Nr. de înregistrare invalid (ex: J40/1234/2020)' })
+    }
+  })
 
 export const otpSendSchema = z.object({
   email: z.string().email('Adresa de email nu este validă'),

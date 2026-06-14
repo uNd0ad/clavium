@@ -31,5 +31,7 @@ export function sessionFor(user: { id: string; firstName: string; lastName: stri
     role: user.role as UserRole,
     email: user.email,
     emailVerified: true,
+    accountType: 'PERSON',
+    companyVatPayer: false,
   }
 }

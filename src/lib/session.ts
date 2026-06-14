@@ -2,6 +2,7 @@ import { cookies } from 'next/headers'
 import { getUserFromToken } from './auth'
 import { COOKIE_NAME } from './constants'
 import type { UserRole } from './types/roles'
+import type { AccountType } from './types/auth'
 
 export type SessionUser = {
   id: string
@@ -12,6 +13,12 @@ export type SessionUser = {
   emailVerified: boolean
   phone?: string
   avatar?: string
+  accountType: AccountType
+  companyName?: string
+  companyCui?: string
+  companyReg?: string
+  companyAddress?: string
+  companyVatPayer: boolean
 }
 
 export async function getCurrentUser(): Promise<SessionUser | null> {
@@ -31,5 +38,11 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
     emailVerified: user.emailVerified,
     phone: user.phone ?? undefined,
     avatar: user.avatar ?? undefined,
+    accountType: user.accountType,
+    companyName: user.companyName ?? undefined,
+    companyCui: user.companyCui ?? undefined,
+    companyReg: user.companyReg ?? undefined,
+    companyAddress: user.companyAddress ?? undefined,
+    companyVatPayer: user.companyVatPayer,
   }
 }

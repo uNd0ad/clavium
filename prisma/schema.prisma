@@ -19,6 +19,14 @@ model User {
   phoneVerified Boolean  @default(false)
   isActive      Boolean  @default(true)
   avatar        String?
+  // Tip cont: PERSON (persoană fizică) sau COMPANY (persoană juridică).
+  // Pentru COMPANY, firstName/lastName = reprezentantul legal.
+  accountType     String   @default("PERSON")
+  companyName     String?
+  companyCui      String? // CUI/CIF
+  companyReg      String? // nr. înregistrare ORC (J…)
+  companyAddress  String?
+  companyVatPayer Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

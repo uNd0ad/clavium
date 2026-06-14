@@ -26,6 +26,12 @@ export default function RegisterPage() {
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [role, setRole] = useState<UserRole>('CLIENT')
+  const [accountType, setAccountType] = useState<'PERSON' | 'COMPANY'>('PERSON')
+  const [companyName, setCompanyName] = useState('')
+  const [companyCui, setCompanyCui] = useState('')
+  const [companyReg, setCompanyReg] = useState('')
+  const [companyAddress, setCompanyAddress] = useState('')
+  const [companyVatPayer, setCompanyVatPayer] = useState(false)
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [phone, setPhone] = useState('')
@@ -49,9 +55,15 @@ export default function RegisterPage() {
   }, [registered, countdown, router])
 
   const handleNext = () => {
-    if (step === 0 && (!firstName || !lastName || !email)) {
-      toast.error('Completează prenumele, numele de familie și email-ul pentru a continua.')
-      return
+    if (step === 0) {
+      if (!firstName || !lastName || !email) {
+        toast.error('Completează prenumele, numele de familie și email-ul pentru a continua.')
+        return
+      }
+      if (accountType === 'COMPANY' && (!companyName || !companyCui || !companyReg)) {
+        toast.error('Completează datele firmei: denumire, CUI și nr. de înregistrare.')
+        return
+      }
     }
     if (step === 1 && (password.length < 8 || password !== confirmPassword)) {
       toast.error('Parola trebuie să aibă cel puțin 8 caractere și să se potrivească.')
@@ -131,7 +143,18 @@ export default function RegisterPage() {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ firstName, lastName, email, password, role, phone }),
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          password,
+          role,
+          phone,
+          accountType,
+          ...(accountType === 'COMPANY'
+            ? { companyName, companyCui, companyReg, companyAddress: companyAddress || undefined, companyVatPayer }
+            : {}),
+        }),
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
@@ -211,6 +234,19 @@ export default function RegisterPage() {
         <div key={step} className="step-transition">
           {step === 0 && (
             <div className="space-y-5">
+              <div className="flex gap-2 rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-2 text-[13px]">
+                {([['PERSON', 'Persoană fizică'], ['COMPANY', 'Persoană juridică']] as const).map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setAccountType(value)}
+                    className={`flex-1 rounded-full px-5 py-2.5 font-semibold transition ${accountType === value ? 'bg-[var(--brand)] text-white' : 'text-[var(--muted)] hover:text-[var(--brand)]'}`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
               <div className="grid gap-3 sm:grid-cols-2">
                 {roleOptions.map((option) => {
                   const Icon = option.icon
@@ -229,8 +265,25 @@ export default function RegisterPage() {
                   )
                 })}
               </div>
-              <FormField label="Prenume" value={firstName} onChange={(event) => setFirstName(event.target.value)} placeholder="Ion" />
-              <FormField label="Nume de familie" value={lastName} onChange={(event) => setLastName(event.target.value)} placeholder="Popescu" />
+
+              {accountType === 'COMPANY' ? (
+                <div className="space-y-5 rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
+                  <p className="text-[13px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Date firmă</p>
+                  <FormField label="Denumire firmă" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Exemplu SRL" />
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FormField label="CUI / CIF" value={companyCui} onChange={(e) => setCompanyCui(e.target.value)} placeholder="RO12345678" />
+                    <FormField label="Nr. înregistrare (ORC)" value={companyReg} onChange={(e) => setCompanyReg(e.target.value)} placeholder="J40/1234/2020" />
+                  </div>
+                  <FormField label="Adresă sediu (opțional)" value={companyAddress} onChange={(e) => setCompanyAddress(e.target.value)} placeholder="Str. Exemplu nr. 1, București" />
+                  <label className="flex cursor-pointer items-center gap-3 text-sm text-[var(--muted)]">
+                    <input type="checkbox" checked={companyVatPayer} onChange={(e) => setCompanyVatPayer(e.target.checked)} className="h-4 w-4 accent-[var(--brand)]" />
+                    Plătitor de TVA
+                  </label>
+                </div>
+              ) : null}
+
+              <FormField label={accountType === 'COMPANY' ? 'Prenume reprezentant legal' : 'Prenume'} value={firstName} onChange={(event) => setFirstName(event.target.value)} placeholder="Ion" />
+              <FormField label={accountType === 'COMPANY' ? 'Nume reprezentant legal' : 'Nume de familie'} value={lastName} onChange={(event) => setLastName(event.target.value)} placeholder="Popescu" />
               <FormField label="Email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="exemplu@domeniu.ro" />
             </div>
           )}
@@ -307,9 +360,19 @@ export default function RegisterPage() {
               </p>
               <div className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5 text-sm text-[var(--text)]">
                 <p className="font-semibold">Rezumat cont</p>
-                <p className="mt-3">Tip cont: {role === 'OWNER' ? 'Proprietar' : 'Client'}</p>
-                <p>Prenume: {firstName || '—'}</p>
-                <p>Nume de familie: {lastName || '—'}</p>
+                <p className="mt-3">Tip: {accountType === 'COMPANY' ? 'Persoană juridică' : 'Persoană fizică'} · {role === 'OWNER' ? 'Proprietar' : 'Client'}</p>
+                {accountType === 'COMPANY' ? (
+                  <>
+                    <p>Firmă: {companyName || '—'}</p>
+                    <p>CUI: {companyCui || '—'} · Reg: {companyReg || '—'}</p>
+                    <p>Reprezentant: {firstName || '—'} {lastName || '—'}</p>
+                  </>
+                ) : (
+                  <>
+                    <p>Prenume: {firstName || '—'}</p>
+                    <p>Nume de familie: {lastName || '—'}</p>
+                  </>
+                )}
                 <p>Email: {email || '—'}</p>
                 <p>Telefon: {phone || '—'} {phoneVerified ? '(verificat)' : ''}</p>
                 <p>Parolă: {password ? 'Setată' : 'Nedefinită'}</p>

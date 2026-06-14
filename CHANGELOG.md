@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.7.0 — 2026-06-14
+
+### Înregistrare pentru firme (persoane juridice)
+- Wizard-ul de înregistrare suportă acum tip cont **persoană fizică / juridică** (pe lângă rol).
+- Pentru firme: denumire, CUI/CIF, nr. înregistrare ORC (J…), adresă sediu, plătitor TVA;
+  firstName/lastName devin reprezentantul legal. Câmpuri pe `User` (`accountType`, `company*`),
+  migrația `company_accounts`.
+- Validare fiscală: checksum CUI + format J-number (`src/lib/fiscalCode.ts`).
+- Datele firmei afișate în profil (card „Date firmă").
+- Teste: validatoare fiscale + schema de înregistrare pentru firme (34 teste în total).
+
 ## 0.6.1 — 2026-06-14
 
 ### Suită de teste

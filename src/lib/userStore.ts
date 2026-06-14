@@ -1,6 +1,7 @@
 import { prisma } from './prisma'
 import { sha256 } from './hash'
-import type { User } from './types/auth'
+import type { User } from '@prisma/client'
+import type { User as AppUser, CompanyInput, AccountType } from './types/auth'
 import type { UserRole } from './types/roles'
 import { ROLES, isValidRole } from './types/roles'
 
@@ -8,13 +9,9 @@ function mapUserRole(role: string): UserRole {
   return isValidRole(role) ? role : ROLES.CLIENT
 }
 
-export async function findUserByEmail(email: string): Promise<User | null> {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
-    })
-    if (!user) return null
-    return {
+// Mapper unic Prisma → tipul aplicației (folosit de toate funcțiile de citire).
+function toUser(user: User): AppUser {
+  return {
     id: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
@@ -25,16 +22,36 @@ export async function findUserByEmail(email: string): Promise<User | null> {
     emailVerified: user.emailVerified,
     isActive: user.isActive,
     avatar: user.avatar,
+    accountType: (user.accountType as AccountType) || 'PERSON',
+    companyName: user.companyName,
+    companyCui: user.companyCui,
+    companyReg: user.companyReg,
+    companyAddress: user.companyAddress,
+    companyVatPayer: user.companyVatPayer,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
   }
+}
+
+export async function findUserByEmail(email: string): Promise<AppUser | null> {
+  try {
+    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } })
+    return user ? toUser(user) : null
   } catch (err) {
     console.error('findUserByEmail error:', err)
     return null
   }
 }
 
-export async function createUser(firstName: string, lastName: string, email: string, passwordHash: string, role?: UserRole, phone?: string): Promise<User> {
+export async function createUser(
+  firstName: string,
+  lastName: string,
+  email: string,
+  passwordHash: string,
+  role?: UserRole,
+  phone?: string,
+  company?: CompanyInput
+): Promise<AppUser> {
   const existing = await findUserByEmail(email)
   if (existing) {
     throw new Error('Există deja un cont cu acest email.')
@@ -49,43 +66,22 @@ export async function createUser(firstName: string, lastName: string, email: str
       role: role || ROLES.CLIENT,
       phone: phone || null,
       phoneVerified: Boolean(phone),
+      accountType: company ? 'COMPANY' : 'PERSON',
+      companyName: company?.name ?? null,
+      companyCui: company?.cui ?? null,
+      companyReg: company?.reg ?? null,
+      companyAddress: company?.address ?? null,
+      companyVatPayer: company?.vatPayer ?? false,
     },
   })
 
-  return {
-    id: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-    phone: user.phone,
-    passwordHash: user.passwordHash,
-    role: mapUserRole(user.role),
-    emailVerified: user.emailVerified,
-    isActive: user.isActive,
-    avatar: user.avatar,
-    createdAt: user.createdAt.toISOString(),
-    updatedAt: user.updatedAt.toISOString(),
-  }
+  return toUser(user)
 }
 
-export async function getUserById(id: string): Promise<User | null> {
+export async function getUserById(id: string): Promise<AppUser | null> {
   try {
     const user = await prisma.user.findUnique({ where: { id } })
-    if (!user) return null
-    return {
-    id: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-    phone: user.phone,
-    passwordHash: user.passwordHash,
-    role: mapUserRole(user.role),
-    emailVerified: user.emailVerified,
-    isActive: user.isActive,
-    avatar: user.avatar,
-    createdAt: user.createdAt.toISOString(),
-    updatedAt: user.updatedAt.toISOString(),
-  }
+    return user ? toUser(user) : null
   } catch (err) {
     console.error('getUserById error:', err)
     return null
