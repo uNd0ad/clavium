@@ -11,7 +11,7 @@ externe reale (plăți, QES, email/SMS în producție), migrarea infrastructurii
 - [x] **CRUD proprietăți pentru owneri** — adăugare/dezactivare/reactivare din dashboard, cu upload de fotografii
 - [x] **Salvare proprietăți** — toggle pe pagina proprietății, vizibile în dashboard
 - [x] **Flux de oferte** — trimitere de pe pagina proprietății; acceptare/respingere din dashboard; la acceptare se creează contractul și se resping ofertele concurente
-- [x] **Generare contract** — automat la acceptarea ofertei, cu chiria din ofertă *(PDF descărcabil încă nu)*
+- [x] **Generare contract** — automat la acceptarea ofertei, cu chiria din ofertă *(doar auto-creare — vezi „Generator de contracte")*
 - [x] **Flux de semnare** — ambele părți semnează, contract ACTIV + proprietate ÎNCHIRIATĂ + prima scadență automat
 - [x] **Notificări funcționale** — generate de evenimente reale, cu marcare ca citite
 - [x] **Editare profil** — nume/telefon, schimbare parolă, export GDPR, dezactivare cont
@@ -28,6 +28,92 @@ externe reale (plăți, QES, email/SMS în producție), migrarea infrastructurii
 - [x] **Programare chirii recurente** — scadență lunară automată după fiecare plată, alerte la scadențe în overview
 - [ ] **QES real** — integrare furnizor eIDAS (certSIGN/Namirial) în `src/lib/qes.ts` (azi: simulat în dev)
 - [ ] **Facturare comisioane** — generare facturi + e-Factura
+
+## Generator de contracte — flux complet (planificat)
+
+Azi contractul e doar o înregistrare în DB (chirie + durată implicită), creată la acceptarea
+ofertei; nu există un document propriu-zis. Acest milestone adaugă fluxul complet de generare:
+
+- [ ] **Termenii contractului** — la acceptarea ofertei, ownerul completează termenii compleți:
+  durată (dată început/sfârșit sau nr. luni), garanție (depozit), zi de scadență a chiriei,
+  utilități incluse, clauze speciale. *(Extinde modelul `Contract`: `deposit`, `startDate`/`endDate`,
+  `dueDay`, `clauses`, `documentUrl`.)*
+- [ ] **Generarea documentului** — completarea unui șablon de contract de închiriere (conform
+  Legii 214/2024 / Codului civil) cu termenii agreați → HTML → PDF. *(`src/lib/contractTemplate.ts`
+  + `src/lib/contractPdf.ts`; librărie `@react-pdf/renderer` sau `pdf-lib`/puppeteer.)*
+- [ ] **Previzualizare** — pagină de detaliu contract (`/dashboard/contracte/[id]`) unde ambele
+  părți văd documentul generat înainte de a semna.
+- [ ] **Stocare PDF** — salvarea documentului prin stratul de storage (`src/lib/storage.ts`),
+  legat de „Storage fișiere în producție" din Infrastructură.
+- [ ] **Semnare pe document** — fluxul QES existent (`signContractAction` + `src/lib/qes.ts`)
+  semnează acest document; aplicarea semnăturilor + timestamp pe PDF-ul final.
+- [ ] **Descărcare** — ambele părți descarcă contractul (preview nesemnat / final semnat),
+  similar cu exportul GDPR.
+
+## Înregistrare pentru firme (persoane juridice) (planificat)
+
+Azi înregistrarea (`/auth/register`) creează doar persoane fizice (prenume, nume, email, telefon).
+Pentru a permite și firme (proprietari sau chiriași persoane juridice):
+
+- [ ] **Tip cont la înregistrare** — alegere persoană fizică / persoană juridică, pe lângă rol
+  (Client/Proprietar). *(Wizard-ul de register are deja pasul de alegere rol în `src/app/auth/register/page.tsx` — se extinde cu tipul de entitate.)*
+- [ ] **Date firmă** — denumire, CUI/CIF, nr. înregistrare ORC (J…), adresă sediu, reprezentant
+  legal, plătitor de TVA (da/nu). *(Model nou `Company` legat de `User`, sau câmpuri pe `User`; ajustare la `registerSchema` din `src/lib/validations.ts`.)*
+- [ ] **Validare fiscală** — format + checksum CUI, format J-number; (opțional) verificare la ANAF.
+- [ ] **Folosire în contracte și facturi** — datele firmei apar ca parte în contractul generat
+  (vezi „Generator de contracte") și pe facturile de comision / e-Factura.
+- [ ] **KYC pentru firme** — verificarea identității și a împuternicirii reprezentantului legal
+  (leagă „Verificarea identității ownerilor" din Legal).
+
+## Pin pe hartă (Google Maps) pentru proprietăți exclusive (planificat)
+
+Locația exactă a proprietății afișată pe hartă (pin Google Maps), disponibilă doar pentru
+proprietarii care semnează un **acord de exclusivitate** cu platforma. (Homepage-ul promite deja
+„hartă clară", dar momentan nu există nicio hartă.)
+
+- [ ] **Acord de exclusivitate** — proprietarul semnează exclusivitatea (poate refolosi fluxul QES din
+  „Generator de contracte"); flag pe owner sau pe proprietate (`exclusive: boolean` sau model
+  `ExclusivityAgreement`).
+- [ ] **Coordonate proprietate** — `lat`/`lng` pe modelul `Property`, completate la adăugare/editare:
+  fie geocoding din adresă, fie un selector pe hartă (drag pin). Adresa exactă rămâne ascunsă la
+  proprietățile ne-exclusive.
+- [ ] **Integrare Google Maps** — `@vis.gl/react-google-maps` sau Maps JS API; `GOOGLE_MAPS_API_KEY`
+  în `.env` (cheie restricționată pe domeniu + facturare). Pin pe pagina de detaliu, opțional în listări.
+- [ ] **Gating** — pinul exact apare doar pentru proprietățile exclusive; la cele ne-exclusive doar
+  zona aproximativă (cartier/oraș) sau fără hartă.
+
+## Import listare din alte platforme (planificat)
+
+Dacă proprietarul are deja proprietatea publicată pe alt site (OLX, Imobiliare.ro, Storia etc.),
+o poate importa în loc să reintroducă totul manual.
+
+- [ ] **Import din URL** — proprietarul lipește linkul anunțului; sistemul extrage titlu, descriere,
+  preț/chirie, camere, suprafață, localitate și fotografii, apoi pre-completează formularul de adăugare
+  (`PropertyForm`) pentru revizuire înainte de publicare.
+- [ ] **Parsere per platformă** — adaptoare pentru cele mai folosite site-uri din RO (OLX,
+  Imobiliare.ro, Storia, …); strat comun de import cu un parser per sursă. *(`src/lib/import/`.)*
+- [ ] **Import fotografii** — descărcarea imaginilor din anunțul sursă și salvarea prin
+  `src/lib/storage.ts` (cu limitele existente: max 8, dimensiune, format).
+- [ ] **Aspecte legale și robustețe** — verificarea ToS-ului platformelor sursă (scraping-ul poate fi
+  interzis) și a drepturilor asupra fotografiilor/descrierii; parserele se strică la schimbarea
+  site-urilor → degradare grațioasă (import parțial + completare manuală).
+
+## Comision degresiv pentru vânzări (planificat)
+
+Platforma gestionează azi doar închirieri (comision fix 5% pe chirie — `COMMISSION_PERCENT` în
+`src/lib/constants.ts`). Pentru cazurile de **vânzare** (homepage-ul promovează deja „Cumpărare"),
+un comision pe scală degresivă: cu cât prețul e mai mare, cu atât procentul e mai mic.
+
+- [ ] **Flux de vânzare** — tip tranzacție „vânzare" pe proprietate/ofertă (azi totul e închiriere):
+  ofertă → acceptare → contract de vânzare-cumpărare → comision la finalizare.
+- [ ] **Scală de comision** — sub 100.000 € → **2,5%**; peste 1.000.000 € → **0,1%**; între praguri
+  interpolare graduală descrescătoare. Implementare ca funcție pură testabilă
+  (`saleCommission(price)` în `src/lib/commission.ts`). Variantă de bază (liniară pe procent):
+  `rate = 2,5% − (preț − 100k) / (1M − 100k) × (2,5% − 0,1%)` *(ex.: 550.000 € → 1,3%)*.
+- [ ] **Curba de interpolare** — de confirmat: liniară (mai sus) vs. logaritmică vs. pe tranșe;
+  documentată cu exemple, transparentă pentru utilizatori.
+- [ ] **Afișare + valută** — comisionul estimat afișat înainte de acceptare/finalizare; lucrul în EUR
+  *(atenție la conversia/cursul RON↔EUR, dacă prețurile sunt afișate și în RON)*.
 
 ## Securitate ✅ (rămâne doar operaționalul)
 
