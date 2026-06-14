@@ -26,7 +26,7 @@ export default function Sidebar({ user }: { user: UserProfile }) {
   const items = dashboardNavItems.filter((item) => item.roles.includes(user.role))
 
   return (
-    <aside className="hidden lg:flex w-[320px] shrink-0 flex-col gap-6 border-r border-[var(--border)] bg-[var(--surface)] px-6 py-8">
+    <aside className="hidden lg:flex w-[320px] shrink-0 flex-col gap-6 border-r border-[var(--border)] bg-[var(--surface)] px-6 py-8 print:hidden">
       <div className="space-y-4">
         <div className="flex items-center gap-4">
           <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-[var(--brand-soft)] text-[var(--brand)]">{user.firstName[0]}</div>

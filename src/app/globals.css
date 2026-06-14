@@ -175,6 +175,18 @@ summary:focus-visible,
   }
 }
 
+/* La printare (Salvează ca PDF) afișăm doar documentul, fără chrome-ul aplicației. */
+@media print {
+  body {
+    background: #fff;
+    overflow: visible;
+  }
+  .print-document {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .page-transition,
   .step-transition,

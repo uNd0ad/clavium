@@ -132,7 +132,11 @@ model Contract {
   tenant         User      @relation("ContractsAsTenant", fields: [tenantId], references: [id])
   rent           Int       @default(0)
   months         Int       @default(12)
+  deposit        Int       @default(0) // garanție
+  dueDay         Int       @default(5) // ziua scadentă a chiriei
   startDate      DateTime?
+  endDate        DateTime?
+  clauses        String? // clauze speciale
   signedByOwner  Boolean   @default(false)
   signedByClient Boolean   @default(false)
   qes            Boolean   @default(false)

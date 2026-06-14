@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { requireActionUser } from '@/lib/actionUser'
 import { errorMessage } from '@/lib/apiError'
+import { contractTermsSchema } from '@/lib/validations'
 import { notify } from '@/lib/notify'
 import { signWithQes } from '@/lib/qes'
 import { processPayment } from '@/lib/payments'
@@ -12,6 +13,42 @@ import { formatRon } from '@/lib/dashboardData'
 import { COMMISSION_PERCENT } from '@/lib/constants'
 
 const RENT_DUE_DAYS = 5
+
+// Proprietarul editează termenii contractului înainte de semnare (cât e IN_ASTEPTARE).
+export async function setContractTermsAction(contractId: string, input: unknown) {
+  try {
+    const user = await requireActionUser()
+    const contract = await prisma.contract.findUnique({ where: { id: contractId } })
+    if (!contract) return { ok: false as const, error: 'Contractul nu există.' }
+    if (user.role !== 'ADMIN' && contract.ownerId !== user.id) {
+      return { ok: false as const, error: 'Doar proprietarul poate edita termenii.' }
+    }
+    if (contract.status !== 'IN_ASTEPTARE') {
+      return { ok: false as const, error: 'Termenii pot fi modificați doar înainte de semnare.' }
+    }
+
+    const data = contractTermsSchema.parse(input)
+    const endDate = new Date(data.startDate)
+    endDate.setMonth(endDate.getMonth() + data.months)
+
+    await prisma.contract.update({
+      where: { id: contractId },
+      data: {
+        rent: data.rent,
+        deposit: data.deposit,
+        months: data.months,
+        dueDay: data.dueDay,
+        startDate: data.startDate,
+        endDate,
+        clauses: data.clauses?.trim() || null,
+      },
+    })
+    revalidatePath('/dashboard', 'layout')
+    return { ok: true as const }
+  } catch (err) {
+    return { ok: false as const, error: errorMessage(err) }
+  }
+}
 
 export async function signContractAction(contractId: string) {
   try {

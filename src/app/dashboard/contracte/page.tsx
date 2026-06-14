@@ -1,4 +1,6 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { ChevronRight } from 'lucide-react'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import StatusBadge from '@/components/dashboard/StatusBadge'
 import { ContractActions } from '@/components/dashboard/actions'
@@ -65,6 +67,12 @@ export default async function DashboardContractsPage() {
                   canPay={contract.canPay}
                   dueAmount={contract.dueAmount}
                 />
+                <Link
+                  href={`/dashboard/contracte/${contract.id}`}
+                  className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[var(--brand)]"
+                >
+                  Vezi contractul <ChevronRight size={15} />
+                </Link>
               </div>
             ))
           )}

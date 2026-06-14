@@ -26,7 +26,7 @@ export default function MobileTopBar({ user }: { user: UserProfile }) {
   const items = dashboardNavItems.filter((item) => item.roles.includes(user.role))
 
   return (
-    <div className="lg:hidden border-b border-[var(--border)] bg-[var(--surface)] px-4 py-4">
+    <div className="lg:hidden border-b border-[var(--border)] bg-[var(--surface)] px-4 py-4 print:hidden">
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-[13px] uppercase tracking-[0.28em] text-[var(--muted)]">Dashboard</p>

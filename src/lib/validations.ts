@@ -84,6 +84,15 @@ export const offerActionSchema = z.object({
   action: z.enum(['accept', 'reject']),
 })
 
+export const contractTermsSchema = z.object({
+  rent: z.coerce.number().int().min(1, 'Chiria trebuie să fie pozitivă').max(1_000_000),
+  deposit: z.coerce.number().int().min(0, 'Garanția nu poate fi negativă').max(10_000_000),
+  months: z.coerce.number().int().min(1, 'Durata minimă este 1 lună').max(120, 'Durata maximă este 120 de luni'),
+  dueDay: z.coerce.number().int().min(1).max(28, 'Ziua scadentă trebuie să fie între 1 și 28'),
+  startDate: z.coerce.date(),
+  clauses: z.string().max(4000, 'Clauzele sunt prea lungi').optional(),
+})
+
 export const profileUpdateSchema = z.object({
   firstName: z.string().min(2, 'Prenumele trebuie să aibă cel puțin 2 caractere').optional(),
   lastName: z.string().min(2, 'Numele de familie trebuie să aibă cel puțin 2 caractere').optional(),

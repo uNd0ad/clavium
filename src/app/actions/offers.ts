@@ -80,6 +80,12 @@ export async function respondToOfferAction(offerId: string, action: 'accept' | '
     }
 
     // Acceptare: oferta devine contract în așteptarea semnăturilor; ofertele concurente se resping.
+    // Termeni impliciti rezonabili (editabili de owner înainte de semnare): garanție 1 chirie,
+    // durată 12 luni de azi, scadență pe 5 ale lunii.
+    const months = 12
+    const startDate = new Date()
+    const endDate = new Date(startDate)
+    endDate.setMonth(endDate.getMonth() + months)
     const [, contract] = await prisma.$transaction([
       prisma.offer.update({ where: { id: offerId }, data: { status: 'ACCEPTATA' } }),
       prisma.contract.create({
@@ -88,6 +94,11 @@ export async function respondToOfferAction(offerId: string, action: 'accept' | '
           ownerId: offer.toUserId,
           tenantId: offer.fromUserId,
           rent: offer.amount,
+          months,
+          deposit: offer.amount,
+          dueDay: 5,
+          startDate,
+          endDate,
         },
       }),
       prisma.offer.updateMany({
