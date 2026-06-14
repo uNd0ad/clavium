@@ -20,7 +20,7 @@ export default async function DashboardSearchPage({ searchParams }: { searchPara
     prisma.savedProperty.findMany({ where: { userId: user.id }, select: { propertyId: true } }),
   ])
   const savedIds = new Set(saved.map((entry) => entry.propertyId))
-  const hasFilters = Boolean(filters.q || filters.minRent || filters.maxRent || filters.rooms || filters.sort)
+  const hasFilters = Boolean(filters.q || filters.type || filters.minRent || filters.maxRent || filters.rooms || filters.sort)
 
   return (
     <section className="space-y-8">
@@ -51,6 +51,7 @@ export default async function DashboardSearchPage({ searchParams }: { searchPara
                   propertyId={property.id}
                   initialSaved={savedIds.has(property.id)}
                   canOffer={user.role === 'CLIENT'}
+                  transactionType={property.transactionType}
                 />
               </PropertyCard>
             ))}

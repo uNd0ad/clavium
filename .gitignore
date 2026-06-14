@@ -21,6 +21,7 @@ pnpm-debug.log*
 # Database
 dev.db
 test.db
+*.db-journal
 
 # MacOS
 .DS_Store

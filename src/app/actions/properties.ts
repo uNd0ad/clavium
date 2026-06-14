@@ -24,12 +24,15 @@ export async function createPropertyAction(input: unknown) {
   try {
     const user = await requireActionUser(['OWNER', 'ADMIN'])
     const data = propertySchema.parse(input)
+    const isSale = data.transactionType === 'VANZARE'
     const property = await prisma.property.create({
       data: {
         title: data.title,
         description: data.description,
         location: data.location,
-        rent: data.rent,
+        transactionType: data.transactionType,
+        rent: isSale ? 0 : (data.rent ?? 0),
+        price: isSale ? (data.price ?? 0) : 0,
         rooms: data.rooms,
         surface: data.surface,
         ownerId: user.id,

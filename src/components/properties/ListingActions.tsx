@@ -7,7 +7,7 @@ import { toggleSaveAction } from '@/app/actions/properties'
 import { createOfferAction } from '@/app/actions/offers'
 
 // Acțiuni compacte pe cardul din listă: salvare + ofertă rapidă.
-export default function ListingActions({ propertyId, initialSaved, canOffer }: { propertyId: string; initialSaved: boolean; canOffer: boolean }) {
+export default function ListingActions({ propertyId, initialSaved, canOffer, transactionType = 'INCHIRIERE' }: { propertyId: string; initialSaved: boolean; canOffer: boolean; transactionType?: 'INCHIRIERE' | 'VANZARE' }) {
   const [saved, setSaved] = useState(initialSaved)
   const [amount, setAmount] = useState('')
   const [loading, setLoading] = useState(false)
@@ -59,7 +59,7 @@ export default function ListingActions({ propertyId, initialSaved, canOffer }: {
               min={1}
               value={amount}
               onChange={(event) => setAmount(event.target.value)}
-              placeholder="RON / lună"
+              placeholder={transactionType === 'VANZARE' ? 'RON' : 'RON / lună'}
               className="w-full min-w-0 flex-1 rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-[12px] outline-none transition focus:border-[var(--brand)]"
             />
             <button

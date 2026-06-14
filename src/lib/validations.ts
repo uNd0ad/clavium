@@ -62,17 +62,38 @@ export const phoneOtpVerifySchema = z.object({
   code: z.string().length(6, 'Codul OTP trebuie să conțină 6 cifre'),
 })
 
-export const propertySchema = z.object({
-  title: z.string().min(5, 'Titlul trebuie să aibă cel puțin 5 caractere'),
+export const propertySchema = z
+  .object({
+    title: z.string().min(5, 'Titlul trebuie să aibă cel puțin 5 caractere'),
+    description: z.string().max(2000, 'Descrierea este prea lungă').optional(),
+    location: z.string().min(2, 'Localitatea trebuie să aibă cel puțin 2 caractere'),
+    transactionType: z.enum(['INCHIRIERE', 'VANZARE']).optional().default('INCHIRIERE'),
+    // Chiria e obligatorie pentru închiriere, prețul pentru vânzare (validate mai jos).
+    rent: z.coerce.number().int().min(0).max(1_000_000, 'Chiria este prea mare').optional(),
+    price: z.coerce.number().int().min(0).max(100_000_000, 'Prețul este prea mare').optional(),
+    rooms: z.coerce.number().int().min(1).max(50).optional(),
+    surface: z.coerce.number().int().min(1).max(10_000).optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.transactionType === 'VANZARE') {
+      if (!data.price || data.price < 1) {
+        ctx.addIssue({ code: 'custom', path: ['price'], message: 'Prețul de vânzare trebuie să fie pozitiv' })
+      }
+    } else if (!data.rent || data.rent < 1) {
+      ctx.addIssue({ code: 'custom', path: ['rent'], message: 'Chiria trebuie să fie pozitivă' })
+    }
+  })
+
+export const propertyUpdateSchema = z.object({
+  title: z.string().min(5, 'Titlul trebuie să aibă cel puțin 5 caractere').optional(),
   description: z.string().max(2000, 'Descrierea este prea lungă').optional(),
-  location: z.string().min(2, 'Localitatea trebuie să aibă cel puțin 2 caractere'),
-  rent: z.coerce.number().int().min(1, 'Chiria trebuie să fie pozitivă').max(1_000_000, 'Chiria este prea mare'),
+  location: z.string().min(2, 'Localitatea trebuie să aibă cel puțin 2 caractere').optional(),
+  transactionType: z.enum(['INCHIRIERE', 'VANZARE']).optional(),
+  rent: z.coerce.number().int().min(0).max(1_000_000, 'Chiria este prea mare').optional(),
+  price: z.coerce.number().int().min(0).max(100_000_000, 'Prețul este prea mare').optional(),
   rooms: z.coerce.number().int().min(1).max(50).optional(),
   surface: z.coerce.number().int().min(1).max(10_000).optional(),
-})
-
-export const propertyUpdateSchema = propertySchema.partial().extend({
-  status: z.enum(['DISPONIBILA', 'INCHIRIATA', 'INACTIVA']).optional(),
+  status: z.enum(['DISPONIBILA', 'INCHIRIATA', 'REZERVATA', 'VANDUTA', 'INACTIVA']).optional(),
 })
 
 export const offerSchema = z.object({
@@ -92,6 +113,18 @@ export const contractTermsSchema = z.object({
   startDate: z.coerce.date(),
   clauses: z.string().max(4000, 'Clauzele sunt prea lungi').optional(),
 })
+
+export const saleTermsSchema = z
+  .object({
+    price: z.coerce.number().int().min(1, 'Prețul trebuie să fie pozitiv').max(100_000_000, 'Prețul este prea mare'),
+    deposit: z.coerce.number().int().min(0, 'Avansul nu poate fi negativ').max(100_000_000),
+    clauses: z.string().max(4000, 'Clauzele sunt prea lungi').optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.deposit > data.price) {
+      ctx.addIssue({ code: 'custom', path: ['deposit'], message: 'Avansul nu poate depăși prețul de vânzare' })
+    }
+  })
 
 export const profileUpdateSchema = z.object({
   firstName: z.string().min(2, 'Prenumele trebuie să aibă cel puțin 2 caractere').optional(),

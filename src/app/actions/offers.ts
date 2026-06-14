@@ -7,6 +7,9 @@ import { errorMessage } from '@/lib/apiError'
 import { offerSchema, offerActionSchema } from '@/lib/validations'
 import { notify } from '@/lib/notify'
 import { formatRon } from '@/lib/dashboardData'
+import { SALE_DEPOSIT_PERCENT } from '@/lib/constants'
+
+const OPEN_CONTRACT_STATUSES = ['IN_ASTEPTARE', 'SEMNAT', 'ACTIV'] as const
 
 export async function createOfferAction(input: unknown) {
   try {
@@ -79,38 +82,85 @@ export async function respondToOfferAction(offerId: string, action: 'accept' | '
       return { ok: true as const, status: 'RESPINSA' as const }
     }
 
+    if (offer.property.status !== 'DISPONIBILA') {
+      return { ok: false as const, error: 'Proprietatea nu este disponibilă.' }
+    }
+
+    const blockingContract = await prisma.contract.findFirst({
+      where: { propertyId: offer.propertyId, status: { in: [...OPEN_CONTRACT_STATUSES] } },
+    })
+    if (blockingContract) {
+      return { ok: false as const, error: 'Există deja un contract în curs pentru această proprietate.' }
+    }
+
     // Acceptare: oferta devine contract în așteptarea semnăturilor; ofertele concurente se resping.
-    // Termeni impliciti rezonabili (editabili de owner înainte de semnare): garanție 1 chirie,
-    // durată 12 luni de azi, scadență pe 5 ale lunii.
-    const months = 12
+    const isSale = offer.property.transactionType === 'VANZARE'
+    // La închiriere proprietatea trece direct în INCHIRIATA; la vânzare e REZERVATA până la finalizarea plăților.
+    const reservedStatus = isSale ? 'REZERVATA' : 'INCHIRIATA'
+    // Termeni impliciti rezonabili (editabili de owner înainte de semnare).
+    // Închiriere: garanție 1 chirie, durată 12 luni de azi, scadență pe 5 ale lunii.
+    // Vânzare: prețul din ofertă, avans implicit (procent din preț).
+    const months = isSale ? 0 : 12
     const startDate = new Date()
     const endDate = new Date(startDate)
-    endDate.setMonth(endDate.getMonth() + months)
-    const [, contract] = await prisma.$transaction([
-      prisma.offer.update({ where: { id: offerId }, data: { status: 'ACCEPTATA' } }),
-      prisma.contract.create({
+    endDate.setMonth(endDate.getMonth() + (months || 0))
+    const saleDeposit = isSale ? Math.round((offer.amount * SALE_DEPOSIT_PERCENT) / 100) : offer.amount
+
+    const contract = await prisma.$transaction(async (tx) => {
+      // Rezervare atomică: doar o acceptare concurentă poate trece de la DISPONIBILA → rezervat.
+      const reserved = await tx.property.updateMany({
+        where: { id: offer.propertyId, status: 'DISPONIBILA' },
+        data: { status: reservedStatus },
+      })
+      if (reserved.count === 0) {
+        throw new Error('Proprietatea nu este disponibilă pentru acceptarea ofertei.')
+      }
+
+      const updated = await tx.offer.updateMany({
+        where: { id: offerId, status: 'TRIMISA' },
+        data: { status: 'ACCEPTATA' },
+      })
+      if (updated.count === 0) {
+        throw new Error('Oferta a fost deja procesată.')
+      }
+
+      const existing = await tx.contract.findFirst({
+        where: { propertyId: offer.propertyId, status: { in: [...OPEN_CONTRACT_STATUSES] } },
+      })
+      if (existing) {
+        throw new Error('Există deja un contract în curs pentru această proprietate.')
+      }
+
+      const created = await tx.contract.create({
         data: {
           propertyId: offer.propertyId,
           ownerId: offer.toUserId,
           tenantId: offer.fromUserId,
-          rent: offer.amount,
+          type: isSale ? 'VANZARE' : 'INCHIRIERE',
+          rent: isSale ? 0 : offer.amount,
+          price: isSale ? offer.amount : 0,
           months,
-          deposit: offer.amount,
+          deposit: saleDeposit,
           dueDay: 5,
           startDate,
-          endDate,
+          endDate: isSale ? null : endDate,
         },
-      }),
-      prisma.offer.updateMany({
+      })
+
+      await tx.offer.updateMany({
         where: { propertyId: offer.propertyId, status: 'TRIMISA', id: { not: offerId } },
         data: { status: 'RESPINSA' },
-      }),
-    ])
+      })
+
+      return created
+    })
 
     await notify(
       offer.fromUserId,
       'Ofertă acceptată',
-      `Oferta ta pentru „${offer.property.title}” a fost acceptată. Contractul așteaptă semnăturile.`,
+      isSale
+        ? `Oferta ta pentru „${offer.property.title}” a fost acceptată. Antecontractul de vânzare așteaptă semnăturile.`
+        : `Oferta ta pentru „${offer.property.title}” a fost acceptată. Contractul așteaptă semnăturile.`,
       'success'
     )
 

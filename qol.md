@@ -18,22 +18,24 @@ plăcută fără a fi feature-uri mari. Bifează pe măsură ce se implementeaz�
 
 ## Idei (mici, de făcut)
 
-- [ ] **Confirmare la ștergerea unei fotografii** — momentan ștergerea e instantanee; un `ConfirmDialog`
-  scurt ar preveni greșelile.
-- [ ] **Număr de oferte primite pe cardul proprietății** (owner) — „3 oferte în așteptare" direct pe
-  listare, ca scurtătură către `/dashboard/oferte`.
+- [x] **Confirmare la ștergerea unei fotografii** — `ConfirmDialog` înainte de ștergere. —
+  `src/components/dashboard/PhotoManager.tsx`
+- [x] **Număr de oferte primite pe cardul proprietății** (owner) — link către `/dashboard/oferte`. —
+  `src/lib/dashboardData.ts`, `src/app/dashboard/proprietati/page.tsx`
 - [ ] **Duplică o listare** — buton care pre-completează formularul de adăugare cu valorile unei
   proprietăți existente (util pentru apartamente similare).
 - [ ] **Alege coperta** — reordonarea fotografiilor (drag) sau un buton „setează ca și copertă" pe
   fiecare miniatură, în loc ca prima încărcată să fie mereu coperta.
-- [ ] **„Copiază linkul"** către o proprietate, de pe pagina de detaliu și din dashboard.
-- [ ] **Breadcrumbs / „Înapoi la căutare"** pe pagina de detaliu a proprietății.
+- [x] **„Copiază linkul"** către o proprietate, de pe pagina de detaliu. —
+  `src/components/ui/CopyLinkButton.tsx`, `src/app/proprietati/[id]/page.tsx`
+- [x] **Breadcrumbs / „Înapoi la căutare"** pe pagina de detaliu a proprietății.
 - [ ] **Submit cu Enter / Cmd+Enter** în formularele cu `textarea` (descrieri).
 - [ ] **Sortare în lista proprietarului** — după status (disponibile întâi) sau după chirie.
 - [ ] **Format cu separatori de mii în timp ce scrii** la câmpurile de sumă (chirie, ofertă).
 - [ ] **Indicator „necitit" pe rândurile de notificări** și marcare individuală (acum doar „tot ca citit").
 - [ ] **Stare „se încarcă" pe filtrele de căutare** — momentan o interogare lentă pare blocată.
-- [ ] **Memorează ultimul tab** (Parolă/OTP) la login, pentru reveniri rapide.
+- [x] **Memorează ultimul tab** (Parolă/OTP) la login, pentru reveniri rapide. —
+  `src/app/auth/login/page.tsx`
 
 > Acestea sunt opționale și se pot lua pe rând, independent. Articolele mai mari (plăți reale, QES,
 > Postgres) trăiesc în [TODO.md](TODO.md) și [UX-REVIEW.md](UX-REVIEW.md).

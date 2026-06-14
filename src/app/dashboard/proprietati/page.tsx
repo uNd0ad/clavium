@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import StatusBadge from '@/components/dashboard/StatusBadge'
@@ -26,8 +27,20 @@ function PropertyList({ properties, emptyMessage, emptyCta, manageable = false }
             <StatusBadge label={property.status} variant={property.statusVariant} />
           </div>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-[var(--muted)]">{property.rent}</p>
-            <p className="text-sm text-[var(--muted)]">Actualizat: {property.updated}</p>
+            <p className="text-sm text-[var(--muted)]">
+              <span className="mr-2 rounded-full bg-[var(--brand-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--brand)]">
+                {property.transactionType === 'VANZARE' ? 'Vânzare' : 'Închiriere'}
+              </span>
+              {property.price}
+            </p>
+            <div className="flex flex-wrap items-center gap-3 text-sm text-[var(--muted)]">
+              {manageable && property.pendingOffers > 0 ? (
+                <Link href="/dashboard/oferte" className="font-semibold text-[var(--brand)]">
+                  {property.pendingOffers} {property.pendingOffers === 1 ? 'ofertă' : 'oferte'} în așteptare
+                </Link>
+              ) : null}
+              <p>Actualizat: {property.updated}</p>
+            </div>
           </div>
           {manageable ? (
             <>
@@ -37,7 +50,9 @@ function PropertyList({ properties, emptyMessage, emptyCta, manageable = false }
                   propertyId={property.id}
                   title={property.title}
                   location={property.location}
+                  transactionType={property.transactionType}
                   rent={property.rentValue}
+                  price={property.priceValue}
                   rooms={property.rooms}
                   surface={property.surface}
                   description={property.description}

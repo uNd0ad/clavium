@@ -44,9 +44,14 @@ export default async function DashboardContractsPage() {
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div>
                     <p className="text-lg font-semibold">{contract.property}</p>
-                    <p className="mt-1 text-sm text-[var(--muted)]">Chiriaș: {contract.tenant} · Chirie: {contract.rent} / lună</p>
+                    <p className="mt-1 text-sm text-[var(--muted)]">
+                      {contract.type === 'VANZARE'
+                        ? `Cumpărător: ${contract.tenant} · Preț: ${contract.terms}`
+                        : `Chiriaș: ${contract.tenant} · Chirie: ${contract.terms}`}
+                    </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
+                    <StatusBadge label={contract.type === 'VANZARE' ? 'Vânzare' : 'Închiriere'} variant="info" />
                     <StatusBadge label={contract.status} variant={contract.statusVariant} />
                     <StatusBadge label={contract.qes ? 'QES' : 'Fără QES'} variant={contract.qes ? 'info' : 'warning'} />
                   </div>
@@ -66,6 +71,7 @@ export default async function DashboardContractsPage() {
                   canSign={contract.canSign}
                   canPay={contract.canPay}
                   dueAmount={contract.dueAmount}
+                  dueType={contract.dueType}
                 />
                 <Link
                   href={`/dashboard/contracte/${contract.id}`}

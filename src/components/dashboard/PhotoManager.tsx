@@ -5,10 +5,12 @@ import Image from 'next/image'
 import { toast } from 'sonner'
 import { ImagePlus, X } from 'lucide-react'
 import { uploadPhotosAction, deletePhotoAction } from '@/app/actions/properties'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 
 export default function PhotoManager({ propertyId, photos }: { propertyId: string; photos: string[] }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
+  const [pendingDelete, setPendingDelete] = useState<string | null>(null)
 
   const upload = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
@@ -23,12 +25,14 @@ export default function PhotoManager({ propertyId, photos }: { propertyId: strin
     if (inputRef.current) inputRef.current.value = ''
   }
 
-  const remove = async (url: string) => {
+  const confirmRemove = async () => {
+    if (!pendingDelete) return
     setLoading(true)
-    const res = await deletePhotoAction(propertyId, url)
+    const res = await deletePhotoAction(propertyId, pendingDelete)
     if (res.ok) toast.success('Fotografie ștearsă.')
     else toast.error(res.error)
     setLoading(false)
+    setPendingDelete(null)
   }
 
   return (
@@ -44,7 +48,7 @@ export default function PhotoManager({ propertyId, photos }: { propertyId: strin
             ) : null}
             <button
               type="button"
-              onClick={() => remove(url)}
+              onClick={() => setPendingDelete(url)}
               disabled={loading}
               aria-label="Șterge fotografia"
               className="absolute right-1 top-1 hidden rounded-full bg-[var(--card)] p-0.5 text-rose-700 shadow group-hover:block"
@@ -64,6 +68,18 @@ export default function PhotoManager({ propertyId, photos }: { propertyId: strin
         </button>
         <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" multiple hidden onChange={upload} />
       </div>
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Ștergi fotografia?"
+        description="Acțiunea nu poate fi anulată. Fotografia va fi eliminată din listare."
+        confirmLabel="Șterge"
+        cancelLabel="Renunță"
+        destructive
+        loading={loading}
+        onConfirm={confirmRemove}
+        onCancel={() => setPendingDelete(null)}
+      />
     </div>
   )
 }

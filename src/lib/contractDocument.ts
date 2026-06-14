@@ -3,7 +3,7 @@ import { formatRon } from './dashboardData'
 import type { SessionUser } from './session'
 
 type Party = {
-  role: 'Proprietar' | 'Chiriaș'
+  role: 'Proprietar' | 'Chiriaș' | 'Vânzător' | 'Cumpărător'
   kind: 'PERSON' | 'COMPANY'
   name: string
   lines: string[]
@@ -12,11 +12,13 @@ type Party = {
 export type ContractDocument = {
   id: string
   number: string
+  type: 'INCHIRIERE' | 'VANZARE'
   statusLabel: string
   property: { title: string; location: string }
   owner: Party
   tenant: Party
   rent: string
+  price: string
   deposit: string
   months: number
   dueDay: number
@@ -78,11 +80,15 @@ export type ContractDetail = {
   doc: ContractDocument
   isOwner: boolean
   canEdit: boolean
+  canEditSale: boolean
   canSign: boolean
   canPay: boolean
   dueAmount: string | null
-  // Valori brute pentru formularul de termeni.
+  dueType: 'CHIRIE' | 'AVANS' | 'REST' | null
+  // Valori brute pentru formularul de termeni (închiriere).
   terms: { rent: number; deposit: number; months: number; dueDay: number; startDate: string; clauses: string }
+  // Valori brute pentru formularul de termeni (vânzare).
+  saleTerms: { price: number; deposit: number; clauses: string }
 }
 
 // Încarcă, autorizează (părți + admin) și construiește documentul de contract.
@@ -93,7 +99,11 @@ export async function getContractDetail(contractId: string, user: SessionUser): 
       property: true,
       owner: true,
       tenant: true,
-      payments: { where: { type: 'CHIRIE', status: 'IN_CURS' }, orderBy: { dueDate: 'asc' }, take: 1 },
+      payments: {
+        where: { type: { in: ['CHIRIE', 'AVANS', 'REST'] }, status: 'IN_CURS' },
+        orderBy: [{ dueDate: 'asc' }, { createdAt: 'asc' }],
+        take: 1,
+      },
     },
   })
   if (!contract) return null
@@ -102,6 +112,7 @@ export async function getContractDetail(contractId: string, user: SessionUser): 
   const isTenant = contract.tenantId === user.id
   if (!isOwner && !isTenant && user.role !== 'ADMIN') return null
 
+  const isSale = contract.type === 'VANZARE'
   const signable = contract.status === 'IN_ASTEPTARE' || contract.status === 'SEMNAT'
   const canSign =
     signable &&
@@ -111,12 +122,14 @@ export async function getContractDetail(contractId: string, user: SessionUser): 
 
   const doc: ContractDocument = {
     id: contract.id,
-    number: `CTR-${contract.id.slice(0, 8).toUpperCase()}`,
+    number: `${isSale ? 'ACV' : 'CTR'}-${contract.id.slice(0, 8).toUpperCase()}`,
+    type: isSale ? 'VANZARE' : 'INCHIRIERE',
     statusLabel: STATUS_LABEL[contract.status] ?? contract.status,
     property: { title: contract.property.title, location: contract.property.location },
-    owner: buildParty('Proprietar', contract.owner),
-    tenant: buildParty('Chiriaș', contract.tenant),
+    owner: buildParty(isSale ? 'Vânzător' : 'Proprietar', contract.owner),
+    tenant: buildParty(isSale ? 'Cumpărător' : 'Chiriaș', contract.tenant),
     rent: formatRon(contract.rent),
+    price: formatRon(contract.price),
     deposit: formatRon(contract.deposit),
     months: contract.months,
     dueDay: contract.dueDay,
@@ -131,16 +144,23 @@ export async function getContractDetail(contractId: string, user: SessionUser): 
   return {
     doc,
     isOwner,
-    canEdit: (isOwner || user.role === 'ADMIN') && contract.status === 'IN_ASTEPTARE',
+    canEdit: (isOwner || user.role === 'ADMIN') && !isSale && contract.status === 'IN_ASTEPTARE',
+    canEditSale: (isOwner || user.role === 'ADMIN') && isSale && contract.status === 'IN_ASTEPTARE',
     canSign,
     canPay: contract.status === 'ACTIV' && contract.tenantId === user.id && Boolean(due),
     dueAmount: due ? formatRon(due.amount) : null,
+    dueType: (due?.type as 'CHIRIE' | 'AVANS' | 'REST' | undefined) ?? null,
     terms: {
       rent: contract.rent,
       deposit: contract.deposit,
       months: contract.months,
       dueDay: contract.dueDay,
       startDate: (contract.startDate ?? new Date()).toISOString().slice(0, 10),
+      clauses: contract.clauses ?? '',
+    },
+    saleTerms: {
+      price: contract.price,
+      deposit: contract.deposit,
       clauses: contract.clauses ?? '',
     },
   }

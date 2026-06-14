@@ -8,7 +8,9 @@ export type PropertyCardData = {
   id: string
   title: string
   location: string
+  transactionType: 'INCHIRIERE' | 'VANZARE'
   rent: number
+  price: number
   rooms: number | null
   surface: number | null
   photos: string[]
@@ -37,7 +39,7 @@ export default function PropertyCard({ property, children }: { property: Propert
           <Link href={`/proprietati/${property.id}`} className="text-lg font-semibold text-[var(--text)] no-underline group-hover:text-[var(--brand)]">
             {property.title}
           </Link>
-          <StatusBadge label="Disponibilă" variant="success" />
+          <StatusBadge label={property.transactionType === 'VANZARE' ? 'De vânzare' : 'De închiriat'} variant="success" />
         </div>
         <p className="mt-3 flex items-center gap-2 text-sm text-[var(--muted)]">
           <MapPin size={15} /> {property.location}
@@ -51,7 +53,13 @@ export default function PropertyCard({ property, children }: { property: Propert
           ) : null}
         </div>
         <p className="mt-4 text-xl font-semibold text-[var(--text)]">
-          {formatRon(property.rent)} <span className="text-sm font-normal text-[var(--muted)]">/ lună</span>
+          {property.transactionType === 'VANZARE' ? (
+            formatRon(property.price)
+          ) : (
+            <>
+              {formatRon(property.rent)} <span className="text-sm font-normal text-[var(--muted)]">/ lună</span>
+            </>
+          )}
         </p>
         {children}
       </div>

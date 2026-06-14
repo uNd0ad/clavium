@@ -63,4 +63,18 @@ describe('termenii contractului (generator)', () => {
     const res = await setContractTermsAction(contractId, { rent: 1, deposit: 0, months: 1, dueDay: 1, startDate: '2026-01-01' })
     expect(res.ok).toBe(false)
   })
+
+  it('la activare păstrează startDate din termeni și calculează scadența din dueDay', async () => {
+    setUser(sessionFor(client))
+    expect((await signContractAction(contractId)).ok).toBe(true) // → ACTIV
+
+    const c = await prisma.contract.findUniqueOrThrow({ where: { id: contractId } })
+    expect(c.status).toBe('ACTIV')
+    expect(c.startDate?.toISOString().slice(0, 10)).toBe('2026-01-01')
+
+    const due = await prisma.payment.findFirstOrThrow({ where: { contractId, type: 'CHIRIE', status: 'IN_CURS' } })
+    expect(due.dueDate?.getFullYear()).toBe(2026)
+    expect(due.dueDate?.getMonth()).toBe(0)
+    expect(due.dueDate?.getDate()).toBe(10)
+  })
 })

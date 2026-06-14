@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import Button from '@/components/ui/Button'
 import { useUnreadCount, useSetUnreadCount } from './NotificationContext'
 import { respondToOfferAction } from '@/app/actions/offers'
-import { signContractAction, payRentAction } from '@/app/actions/contracts'
+import { signContractAction, payRentAction, paySaleAction } from '@/app/actions/contracts'
 import { updatePropertyStatusAction } from '@/app/actions/properties'
 import { markNotificationsReadAction } from '@/app/actions/notifications'
 
@@ -58,10 +58,34 @@ export function OfferActions({ offerId }: { offerId: string }) {
   )
 }
 
-export function ContractActions({ contractId, canSign, canPay, dueAmount }: { contractId: string; canSign: boolean; canPay: boolean; dueAmount: string | null }) {
+type DueType = 'CHIRIE' | 'AVANS' | 'REST' | null
+
+const PAY_LABEL: Record<'CHIRIE' | 'AVANS' | 'REST', string> = {
+  CHIRIE: 'Plătește chiria',
+  AVANS: 'Plătește avansul',
+  REST: 'Plătește diferența',
+}
+
+export function ContractActions({
+  contractId,
+  canSign,
+  canPay,
+  dueAmount,
+  dueType = 'CHIRIE',
+}: {
+  contractId: string
+  canSign: boolean
+  canPay: boolean
+  dueAmount: string | null
+  dueType?: DueType
+}) {
   const { run, loading } = useAction()
 
   if (!canSign && !canPay) return null
+
+  const isSalePayment = dueType === 'AVANS' || dueType === 'REST'
+  const payLabel = `${PAY_LABEL[dueType ?? 'CHIRIE']} (${dueAmount})`
+  const paySuccess = isSalePayment ? 'Plata a fost efectuată.' : 'Plata chiriei a fost efectuată.'
 
   return (
     <div className="mt-4 space-y-3">
@@ -85,10 +109,12 @@ export function ContractActions({ contractId, canSign, canPay, dueAmount }: { co
           <Button
             type="button"
             loading={loading}
-            onClick={() => run(() => payRentAction(contractId), { success: 'Plata chiriei a fost efectuată.' })}
+            onClick={() =>
+              run(() => (isSalePayment ? paySaleAction(contractId) : payRentAction(contractId)), { success: paySuccess })
+            }
             className="px-5 py-2.5 text-[12px]"
           >
-            {`Plătește chiria (${dueAmount})`}
+            {payLabel}
           </Button>
         ) : null}
       </div>
@@ -98,7 +124,8 @@ export function ContractActions({ contractId, canSign, canPay, dueAmount }: { co
 
 export function PropertyStatusToggle({ propertyId, status }: { propertyId: string; status: string }) {
   const { run, loading } = useAction()
-  if (status === 'Închiriată') return null
+  // Comutarea listării are sens doar între Disponibilă și Inactivă.
+  if (status !== 'Disponibilă' && status !== 'Inactivă') return null
   const inactive = status === 'Inactivă'
 
   return (

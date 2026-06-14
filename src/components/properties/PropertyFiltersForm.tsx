@@ -6,10 +6,15 @@ const inputClass =
 // Formular GET — filtrele trăiesc în URL, deci sunt shareable și SSR-friendly.
 export default function PropertyFiltersForm({ filters, action }: { filters: PropertyFilters; action?: string }) {
   return (
-    <form method="get" action={action} className="grid gap-4 rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 sm:grid-cols-2 lg:grid-cols-7">
+    <form method="get" action={action} className="grid gap-4 rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 sm:grid-cols-2 lg:grid-cols-8">
       <input name="q" defaultValue={filters.q ?? ''} placeholder="Localitate sau titlu" className={`${inputClass} lg:col-span-2`} />
-      <input name="minRent" type="number" min={0} defaultValue={filters.minRent ?? ''} placeholder="Chirie min" className={inputClass} />
-      <input name="maxRent" type="number" min={0} defaultValue={filters.maxRent ?? ''} placeholder="Chirie max" className={inputClass} />
+      <select name="type" defaultValue={filters.type ?? ''} className={inputClass}>
+        <option value="">Toate</option>
+        <option value="INCHIRIERE">Închiriere</option>
+        <option value="VANZARE">Vânzare</option>
+      </select>
+      <input name="minRent" type="number" min={0} defaultValue={filters.minRent ?? ''} placeholder="Preț min" className={inputClass} />
+      <input name="maxRent" type="number" min={0} defaultValue={filters.maxRent ?? ''} placeholder="Preț max" className={inputClass} />
       <input name="rooms" type="number" min={1} defaultValue={filters.rooms ?? ''} placeholder="Camere min" className={inputClass} />
       <select name="sort" defaultValue={filters.sort ?? ''} className={inputClass}>
         <option value="">Cele mai noi</option>

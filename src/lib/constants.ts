@@ -8,3 +8,5 @@ export const JWT_SECRET = secret ?? 'dev_secret_clavium'
 
 export const APP_URL = process.env.APP_URL ?? 'http://localhost:3000'
 export const COMMISSION_PERCENT = 5
+// Avansul (arvuna) plătit la activarea antecontractului de vânzare, ca procent din preț.
+export const SALE_DEPOSIT_PERCENT = 10

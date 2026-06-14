@@ -84,11 +84,14 @@ model Property {
   title       String
   description String?
   location    String
-  rent        Int
+  // Tip tranzacție: INCHIRIERE (folosește `rent`) sau VANZARE (folosește `price`).
+  transactionType String @default("INCHIRIERE")
+  rent        Int      @default(0)
+  price       Int      @default(0) // preț de vânzare (RON), pentru transactionType=VANZARE
   rooms       Int?
   surface     Int?
   photos      String   @default("[]") // JSON: array de URL-uri /uploads/...
-  status      String   @default("DISPONIBILA") // DISPONIBILA | INCHIRIATA | INACTIVA
+  status      String   @default("DISPONIBILA") // DISPONIBILA | INCHIRIATA | REZERVATA | VANDUTA | INACTIVA
   ownerId     String
   owner       User     @relation("OwnedProperties", fields: [ownerId], references: [id])
   savedBy     SavedProperty[]
@@ -130,9 +133,12 @@ model Contract {
   owner          User      @relation("ContractsAsOwner", fields: [ownerId], references: [id])
   tenantId       String
   tenant         User      @relation("ContractsAsTenant", fields: [tenantId], references: [id])
+  // Tip contract: INCHIRIERE (locațiune) sau VANZARE (antecontract de vânzare-cumpărare).
+  type           String    @default("INCHIRIERE")
   rent           Int       @default(0)
+  price          Int       @default(0) // preț de vânzare (RON), pentru type=VANZARE
   months         Int       @default(12)
-  deposit        Int       @default(0) // garanție
+  deposit        Int       @default(0) // garanție (închiriere) sau avans (vânzare)
   dueDay         Int       @default(5) // ziua scadentă a chiriei
   startDate      DateTime?
   endDate        DateTime?
@@ -153,7 +159,7 @@ model Payment {
   contractId String?
   contract   Contract? @relation(fields: [contractId], references: [id])
   amount     Int
-  type       String // CHIRIE | COMISION | REFUND
+  type       String // CHIRIE | COMISION | REFUND | AVANS | REST
   status     String    @default("IN_CURS") // FINALIZATA | IN_CURS | ESUATA
   dueDate    DateTime?
   paidAt     DateTime?

@@ -15,9 +15,10 @@ type PropertyActionsProps = {
   isAuthenticated: boolean
   canOffer: boolean
   available: boolean
+  transactionType?: 'INCHIRIERE' | 'VANZARE'
 }
 
-export default function PropertyActions({ propertyId, initialSaved, isAuthenticated, canOffer, available }: PropertyActionsProps) {
+export default function PropertyActions({ propertyId, initialSaved, isAuthenticated, canOffer, available, transactionType = 'INCHIRIERE' }: PropertyActionsProps) {
   const router = useRouter()
   const [saved, setSaved] = useState(initialSaved)
   const [amount, setAmount] = useState('')
@@ -69,12 +70,12 @@ export default function PropertyActions({ propertyId, initialSaved, isAuthentica
       {canOffer && available ? (
         <div className="space-y-4">
           <FormField
-            label="Oferta ta (RON / lună)"
+            label={transactionType === 'VANZARE' ? 'Oferta ta (RON)' : 'Oferta ta (RON / lună)'}
             type="number"
             min={1}
             value={amount}
             onChange={(event) => setAmount(event.target.value)}
-            placeholder="1800"
+            placeholder={transactionType === 'VANZARE' ? '250000' : '1800'}
           />
           <Button type="button" loading={loading} disabled={!amount} onClick={handleOffer} className="w-full py-4 text-[14px]">
             Trimite oferta

@@ -1,10 +1,12 @@
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { MapPin, BedDouble, Ruler, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, MapPin, BedDouble, Ruler, ShieldCheck } from 'lucide-react'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import StatusBadge from '@/components/dashboard/StatusBadge'
 import PropertyActions from '@/components/properties/PropertyActions'
 import PropertyGallery from '@/components/properties/PropertyGallery'
+import CopyLinkButton from '@/components/ui/CopyLinkButton'
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/session'
 import { formatRon } from '@/lib/dashboardData'
@@ -33,25 +35,44 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     : false
 
   const available = property.status === 'DISPONIBILA'
+  const isSale = property.transactionType === 'VANZARE'
   const photos = parsePhotos(property.photos)
 
   return (
     <>
       <Navbar />
       <main className="mx-auto min-h-screen max-w-7xl px-6 pb-24 pt-36 lg:px-12">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <Link
+            href="/proprietati"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--brand)]"
+          >
+            <ArrowLeft size={15} /> Înapoi la căutare
+          </Link>
+          <CopyLinkButton path={`/proprietati/${property.id}`} className="py-3 text-[13px]" />
+        </div>
         <div className="grid gap-8 lg:grid-cols-[1.6fr_1fr]">
           <div className="space-y-8">
             <PropertyGallery photos={photos} title={property.title} />
             <div>
               <div className="flex flex-wrap items-center gap-3">
-                <StatusBadge label={available ? 'Disponibilă' : 'Închiriată'} variant={available ? 'success' : 'warning'} />
+                <StatusBadge
+                  label={available ? (isSale ? 'De vânzare' : 'De închiriat') : isSale ? 'Indisponibilă' : 'Închiriată'}
+                  variant={available ? 'success' : 'warning'}
+                />
                 <p className="flex items-center gap-2 text-sm text-[var(--muted)]">
                   <MapPin size={15} /> {property.location}
                 </p>
               </div>
               <h1 className="mt-4 text-4xl font-semibold">{property.title}</h1>
               <p className="mt-4 text-2xl font-semibold text-[var(--brand)]">
-                {formatRon(property.rent)} <span className="text-sm font-normal text-[var(--muted)]">/ lună</span>
+                {isSale ? (
+                  formatRon(property.price)
+                ) : (
+                  <>
+                    {formatRon(property.rent)} <span className="text-sm font-normal text-[var(--muted)]">/ lună</span>
+                  </>
+                )}
               </p>
             </div>
 
@@ -94,6 +115,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               isAuthenticated={Boolean(user)}
               canOffer={user?.role === 'CLIENT'}
               available={available}
+              transactionType={isSale ? 'VANZARE' : 'INCHIRIERE'}
             />
           </div>
         </div>

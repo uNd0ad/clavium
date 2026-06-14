@@ -34,15 +34,13 @@ externe reale (plăți, QES, email/SMS în producție), migrarea infrastructurii
 Azi contractul e doar o înregistrare în DB (chirie + durată implicită), creată la acceptarea
 ofertei; nu există un document propriu-zis. Acest milestone adaugă fluxul complet de generare:
 
-- [ ] **Termenii contractului** — la acceptarea ofertei, ownerul completează termenii compleți:
-  durată (dată început/sfârșit sau nr. luni), garanție (depozit), zi de scadență a chiriei,
-  utilități incluse, clauze speciale. *(Extinde modelul `Contract`: `deposit`, `startDate`/`endDate`,
-  `dueDay`, `clauses`, `documentUrl`.)*
+- [x] **Termenii contractului** — ownerul editează termenii înainte de semnare: durată, garanție, zi scadență, clauze.
+  *(Model `Contract` extins: `deposit`, `startDate`/`endDate`, `dueDay`, `clauses`; `documentUrl` — încă nu)*
 - [ ] **Generarea documentului** — completarea unui șablon de contract de închiriere (conform
   Legii 214/2024 / Codului civil) cu termenii agreați → HTML → PDF. *(`src/lib/contractTemplate.ts`
   + `src/lib/contractPdf.ts`; librărie `@react-pdf/renderer` sau `pdf-lib`/puppeteer.)*
-- [ ] **Previzualizare** — pagină de detaliu contract (`/dashboard/contracte/[id]`) unde ambele
-  părți văd documentul generat înainte de a semna.
+- [x] **Previzualizare** — pagină de detaliu contract (`/dashboard/contracte/[id]`) unde ambele
+  părți văd documentul generat înainte de a semna. *(HTML în pagină + print; PDF descărcabil — încă nu)*
 - [ ] **Stocare PDF** — salvarea documentului prin stratul de storage (`src/lib/storage.ts`),
   legat de „Storage fișiere în producție" din Infrastructură.
 - [ ] **Semnare pe document** — fluxul QES existent (`signContractAction` + `src/lib/qes.ts`)
@@ -60,8 +58,8 @@ ofertei; nu există un document propriu-zis. Acest milestone adaugă fluxul comp
   câmpuri pe `User` (`accountType`, `company*`); firstName/lastName = reprezentant legal. Afișate în profil.
 - [x] **Validare fiscală** — checksum CUI + format J-number (`src/lib/fiscalCode.ts`, testate).
   *(verificare la ANAF — opțional, încă nu)*
-- [ ] **Folosire în contracte și facturi** — datele firmei apar ca parte în contractul generat
-  (vezi „Generator de contracte") și pe facturile de comision / e-Factura.
+- [x] **Date firmă în contract** — persoana juridică apare ca parte în documentul de contract
+  (`src/lib/contractDocument.ts`). *(facturi de comision / e-Factura — încă nu)*
 - [ ] **KYC pentru firme** — verificarea identității și a împuternicirii reprezentantului legal
   (leagă „Verificarea identității ownerilor" din Legal).
 

@@ -19,7 +19,9 @@ export type ContractView = {
   id: string
   property: string
   tenant: string
-  rent: string
+  type: 'INCHIRIERE' | 'VANZARE'
+  // Eticheta termenului financiar: „1.500 RON / lună” (chirie) sau „250.000 RON” (preț vânzare).
+  terms: string
   signedByOwner: boolean
   signedByClient: boolean
   qes: boolean
@@ -28,22 +30,33 @@ export type ContractView = {
   canSign: boolean
   canPay: boolean
   dueAmount: string | null
+  // Tipul plății scadente, pentru a apela acțiunea potrivită (CHIRIE → payRent, AVANS/REST → paySale).
+  dueType: 'CHIRIE' | 'AVANS' | 'REST' | null
 }
 
 export type PropertyView = {
   id: string
   title: string
   location: string
-  rent: string
+  transactionType: 'INCHIRIERE' | 'VANZARE'
+  // Eticheta de preț: „1.500 RON / lună” (închiriere) sau „250.000 RON” (vânzare).
+  price: string
   status: string
   statusVariant: BadgeVariant
   updated: string
   photos: string[]
+  pendingOffers: number
   // Valori brute pentru editare (folosite în dashboardul proprietarului).
   rentValue: number
+  priceValue: number
   rooms: number | null
   surface: number | null
   description: string
+}
+
+// Eticheta de preț în funcție de tipul tranzacției.
+function priceLabel(transactionType: string, rent: number, price: number) {
+  return transactionType === 'VANZARE' ? formatRon(price) : `${formatRon(rent)} / lună`
 }
 
 export type PaymentView = {
@@ -87,6 +100,8 @@ const CONTRACT_STATUS: Record<string, { label: string; variant: BadgeVariant }> 
 const PROPERTY_STATUS: Record<string, { label: string; variant: BadgeVariant }> = {
   DISPONIBILA: { label: 'Disponibilă', variant: 'success' },
   INCHIRIATA: { label: 'Închiriată', variant: 'warning' },
+  REZERVATA: { label: 'Rezervată', variant: 'warning' },
+  VANDUTA: { label: 'Vândută', variant: 'info' },
   INACTIVA: { label: 'Inactivă', variant: 'danger' },
 }
 
@@ -100,7 +115,12 @@ const PAYMENT_TYPE: Record<string, string> = {
   CHIRIE: 'Chirie',
   COMISION: 'Comision',
   REFUND: 'Refund',
+  AVANS: 'Avans',
+  REST: 'Diferență preț',
 }
+
+// Tipuri de plăți datorate de chiriaș/cumpărător (folosite la calculul scadențelor și al venitului).
+const PAYABLE_TYPES = ['CHIRIE', 'AVANS', 'REST'] as const
 
 export function formatRon(amount: number) {
   return `${new Intl.NumberFormat('ro-RO').format(amount)} RON`
@@ -175,7 +195,11 @@ export async function getContracts(user: SessionUser): Promise<ContractView[]> {
     include: {
       property: true,
       tenant: true,
-      payments: { where: { type: 'CHIRIE', status: 'IN_CURS' }, orderBy: { dueDate: 'asc' }, take: 1 },
+      payments: {
+        where: { type: { in: [...PAYABLE_TYPES] }, status: 'IN_CURS' },
+        orderBy: [{ dueDate: 'asc' }, { createdAt: 'asc' }],
+        take: 1,
+      },
     },
     orderBy: { createdAt: 'desc' },
   })
@@ -188,11 +212,13 @@ export async function getContracts(user: SessionUser): Promise<ContractView[]> {
       ((contract.ownerId === user.id && !contract.signedByOwner) ||
         (contract.tenantId === user.id && !contract.signedByClient))
     const due = contract.payments[0]
+    const isSale = contract.type === 'VANZARE'
     return {
       id: contract.id,
       property: contract.property.title,
       tenant: `${contract.tenant.firstName} ${contract.tenant.lastName}`,
-      rent: formatRon(contract.rent),
+      type: (isSale ? 'VANZARE' : 'INCHIRIERE') as 'INCHIRIERE' | 'VANZARE',
+      terms: isSale ? formatRon(contract.price) : `${formatRon(contract.rent)} / lună`,
       signedByOwner: contract.signedByOwner,
       signedByClient: contract.signedByClient,
       qes: contract.qes,
@@ -201,6 +227,7 @@ export async function getContracts(user: SessionUser): Promise<ContractView[]> {
       canSign,
       canPay: contract.status === 'ACTIV' && contract.tenantId === user.id && Boolean(due),
       dueAmount: due ? formatRon(due.amount) : null,
+      dueType: (due?.type as 'CHIRIE' | 'AVANS' | 'REST' | undefined) ?? null,
     }
   })
 }
@@ -210,6 +237,7 @@ export async function getProperties(user: SessionUser): Promise<{ owned: Propert
     prisma.property.findMany({
       where: user.role === 'ADMIN' ? {} : { ownerId: user.id },
       orderBy: { updatedAt: 'desc' },
+      include: { offers: { where: { status: 'TRIMISA' }, select: { id: true } } },
     }),
     prisma.savedProperty.findMany({
       where: { userId: user.id },
@@ -218,18 +246,24 @@ export async function getProperties(user: SessionUser): Promise<{ owned: Propert
     }),
   ])
 
-  const toView = (property: (typeof owned)[number]): PropertyView => {
+  const toView = (
+    property: (typeof owned)[number] | (typeof saved)[number]['property'],
+    pendingOffers = 0
+  ): PropertyView => {
     const { label, variant } = PROPERTY_STATUS[property.status] ?? { label: property.status, variant: 'info' as BadgeVariant }
     return {
       id: property.id,
       title: property.title,
       location: property.location,
-      rent: `${formatRon(property.rent)} / lună`,
+      transactionType: (property.transactionType === 'VANZARE' ? 'VANZARE' : 'INCHIRIERE') as 'INCHIRIERE' | 'VANZARE',
+      price: priceLabel(property.transactionType, property.rent, property.price),
       status: label,
       statusVariant: variant,
       updated: timeAgo(property.updatedAt),
       photos: parsePhotos(property.photos),
+      pendingOffers,
       rentValue: property.rent,
+      priceValue: property.price,
       rooms: property.rooms,
       surface: property.surface,
       description: property.description ?? '',
@@ -237,8 +271,12 @@ export async function getProperties(user: SessionUser): Promise<{ owned: Propert
   }
 
   return {
-    owned: owned.map(toView),
-    saved: saved.map((entry) => ({ ...toView(entry.property), status: 'Salvată', statusVariant: 'info' })),
+    owned: owned.map((property) => toView(property, property.offers.length)),
+    saved: saved.map((entry) => ({
+      ...toView(entry.property),
+      status: 'Salvată',
+      statusVariant: 'info',
+    })),
   }
 }
 
@@ -260,7 +298,7 @@ export async function getPayments(user: SessionUser): Promise<{
 
   return {
     summary: {
-      totalIncome: formatRon(sum((p) => p.type === 'CHIRIE' && p.status === 'FINALIZATA')),
+      totalIncome: formatRon(sum((p) => (PAYABLE_TYPES as readonly string[]).includes(p.type) && p.status === 'FINALIZATA')),
       pending: formatRon(sum((p) => p.status === 'IN_CURS')),
       fees: formatRon(sum((p) => p.type === 'COMISION')),
     },
@@ -307,7 +345,7 @@ export async function getOverview(user: SessionUser): Promise<OverviewData> {
   const [monthlyPayments, activeContracts, newOffers, ownedCount, savedCount, unsignedContracts, failedPayments, notifications] =
     await Promise.all([
       prisma.payment.findMany({
-        where: { ...paymentScope(user), type: 'CHIRIE', status: 'FINALIZATA', createdAt: { gte: startOfMonth } },
+        where: { ...paymentScope(user), type: { in: [...PAYABLE_TYPES] }, status: 'FINALIZATA', createdAt: { gte: startOfMonth } },
       }),
       prisma.contract.count({ where: { ...contractWhere, status: 'ACTIV' } }),
       prisma.offer.count({

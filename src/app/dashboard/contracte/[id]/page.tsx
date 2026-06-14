@@ -3,6 +3,7 @@ import { redirect, notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { ContractActions } from '@/components/dashboard/actions'
 import ContractTermsForm from '@/components/dashboard/ContractTermsForm'
+import SaleTermsForm from '@/components/dashboard/SaleTermsForm'
 import PrintButton from '@/components/dashboard/PrintButton'
 import { getCurrentUser } from '@/lib/session'
 import { getContractDetail } from '@/lib/contractDocument'
@@ -19,7 +20,8 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
     notFound()
   }
 
-  const { doc, canEdit, canSign, canPay, dueAmount, terms } = detail
+  const { doc, canEdit, canEditSale, canSign, canPay, dueAmount, dueType, terms, saleTerms } = detail
+  const isSale = doc.type === 'VANZARE'
 
   return (
     <section className="space-y-6">
@@ -32,7 +34,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
 
       <article className="print-document rounded-[32px] border border-[var(--border)] bg-[var(--card)] p-8 shadow-[var(--shadow)]">
         <header className="border-b border-[var(--border)] pb-6">
-          <p className="section-label">Contract de închiriere</p>
+          <p className="section-label">{isSale ? 'Antecontract de vânzare-cumpărare' : 'Contract de închiriere'}</p>
           <h1 className="mt-3 text-2xl font-semibold tracking-[-0.02em]">{doc.number}</h1>
           <p className="mt-1 text-sm text-[var(--muted)]">{doc.statusLabel} · {doc.property.title}, {doc.property.location}</p>
         </header>
@@ -52,20 +54,41 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
         </div>
 
         <div className="mt-8 space-y-5 text-[15px] leading-7 text-[var(--muted)]">
-          <div>
-            <h2 className="text-lg font-semibold text-[var(--text)]">1. Obiectul contractului</h2>
-            <p className="mt-2">
-              Proprietarul închiriază chiriașului imobilul „{doc.property.title}”, situat în {doc.property.location},
-              pentru o durată de {doc.months} luni, în perioada {doc.startDate} – {doc.endDate}.
-            </p>
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold text-[var(--text)]">2. Chiria și garanția</h2>
-            <p className="mt-2">
-              Chiria lunară este de {doc.rent}, plătibilă până în data de {doc.dueDay} a fiecărei luni.
-              Garanția (depozitul) este de {doc.deposit} și se restituie la încetarea contractului, în condițiile legii.
-            </p>
-          </div>
+          {isSale ? (
+            <>
+              <div>
+                <h2 className="text-lg font-semibold text-[var(--text)]">1. Obiectul antecontractului</h2>
+                <p className="mt-2">
+                  Vânzătorul se obligă să vândă, iar cumpărătorul să cumpere imobilul „{doc.property.title}”,
+                  situat în {doc.property.location}, prin încheierea contractului de vânzare-cumpărare în formă autentică la notar.
+                </p>
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-[var(--text)]">2. Prețul și avansul</h2>
+                <p className="mt-2">
+                  Prețul de vânzare este de {doc.price}. La semnarea antecontractului, cumpărătorul achită un avans (arvună)
+                  de {doc.deposit}, urmând ca diferența să fie plătită la finalizarea tranzacției.
+                </p>
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <h2 className="text-lg font-semibold text-[var(--text)]">1. Obiectul contractului</h2>
+                <p className="mt-2">
+                  Proprietarul închiriază chiriașului imobilul „{doc.property.title}”, situat în {doc.property.location},
+                  pentru o durată de {doc.months} luni, în perioada {doc.startDate} – {doc.endDate}.
+                </p>
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-[var(--text)]">2. Chiria și garanția</h2>
+                <p className="mt-2">
+                  Chiria lunară este de {doc.rent}, plătibilă până în data de {doc.dueDay} a fiecărei luni.
+                  Garanția (depozitul) este de {doc.deposit} și se restituie la încetarea contractului, în condițiile legii.
+                </p>
+              </div>
+            </>
+          )}
           {doc.clauses ? (
             <div>
               <h2 className="text-lg font-semibold text-[var(--text)]">3. Clauze speciale</h2>
@@ -75,8 +98,8 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
           <div>
             <h2 className="text-lg font-semibold text-[var(--text)]">{doc.clauses ? '4' : '3'}. Semnături electronice (QES)</h2>
             <div className="mt-2 grid gap-3 sm:grid-cols-2">
-              <p>Proprietar: <span className="font-semibold text-[var(--text)]">{doc.signedByOwner ? 'Semnat ✓' : 'În așteptare'}</span></p>
-              <p>Chiriaș: <span className="font-semibold text-[var(--text)]">{doc.signedByClient ? 'Semnat ✓' : 'În așteptare'}</span></p>
+              <p>{doc.owner.role}: <span className="font-semibold text-[var(--text)]">{doc.signedByOwner ? 'Semnat ✓' : 'În așteptare'}</span></p>
+              <p>{doc.tenant.role}: <span className="font-semibold text-[var(--text)]">{doc.signedByClient ? 'Semnat ✓' : 'În așteptare'}</span></p>
             </div>
           </div>
         </div>
@@ -88,7 +111,8 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
 
       <div className="space-y-4 print:hidden">
         {canEdit ? <ContractTermsForm contractId={doc.id} terms={terms} /> : null}
-        <ContractActions contractId={doc.id} canSign={canSign} canPay={canPay} dueAmount={dueAmount} />
+        {canEditSale ? <SaleTermsForm contractId={doc.id} terms={saleTerms} /> : null}
+        <ContractActions contractId={doc.id} canSign={canSign} canPay={canPay} dueAmount={dueAmount} dueType={dueType} />
       </div>
     </section>
   )

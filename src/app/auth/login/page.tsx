@@ -1,12 +1,14 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import FormField from '@/components/ui/FormField'
 import OtpInput from '@/components/ui/OtpInput'
 import Button from '@/components/ui/Button'
 import { useCooldown } from '@/hooks/useCooldown'
+
+const LOGIN_TAB_KEY = 'clavium_login_tab'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -17,6 +19,16 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [otpSent, setOtpSent] = useState(false)
   const resendCooldown = useCooldown(30)
+
+  useEffect(() => {
+    const saved = localStorage.getItem(LOGIN_TAB_KEY)
+    if (saved === 'password' || saved === 'otp') setMode(saved)
+  }, [])
+
+  const switchMode = (next: 'password' | 'otp') => {
+    setMode(next)
+    localStorage.setItem(LOGIN_TAB_KEY, next)
+  }
 
   const handlePasswordSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -97,14 +109,14 @@ export default function LoginPage() {
       <div className="flex flex-wrap items-center gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-4 text-[13px] text-[var(--muted)]">
         <button
           type="button"
-          onClick={() => setMode('password')}
+          onClick={() => switchMode('password')}
           className={`rounded-full px-5 py-2 transition ${mode === 'password' ? 'bg-[var(--brand)] text-white' : 'bg-transparent text-[var(--text)] hover:text-[var(--brand)]'}`}
         >
           Parolă
         </button>
         <button
           type="button"
-          onClick={() => setMode('otp')}
+          onClick={() => switchMode('otp')}
           className={`rounded-full px-5 py-2 transition ${mode === 'otp' ? 'bg-[var(--brand)] text-white' : 'bg-transparent text-[var(--text)] hover:text-[var(--brand)]'}`}
         >
           OTP

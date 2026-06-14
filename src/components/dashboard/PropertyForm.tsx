@@ -11,13 +11,16 @@ export default function PropertyForm() {
   const [open, setOpen] = useState(false)
   const [title, setTitle] = useState('')
   const [location, setLocation] = useState('')
+  const [transactionType, setTransactionType] = useState<'INCHIRIERE' | 'VANZARE'>('INCHIRIERE')
   const [rent, setRent] = useState('')
+  const [price, setPrice] = useState('')
   const [rooms, setRooms] = useState('')
   const [surface, setSurface] = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
   const photosRef = useRef<HTMLInputElement>(null)
   const [photoCount, setPhotoCount] = useState(0)
+  const isSale = transactionType === 'VANZARE'
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -26,7 +29,8 @@ export default function PropertyForm() {
     const res = await createPropertyAction({
       title,
       location,
-      rent,
+      transactionType,
+      ...(isSale ? { price } : { rent }),
       rooms: rooms || undefined,
       surface: surface || undefined,
       description: description || undefined,
@@ -48,7 +52,8 @@ export default function PropertyForm() {
     }
 
     toast.success('Proprietatea a fost adăugată!')
-    setTitle(''); setLocation(''); setRent(''); setRooms(''); setSurface(''); setDescription('')
+    setTitle(''); setLocation(''); setRent(''); setPrice(''); setRooms(''); setSurface(''); setDescription('')
+    setTransactionType('INCHIRIERE')
     setPhotoCount(0)
     setOpen(false)
     setLoading(false)
@@ -66,9 +71,32 @@ export default function PropertyForm() {
     <form onSubmit={handleSubmit} className="step-transition space-y-5 rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">
       <h2 className="text-xl font-semibold">Proprietate nouă</h2>
       <FormField label="Titlu" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Apartament 2 camere Dorobanți" required />
+      <div>
+        <span className="mb-2 block text-[13px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Tip tranzacție</span>
+        <div className="grid grid-cols-2 gap-2">
+          {([['INCHIRIERE', 'Închiriere'], ['VANZARE', 'Vânzare']] as const).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setTransactionType(value)}
+              className={`rounded-[18px] border px-4 py-3 text-[13px] font-semibold transition ${
+                transactionType === value
+                  ? 'border-[var(--brand)] bg-[var(--brand-soft)] text-[var(--brand)]'
+                  : 'border-[var(--border)] text-[var(--muted)] hover:border-[var(--brand)]'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField label="Localitate" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="București" required />
-        <FormField label="Chirie (RON / lună)" type="number" min={1} value={rent} onChange={(e) => setRent(e.target.value)} placeholder="1800" required />
+        {isSale ? (
+          <FormField label="Preț de vânzare (RON)" type="number" min={1} value={price} onChange={(e) => setPrice(e.target.value)} placeholder="250000" required />
+        ) : (
+          <FormField label="Chirie (RON / lună)" type="number" min={1} value={rent} onChange={(e) => setRent(e.target.value)} placeholder="1800" required />
+        )}
         <FormField label="Camere (opțional)" type="number" min={1} value={rooms} onChange={(e) => setRooms(e.target.value)} placeholder="2" />
         <FormField label="Suprafață m² (opțional)" type="number" min={1} value={surface} onChange={(e) => setSurface(e.target.value)} placeholder="56" />
       </div>
