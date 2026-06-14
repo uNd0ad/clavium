@@ -10,13 +10,18 @@ function useAction() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 
-  const run = async (url: string, init?: RequestInit, success?: string) => {
+  const run = async (url: string, init?: RequestInit, success?: string, successAction?: { label: string; href: string }) => {
     setLoading(true)
     try {
       const response = await fetch(url, init)
       const data = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
-      if (success) toast.success(success)
+      if (success) {
+        toast.success(
+          success,
+          successAction ? { action: { label: successAction.label, onClick: () => router.push(successAction.href) } } : undefined
+        )
+      }
       router.refresh()
       return true
     } catch (err) {
@@ -41,7 +46,8 @@ export function OfferActions({ offerId }: { offerId: string }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action }),
       },
-      action === 'accept' ? 'Ofertă acceptată — contractul a fost creat.' : 'Ofertă respinsă.'
+      action === 'accept' ? 'Ofertă acceptată — contractul a fost creat.' : 'Ofertă respinsă.',
+      action === 'accept' ? { label: 'Vezi contractul', href: '/dashboard/contracte' } : undefined
     )
 
   return (
@@ -62,27 +68,34 @@ export function ContractActions({ contractId, canSign, canPay, dueAmount }: { co
   if (!canSign && !canPay) return null
 
   return (
-    <div className="mt-4 flex flex-wrap gap-3">
+    <div className="mt-4 space-y-3">
       {canSign ? (
-        <Button
-          type="button"
-          loading={loading}
-          onClick={() => run(`/api/contracts/${contractId}/sign`, { method: 'POST' }, 'Contract semnat cu QES.')}
-          className="px-5 py-2.5 text-[12px]"
-        >
-          Semnează cu QES
-        </Button>
+        <p className="inline-flex items-center gap-2 rounded-full bg-[var(--brand-soft)] px-4 py-1.5 text-[12px] font-semibold text-[var(--brand)]">
+          Rândul tău să semnezi
+        </p>
       ) : null}
-      {canPay ? (
-        <Button
-          type="button"
-          loading={loading}
-          onClick={() => run(`/api/contracts/${contractId}/pay`, { method: 'POST' }, 'Plata chiriei a fost efectuată.')}
-          className="px-5 py-2.5 text-[12px]"
-        >
-          {`Plătește chiria (${dueAmount})`}
-        </Button>
-      ) : null}
+      <div className="flex flex-wrap gap-3">
+        {canSign ? (
+          <Button
+            type="button"
+            loading={loading}
+            onClick={() => run(`/api/contracts/${contractId}/sign`, { method: 'POST' }, 'Contract semnat cu QES.')}
+            className="px-5 py-2.5 text-[12px]"
+          >
+            Semnează cu QES
+          </Button>
+        ) : null}
+        {canPay ? (
+          <Button
+            type="button"
+            loading={loading}
+            onClick={() => run(`/api/contracts/${contractId}/pay`, { method: 'POST' }, 'Plata chiriei a fost efectuată.')}
+            className="px-5 py-2.5 text-[12px]"
+          >
+            {`Plătește chiria (${dueAmount})`}
+          </Button>
+        ) : null}
+      </div>
     </div>
   )
 }

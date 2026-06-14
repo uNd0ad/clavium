@@ -62,7 +62,7 @@ export type NotificationView = {
 
 export type OverviewData = {
   stats: { label: string; value: string; highlight?: string }[]
-  alerts: { id: string; title: string; description: string; variant: BadgeVariant }[]
+  alerts: { id: string; title: string; description: string; variant: BadgeVariant; href: string }[]
   activity: { id: string; title: string; description: string; time: string; status: BadgeVariant }[]
 }
 
@@ -345,12 +345,14 @@ export async function getOverview(user: SessionUser): Promise<OverviewData> {
       title: 'Semnătură necesară',
       description: `Contractul pentru „${contract.property.title}” așteaptă semnătura ta.`,
       variant: 'warning' as BadgeVariant,
+      href: '/dashboard/contracte',
     })),
     ...failedPayments.map((payment) => ({
       id: payment.id,
       title: 'Plată eșuată',
       description: `Tranzacția ${payment.reference} (${formatRon(payment.amount)}) a eșuat.`,
       variant: 'danger' as BadgeVariant,
+      href: '/dashboard/plati',
     })),
   ]
 

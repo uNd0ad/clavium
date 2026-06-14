@@ -53,9 +53,14 @@ export default function PhotoManager({ propertyId, photos }: { propertyId: strin
   return (
     <div className="mt-3">
       <div className="flex flex-wrap items-center gap-2">
-        {photos.map((url) => (
+        {photos.map((url, index) => (
           <div key={url} className="group relative h-16 w-20 overflow-hidden rounded-xl border border-[var(--border)]">
             <Image src={url} alt="Fotografie proprietate" fill sizes="80px" className="object-cover" />
+            {index === 0 ? (
+              <span className="absolute bottom-0 left-0 right-0 bg-[var(--brand)]/85 py-0.5 text-center text-[9px] font-semibold uppercase tracking-wide text-white">
+                Copertă
+              </span>
+            ) : null}
             <button
               type="button"
               onClick={() => remove(url)}

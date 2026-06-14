@@ -1,4 +1,6 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { ChevronRight } from 'lucide-react'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import StatusBadge from '@/components/dashboard/StatusBadge'
 import { getCurrentUser } from '@/lib/session'
@@ -46,15 +48,22 @@ export default async function DashboardPage() {
               </p>
             ) : (
               alerts.map((alert) => (
-                <div key={alert.id} className="rounded-[24px] border border-[var(--border)] bg-white p-5">
+                <Link
+                  key={alert.id}
+                  href={alert.href}
+                  className="group block rounded-[24px] border border-[var(--border)] bg-white p-5 transition hover:border-[var(--brand)]"
+                >
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <p className="text-base font-semibold">{alert.title}</p>
                       <p className="mt-2 text-sm text-[var(--muted)]">{alert.description}</p>
                     </div>
-                    <StatusBadge label={alert.variant === 'danger' ? 'Urgent' : 'Atenție'} variant={alert.variant} />
+                    <div className="flex items-center gap-2">
+                      <StatusBadge label={alert.variant === 'danger' ? 'Urgent' : 'Atenție'} variant={alert.variant} />
+                      <ChevronRight size={18} className="text-[var(--muted)] transition group-hover:translate-x-0.5 group-hover:text-[var(--brand)]" />
+                    </div>
                   </div>
-                </div>
+                </Link>
               ))
             )}
           </div>

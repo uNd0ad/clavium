@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.5.1 — 2026-06-14
+
+### Experiența cu fotografii
+- Galerie cu lightbox pe pagina de detaliu a proprietății (`PropertyGallery`): click pentru full-screen, navigare cu săgeți/tastatură, swipe pe mobil, contor și închidere cu Escape/backdrop.
+- Indicator „Copertă" pe prima fotografie în managerul de fotografii al proprietarului.
+
+### Flux ghidat (next-steps)
+- Alertele din overview sunt acum linkuri către secțiunea relevantă (contracte / plăți).
+- Mesaj „Rândul tău să semnezi" pe contractele care îți așteaptă semnătura.
+- La acceptarea unei oferte, toast-ul oferă acțiunea „Vezi contractul" către contractul nou creat.
+
 ## 0.5.0 — 2026-06-13
 
 Pas major de UX: feedback modern, interacțiuni instant și un dashboard în limbajul vizual al homepage-ului. Vezi [UX-REVIEW.md](UX-REVIEW.md) pentru analiza completă care a stat la baza acestor schimbări.

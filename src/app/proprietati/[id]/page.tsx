@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import { MapPin, BedDouble, Ruler, ShieldCheck } from 'lucide-react'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import StatusBadge from '@/components/dashboard/StatusBadge'
 import PropertyActions from '@/components/properties/PropertyActions'
+import PropertyGallery from '@/components/properties/PropertyGallery'
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/session'
 import { formatRon } from '@/lib/dashboardData'
@@ -41,25 +41,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
       <main className="mx-auto min-h-screen max-w-7xl px-6 pb-24 pt-36 lg:px-12">
         <div className="grid gap-8 lg:grid-cols-[1.6fr_1fr]">
           <div className="space-y-8">
-            {photos.length > 0 ? (
-              <div className={`grid gap-3 ${photos.length > 1 ? 'grid-cols-2' : ''}`}>
-                {photos.map((url, index) => (
-                  <div
-                    key={url}
-                    className={`relative overflow-hidden rounded-[24px] ${index === 0 && photos.length > 1 ? 'col-span-2 h-80' : index === 0 ? 'h-80' : 'h-44'}`}
-                  >
-                    <Image
-                      src={url}
-                      alt={`${property.title} — fotografia ${index + 1}`}
-                      fill
-                      sizes="(max-width: 1024px) 100vw, 60vw"
-                      className="object-cover"
-                      priority={index === 0}
-                    />
-                  </div>
-                ))}
-              </div>
-            ) : null}
+            <PropertyGallery photos={photos} title={property.title} />
             <div>
               <div className="flex flex-wrap items-center gap-3">
                 <StatusBadge label={available ? 'Disponibilă' : 'Închiriată'} variant={available ? 'success' : 'warning'} />
