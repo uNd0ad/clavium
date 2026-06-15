@@ -38,7 +38,7 @@ const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
             </button>
           ) : null}
         </div>
-        {error ? <p className="mt-2 text-xs text-rose-600">{error}</p> : null}
+        {error ? <p className="mt-2 text-xs text-rose-600 dark:text-rose-400">{error}</p> : null}
       </label>
     )
   }

@@ -3,7 +3,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Home, KeyRound } from 'lucide-react'
+import { Home, KeyRound, Check } from 'lucide-react'
 import FormField from '@/components/ui/FormField'
 import OtpInput from '@/components/ui/OtpInput'
 import Button from '@/components/ui/Button'
@@ -113,7 +113,7 @@ export default function RegisterPage() {
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'A apărut o eroare.')
       setPhoneVerified(true)
-      toast.success('Numărul de telefon a fost verificat ✓')
+      toast.success('Numărul de telefon a fost verificat.')
     } catch (error) {
       toast.error((error as Error).message)
     } finally {
@@ -170,7 +170,7 @@ export default function RegisterPage() {
   if (registered) {
     return (
       <div className="step-transition space-y-6">
-        <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 text-[var(--text)]">
+        <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 text-[var(--text)] dark:border-emerald-500/30 dark:bg-emerald-500/10">
           <h3 className="text-xl font-semibold">Contul a fost creat!</h3>
           <p className="mt-3 text-base text-[var(--muted)]">
             Te-ai înregistrat cu succes ca {role === 'OWNER' ? 'proprietar' : 'client'}. Vei fi redirecționat către dashboard în{' '}
@@ -210,21 +210,21 @@ export default function RegisterPage() {
                     active
                       ? 'border-[var(--brand)] bg-[var(--brand)] text-white'
                       : done
-                        ? 'cursor-pointer border-emerald-200 bg-emerald-50 text-emerald-700 hover:border-emerald-400'
+                        ? 'cursor-pointer border-emerald-200 bg-emerald-50 text-emerald-700 hover:border-emerald-400 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300 dark:hover:border-emerald-500/60'
                         : 'cursor-default border-[var(--border)] text-[var(--muted)]'
                   }`}
                 >
                   <span
                     className={`flex h-5 w-5 items-center justify-center rounded-full text-2xs ${
-                      active ? 'bg-white/20' : done ? 'bg-emerald-100' : 'bg-[var(--border)]/40'
+                      active ? 'bg-white/20' : done ? 'bg-emerald-100 dark:bg-emerald-500/20' : 'bg-[var(--border)]/40'
                     }`}
                   >
-                    {done ? '✓' : index + 1}
+                    {done ? <Check size={12} strokeWidth={3} /> : index + 1}
                   </span>
                   <span className="whitespace-nowrap">{label}</span>
                 </button>
                 {index < steps.length - 1 ? (
-                  <span className={`h-px w-4 shrink-0 ${done ? 'bg-emerald-300' : 'bg-[var(--border)]'}`} />
+                  <span className={`h-px w-4 shrink-0 ${done ? 'bg-emerald-300 dark:bg-emerald-500/40' : 'bg-[var(--border)]'}`} />
                 ) : null}
               </div>
             )
@@ -327,8 +327,9 @@ export default function RegisterPage() {
                 disabled={phoneVerified}
               />
               {phoneVerified ? (
-                <p className="rounded-3xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800">
-                  Numărul de telefon a fost verificat ✓
+                <p className="flex items-center gap-2 rounded-3xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
+                  <Check size={16} strokeWidth={3} className="shrink-0" />
+                  Numărul de telefon a fost verificat.
                 </p>
               ) : (
                 <>

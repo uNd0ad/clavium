@@ -1,32 +1,33 @@
 'use client'
 
+import { Search, Handshake, FileText, PenLine } from 'lucide-react'
 import { useReveal } from '@/hooks/useReveal'
 
 const STEPS = [
   {
     num: '01',
-    icon: '⌂',
+    icon: Search,
     title: 'Găsești proprietatea',
     desc: 'Cauți după locație, tip și buget. Listingurile afișează informații verificate și ușor de comparat.',
     detail: 'Filtre rapide · Hartă clară',
   },
   {
     num: '02',
-    icon: '◎',
+    icon: Handshake,
     title: 'Negociezi direct',
     desc: 'Trimite oferta către proprietar și urmărește progresul direct din contul tău.',
     detail: 'Mesagerie sigură · Istoric transparent',
   },
   {
     num: '03',
-    icon: '◈',
+    icon: FileText,
     title: 'Generezi contractul',
     desc: 'Contractul se construiește automat din termeni agreați și este gata pentru semnare electronică.',
     detail: 'Template juridic · Preview instant',
   },
   {
     num: '04',
-    icon: '✦',
+    icon: PenLine,
     title: 'Semnezi digital',
     desc: 'Semnătura electronică calificată validează contractul fără deplasări la notar.',
     detail: 'QES eIDAS · Descărcare PDF',
@@ -54,22 +55,22 @@ export default function HowItWorksSection() {
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {STEPS.map((step) => (
-            <div key={step.num} className="surface-card rounded-4xl p-8 border border-[var(--border)]">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-3xl bg-[var(--brand-soft)] text-[var(--brand)] text-xl font-semibold mb-6">
-                {step.icon}
+          {STEPS.map(({ num, icon: Icon, title, desc, detail }) => (
+            <div key={num} className="surface-card rounded-4xl p-8 border border-[var(--border)]">
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-3xl bg-[var(--brand-soft)] text-[var(--brand)] mb-6">
+                <Icon size={22} strokeWidth={1.75} />
               </div>
               <p className="text-2xs uppercase tracking-[0.22em] text-[var(--muted)] mb-3">
-                Pasul {step.num}
+                Pasul {num}
               </p>
               <h3 className="text-xl font-semibold text-[var(--text)] mb-4">
-                {step.title}
+                {title}
               </h3>
               <p className="text-sm text-[var(--muted)] leading-7 mb-5">
-                {step.desc}
+                {desc}
               </p>
               <div className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
-                {step.detail}
+                {detail}
               </div>
             </div>
           ))}

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, ArrowRight } from 'lucide-react'
 import clsx from 'clsx'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 
@@ -98,7 +98,8 @@ export default function Navbar() {
                   Autentificare
                 </a>
                 <a href="/auth/register" className="btn-primary text-xs px-6 py-3">
-                  Cont nou →
+                  Cont nou
+                  <ArrowRight size={14} />
                 </a>
               </>
             )}
@@ -146,7 +147,8 @@ export default function Navbar() {
                   Autentificare
                 </a>
                 <a href="/auth/register" className="btn-primary w-full justify-center">
-                  Creează cont →
+                  Creează cont
+                  <ArrowRight size={16} />
                 </a>
               </>
             )}

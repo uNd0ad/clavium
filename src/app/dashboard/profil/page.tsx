@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { Check } from 'lucide-react'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import ProfileForms from '@/components/dashboard/ProfileForms'
 import { MarkNotificationsRead } from '@/components/dashboard/actions'
@@ -24,12 +25,13 @@ export default async function DashboardProfilePage({ searchParams }: { searchPar
       />
 
       {emailStatus === 'verificat' ? (
-        <p className="rounded-3xl border border-emerald-200 bg-emerald-50 p-5 text-sm font-semibold text-emerald-800">
-          Adresa de email a fost verificată cu succes ✓
+        <p className="flex items-center gap-2 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 text-sm font-semibold text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
+          <Check size={16} strokeWidth={3} className="shrink-0" />
+          Adresa de email a fost verificată cu succes.
         </p>
       ) : null}
       {emailStatus === 'eroare' ? (
-        <p className="rounded-3xl border border-rose-200 bg-rose-50 p-5 text-sm font-semibold text-rose-800">
+        <p className="rounded-3xl border border-rose-200 bg-rose-50 p-5 text-sm font-semibold text-rose-800 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
           Linkul de verificare este invalid sau expirat. Retrimite emailul de verificare mai jos.
         </p>
       ) : null}
@@ -44,7 +46,16 @@ export default async function DashboardProfilePage({ searchParams }: { searchPar
                 <p className="mt-2 font-semibold">{user.firstName} {user.lastName}</p>
               </div>
               <div className="rounded-3xl bg-[var(--card)] p-5">
-                <p className="text-sm text-[var(--muted)]">Email {user.emailVerified ? '✓' : '(neverificat)'}</p>
+                <p className="flex items-center gap-1.5 text-sm text-[var(--muted)]">
+                  Email
+                  {user.emailVerified ? (
+                    <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                      <Check size={14} strokeWidth={3} /> verificat
+                    </span>
+                  ) : (
+                    <span>(neverificat)</span>
+                  )}
+                </p>
                 <p className="mt-2 font-semibold">{user.email}</p>
               </div>
               <div className="rounded-3xl bg-[var(--card)] p-5">

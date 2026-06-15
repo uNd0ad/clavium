@@ -1,7 +1,7 @@
 'use client'
 
 import { useReveal } from '@/hooks/useReveal'
-import { ShieldCheck, Clock, FileText, Download } from 'lucide-react'
+import { ShieldCheck, Clock, FileText, Download, PenLine } from 'lucide-react'
 
 const FEATURES = [
   { icon: ShieldCheck, label: 'QES — semnătură calificată', desc: 'Semnătură electronică cu valoare juridică echivalentă celei olografe, conform Legii 214/2024.' },
@@ -65,7 +65,7 @@ export default function SignatureSection() {
                   </div>
                 </div>
                 <div>
-                  <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-2xs uppercase tracking-[0.2em] text-emerald-700 border border-emerald-200">
+                  <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-2xs uppercase tracking-[0.2em] text-emerald-700 border border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-500/30">
                     <span className="h-2 w-2 rounded-full bg-emerald-500" />
                     Semnat
                   </div>
@@ -100,10 +100,12 @@ export default function SignatureSection() {
 
               <div className="flex gap-3 mt-6">
                 <button className="flex-1 btn-outline text-2xs py-3 justify-center">
+                  <Download size={14} />
                   Descarcă PDF
                 </button>
                 <button className="flex-1 btn-primary text-2xs py-3 justify-center">
-                  ✦ Semnează →
+                  <PenLine size={14} />
+                  Semnează
                 </button>
               </div>
             </div>

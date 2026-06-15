@@ -81,8 +81,8 @@ export default function ProfileForms({ firstName: initialFirst, lastName: initia
   return (
     <div className="space-y-6">
       {!emailVerified ? (
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-amber-200 bg-amber-50 p-5 text-sm">
-          <p className="font-semibold text-amber-800">Adresa de email nu este verificată.</p>
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-amber-200 bg-amber-50 p-5 text-sm dark:border-amber-500/30 dark:bg-amber-500/10">
+          <p className="font-semibold text-amber-800 dark:text-amber-300">Adresa de email nu este verificată.</p>
           <Button type="button" variant="outline" loading={loading} onClick={handleResendVerification} className="px-5 py-2.5 text-xs">
             Retrimite emailul de verificare
           </Button>
@@ -121,10 +121,10 @@ export default function ProfileForms({ firstName: initialFirst, lastName: initia
         </a>
       </div>
 
-      <div className="rounded-4xl border border-rose-200 bg-rose-50/50 p-6">
-        <h2 className="text-xl font-semibold text-rose-800">Danger zone</h2>
+      <div className="rounded-4xl border border-rose-200 bg-rose-50/50 p-6 dark:border-rose-500/30 dark:bg-rose-500/10">
+        <h2 className="text-xl font-semibold text-rose-800 dark:text-rose-300">Danger zone</h2>
         <p className="mt-2 text-sm text-[var(--muted)]">Dezactivarea contului este permanentă — nu te vei mai putea autentifica.</p>
-        <button type="button" onClick={() => setConfirmOpen(true)} disabled={loading} className="mt-4 rounded-full border border-rose-300 bg-[var(--card)] px-6 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-rose-800 transition hover:bg-rose-100">
+        <button type="button" onClick={() => setConfirmOpen(true)} disabled={loading} className="mt-4 rounded-full border border-rose-300 bg-[var(--card)] px-6 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-rose-800 transition hover:bg-rose-100 dark:border-rose-500/40 dark:text-rose-300 dark:hover:bg-rose-500/15">
           Dezactivează contul
         </button>
       </div>

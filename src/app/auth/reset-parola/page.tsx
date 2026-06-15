@@ -70,7 +70,7 @@ function ResetForm() {
       </div>
 
       {done ? (
-        <p className="rounded-3xl border border-emerald-200 bg-emerald-50 p-5 text-sm font-semibold text-emerald-800">
+        <p className="rounded-3xl border border-emerald-200 bg-emerald-50 p-5 text-sm font-semibold text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
           Dacă există un cont cu această adresă, vei primi un email cu linkul de resetare.
         </p>
       ) : token ? (

@@ -1,14 +1,35 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Search, MapPin, ChevronDown } from 'lucide-react'
 
 const TRANSACTION_TYPES = ['Cumpărare', 'Închiriere', 'Leasing']
 const PROPERTY_TYPES = ['Apartament', 'Casă', 'Teren', 'Comercial']
 
+// Tipul de tranzacție din hero mapează pe filtrul listării (`type`). Leasing nu are încă
+// filtru dedicat în /proprietati, deci trimite o căutare generală (fără `type`).
+const TX_TO_FILTER: Record<string, string | undefined> = {
+  Cumpărare: 'VANZARE',
+  Închiriere: 'INCHIRIERE',
+  Leasing: undefined,
+}
+
 export default function HeroSection() {
+  const router = useRouter()
   const [txType, setTxType] = useState('Cumpărare')
   const [propType, setPropType] = useState('Apartament')
+  const [location, setLocation] = useState('')
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault()
+    const params = new URLSearchParams()
+    const filterType = TX_TO_FILTER[txType]
+    if (filterType) params.set('type', filterType)
+    if (location.trim()) params.set('q', location.trim())
+    const query = params.toString()
+    router.push(query ? `/proprietati?${query}` : '/proprietati')
+  }
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-[var(--bg)]">
@@ -40,31 +61,14 @@ export default function HeroSection() {
           </div>
 
           <div className="lg:col-span-5">
-            <div className="glass-panel p-8 lg:p-10 rounded-4xl border border-white/85 backdrop-blur-xl">
+            <div className="glass-panel p-8 lg:p-10 rounded-4xl border border-[var(--border)] backdrop-blur-xl">
               <div className="mb-8">
                 <span className="inline-flex items-center rounded-full bg-[var(--brand-soft)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
                   100% digital · semnătură QES
                 </span>
               </div>
 
-              {/* <div className="space-y-7">
-                {[
-                  { label: 'Comision zero', value: '0 %' },
-                  { label: 'Digital complet', value: '24 h' },
-                  { label: 'Contract legal', value: 'QES & eIDAS' },
-                ].map((item) => (
-                  <div key={item.label} className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5">
-                    <div className="text-sm uppercase tracking-[0.18em] text-[var(--muted)] mb-2">
-                      {item.label}
-                    </div>
-                    <div className="text-3xl font-semibold text-[var(--text)]">
-                      {item.value}
-                    </div>
-                  </div>
-                ))}
-              </div>*/}
-
-              <div className="mt-10 rounded-4xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-[0_16px_40px_rgba(15,23,42,0.08)]">
+              <form onSubmit={handleSearch} className="mt-10 rounded-4xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-[0_16px_40px_rgba(15,23,42,0.08)]">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="relative">
                     <label className="text-2xs uppercase tracking-[0.22em] text-[var(--muted)] mb-2 block">
@@ -104,24 +108,27 @@ export default function HeroSection() {
                 </div>
 
                 <div className="mt-4 relative">
-                  <label className="text-2xs uppercase tracking-[0.22em] text-[var(--muted)] mb-2 block">
+                  <label htmlFor="hero-location" className="text-2xs uppercase tracking-[0.22em] text-[var(--muted)] mb-2 block">
                     Locație
                   </label>
                   <div className="relative">
                     <MapPin size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted)]" />
                     <input
+                      id="hero-location"
                       type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
                       placeholder="Oraș sau cartier..."
                       className="w-full rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 pl-11 text-sm text-[var(--text)] outline-none"
                     />
                   </div>
                 </div>
 
-                <button className="btn-primary mt-5 w-full justify-center">
+                <button type="submit" className="btn-primary mt-5 w-full justify-center">
                   <Search size={16} />
                   Caută
                 </button>
-              </div>
+              </form>
 
               <p className="mt-5 text-xs text-[var(--muted)] tracking-[0.16em] uppercase">
                 Timișoara · Cluj-Napoca · București · Iași · Brașov · Oradea

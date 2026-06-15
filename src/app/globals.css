@@ -144,6 +144,10 @@ summary:focus-visible,
     min-width: 0;
     width: 100%;
   }
+  /* În dev/dark, marginea albă de 75% devine un contur strălucitor — o aliniem la token. */
+  html.dark .glass-panel {
+    border-color: var(--border);
+  }
 
   .surface-card {
     background: var(--surface-strong);

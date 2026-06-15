@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Check } from 'lucide-react'
 import { ContractActions } from '@/components/dashboard/actions'
 import ContractTermsForm from '@/components/dashboard/ContractTermsForm'
 import SaleTermsForm from '@/components/dashboard/SaleTermsForm'
@@ -98,8 +98,8 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
           <div>
             <h2 className="text-lg font-semibold text-[var(--text)]">{doc.clauses ? '4' : '3'}. Semnături electronice (QES)</h2>
             <div className="mt-2 grid gap-3 sm:grid-cols-2">
-              <p>{doc.owner.role}: <span className="font-semibold text-[var(--text)]">{doc.signedByOwner ? 'Semnat ✓' : 'În așteptare'}</span></p>
-              <p>{doc.tenant.role}: <span className="font-semibold text-[var(--text)]">{doc.signedByClient ? 'Semnat ✓' : 'În așteptare'}</span></p>
+              <p>{doc.owner.role}: {doc.signedByOwner ? <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400"><Check size={14} strokeWidth={3} />Semnat</span> : <span className="font-semibold text-[var(--text)]">În așteptare</span>}</p>
+              <p>{doc.tenant.role}: {doc.signedByClient ? <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400"><Check size={14} strokeWidth={3} />Semnat</span> : <span className="font-semibold text-[var(--text)]">În așteptare</span>}</p>
             </div>
           </div>
         </div>

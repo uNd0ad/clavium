@@ -51,7 +51,7 @@ export default function PhotoManager({ propertyId, photos }: { propertyId: strin
               onClick={() => setPendingDelete(url)}
               disabled={loading}
               aria-label="Șterge fotografia"
-              className="absolute right-1 top-1 hidden rounded-full bg-[var(--card)] p-0.5 text-rose-700 shadow group-hover:block"
+              className="absolute right-1 top-1 hidden rounded-full bg-[var(--card)] p-0.5 text-rose-700 shadow group-hover:block dark:text-rose-400"
             >
               <X size={13} />
             </button>
