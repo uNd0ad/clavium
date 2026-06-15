@@ -1,8 +1,8 @@
 import { defineConfig } from 'vitest/config'
 import path from 'node:path'
+import { TEST_DATABASE_URL, TEST_JWT_SECRET } from './src/test/env'
 
 const root = process.cwd()
-const testDb = path.join(root, 'prisma', 'test.db')
 
 export default defineConfig({
   resolve: {
@@ -13,9 +13,10 @@ export default defineConfig({
     // Fișierele de test partajează aceeași bază de date — rulează-le serial ca să nu se suprascrie.
     fileParallelism: false,
     env: {
-      // Bază de date de test izolată + secret valid pentru orice cod care îl cere.
-      DATABASE_URL: `file:${testDb}`,
-      JWT_SECRET: 'test_secret_minimum_32_characters_long_0123',
+      // Schemă de test izolată pe Postgres + secret valid pentru orice cod care îl cere.
+      DATABASE_URL: TEST_DATABASE_URL,
+      DIRECT_URL: TEST_DATABASE_URL,
+      JWT_SECRET: TEST_JWT_SECRET,
     },
     globalSetup: ['./src/test/globalSetup.ts'],
     setupFiles: ['./src/test/setup.ts'],

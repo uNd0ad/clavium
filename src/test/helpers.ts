@@ -4,6 +4,9 @@ import type { UserRole } from '@/lib/types/roles'
 
 // Golește tabelele în ordine sigură pentru cheile externe.
 export async function resetDb() {
+  await prisma.ticketRead.deleteMany()
+  await prisma.ticketMessage.deleteMany()
+  await prisma.ticket.deleteMany()
   await prisma.payment.deleteMany()
   await prisma.contract.deleteMany()
   await prisma.offer.deleteMany()

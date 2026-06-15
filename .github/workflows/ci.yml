@@ -2,15 +2,35 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [dev, prod]
   pull_request:
 
 jobs:
   verify:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: clavium
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     env:
-      DATABASE_URL: file:./dev.db
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/clavium
+      DIRECT_URL: postgresql://postgres:postgres@localhost:5432/clavium
+      # Testele rulează într-o schemă izolată, ca în local.
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/clavium?schema=clavium_test
       JWT_SECRET: ci_secret_used_only_for_build_0123456789abcdef
+
     steps:
       - uses: actions/checkout@v4
 
