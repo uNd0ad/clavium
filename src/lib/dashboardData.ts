@@ -78,6 +78,36 @@ export type NotificationView = {
   read: boolean
 }
 
+export type TicketMessageView = {
+  id: string
+  author: string
+  body: string
+  date: string
+  mine: boolean
+}
+
+export type TicketView = {
+  id: string
+  subject: string
+  property: string
+  // Cealaltă parte din conversație (pentru chiriaș: proprietarul; pentru proprietar/admin: chiriașul).
+  counterparty: string
+  category: string
+  priority: string
+  priorityVariant: BadgeVariant
+  status: string
+  // Codul brut al statusului (DESCHIS | IN_LUCRU | REZOLVAT | INCHIS) pentru logica din UI.
+  statusCode: string
+  statusVariant: BadgeVariant
+  date: string
+  messages: TicketMessageView[]
+  // Poate schimba statusul prin orice tranziție (proprietar/admin); chiriașul are doar redeschide/închide.
+  canManage: boolean
+}
+
+// Contract de închiriere activ pe care utilizatorul (chiriaș) poate deschide tichete.
+export type TicketableContract = { id: string; label: string }
+
 export type OverviewData = {
   stats: { label: string; value: string; highlight?: string }[]
   alerts: { id: string; title: string; description: string; variant: BadgeVariant; href: string }[]
@@ -111,6 +141,26 @@ const PAYMENT_STATUS: Record<string, { label: string; variant: BadgeVariant }> =
   ESUATA: { label: 'Eșuată', variant: 'danger' },
 }
 
+const TICKET_STATUS: Record<string, { label: string; variant: BadgeVariant }> = {
+  DESCHIS: { label: 'Deschis', variant: 'warning' },
+  IN_LUCRU: { label: 'În lucru', variant: 'info' },
+  REZOLVAT: { label: 'Rezolvat', variant: 'success' },
+  INCHIS: { label: 'Închis', variant: 'info' },
+}
+
+const TICKET_CATEGORY: Record<string, string> = {
+  MENTENANTA: 'Mentenanță',
+  PLATA: 'Plată',
+  CONTRACT: 'Contract',
+  ALTELE: 'Altele',
+}
+
+const TICKET_PRIORITY: Record<string, { label: string; variant: BadgeVariant }> = {
+  SCAZUTA: { label: 'Scăzută', variant: 'info' },
+  NORMALA: { label: 'Normală', variant: 'info' },
+  URGENTA: { label: 'Urgentă', variant: 'danger' },
+}
+
 const PAYMENT_TYPE: Record<string, string> = {
   CHIRIE: 'Chirie',
   COMISION: 'Comision',
@@ -128,6 +178,10 @@ export function formatRon(amount: number) {
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat('ro-RO', { day: 'numeric', month: 'short' }).format(date)
+}
+
+function formatDateTime(date: Date) {
+  return new Intl.DateTimeFormat('ro-RO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(date)
 }
 
 function timeAgo(date: Date) {
@@ -228,6 +282,61 @@ export async function getContracts(user: SessionUser): Promise<ContractView[]> {
       canPay: contract.status === 'ACTIV' && contract.tenantId === user.id && Boolean(due),
       dueAmount: due ? formatRon(due.amount) : null,
       dueType: (due?.type as 'CHIRIE' | 'AVANS' | 'REST' | undefined) ?? null,
+    }
+  })
+}
+
+// Contractele de închiriere active în care utilizatorul e chiriaș — singurele pe care poate deschide tichete.
+export async function getTicketableContracts(user: SessionUser): Promise<TicketableContract[]> {
+  const contracts = await prisma.contract.findMany({
+    where: { tenantId: user.id, type: 'INCHIRIERE', status: 'ACTIV' },
+    include: { property: true },
+    orderBy: { createdAt: 'desc' },
+  })
+  return contracts.map((contract) => ({ id: contract.id, label: contract.property.title }))
+}
+
+export async function getTickets(user: SessionUser): Promise<TicketView[]> {
+  const tickets = await prisma.ticket.findMany({
+    where:
+      user.role === 'ADMIN'
+        ? {}
+        : user.role === 'OWNER'
+          ? { contract: { ownerId: user.id } }
+          : { authorId: user.id },
+    include: {
+      contract: { include: { property: true, owner: true, tenant: true } },
+      messages: { include: { author: true }, orderBy: { createdAt: 'asc' } },
+    },
+    orderBy: { updatedAt: 'desc' },
+  })
+
+  return tickets.map((ticket) => {
+    const status = TICKET_STATUS[ticket.status] ?? { label: ticket.status, variant: 'info' as BadgeVariant }
+    const priority = TICKET_PRIORITY[ticket.priority] ?? { label: ticket.priority, variant: 'info' as BadgeVariant }
+    const isAuthor = ticket.authorId === user.id
+    const counterparty = isAuthor ? ticket.contract.owner : ticket.contract.tenant
+    const canManage = ticket.contract.ownerId === user.id || user.role === 'ADMIN'
+    return {
+      id: ticket.id,
+      subject: ticket.subject,
+      property: ticket.contract.property.title,
+      counterparty: `${counterparty.firstName} ${counterparty.lastName}`,
+      category: TICKET_CATEGORY[ticket.category] ?? ticket.category,
+      priority: priority.label,
+      priorityVariant: priority.variant,
+      status: status.label,
+      statusCode: ticket.status,
+      statusVariant: status.variant,
+      date: formatDate(ticket.createdAt),
+      messages: ticket.messages.map((message) => ({
+        id: message.id,
+        author: `${message.author.firstName} ${message.author.lastName}`,
+        body: message.body,
+        date: formatDateTime(message.createdAt),
+        mine: message.authorId === user.id,
+      })),
+      canManage,
     }
   })
 }

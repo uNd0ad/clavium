@@ -13,6 +13,13 @@ const nextConfig = {
   images: {
     remotePatterns: [],
   },
+  experimental: {
+    // Permite încărcarea fotografiilor prin Server Actions: până la 8 imagini × 5 MB
+    // (vezi MAX_PHOTO_BYTES / MAX_PHOTOS_PER_PROPERTY în src/lib/storage.ts) plus overhead multipart.
+    serverActions: {
+      bodySizeLimit: '45mb',
+    },
+  },
   allowedDevOrigins: ['127.0.0.1', 'localhost'],
   async headers() {
     return [{ source: '/(.*)', headers: securityHeaders }]

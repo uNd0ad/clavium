@@ -40,6 +40,8 @@ model User {
   notifications     Notification[]
   sessions          Session[]
   emailTokens       EmailToken[]
+  ticketsAuthored   Ticket[]        @relation("TicketsAuthored")
+  ticketMessages    TicketMessage[] @relation("TicketMessages")
 }
 
 model Session {
@@ -148,6 +150,7 @@ model Contract {
   qes            Boolean   @default(false)
   status         String    @default("IN_ASTEPTARE") // IN_ASTEPTARE | SEMNAT | ACTIV | INCHEIAT
   payments       Payment[]
+  tickets        Ticket[]
   createdAt      DateTime  @default(now())
 }
 
@@ -164,6 +167,33 @@ model Payment {
   dueDate    DateTime?
   paidAt     DateTime?
   createdAt  DateTime  @default(now())
+}
+
+// Tichet de asistență deschis de chiriaș pe un contract de închiriere activ.
+// Conversația dintre chiriaș și proprietar (+ admin) se desfășoară în TicketMessage.
+model Ticket {
+  id         String          @id @default(uuid())
+  contractId String
+  contract   Contract        @relation(fields: [contractId], references: [id])
+  authorId   String // chiriașul care a deschis tichetul
+  author     User            @relation("TicketsAuthored", fields: [authorId], references: [id])
+  subject    String
+  category   String          @default("ALTELE") // MENTENANTA | PLATA | CONTRACT | ALTELE
+  priority   String          @default("NORMALA") // SCAZUTA | NORMALA | URGENTA
+  status     String          @default("DESCHIS") // DESCHIS | IN_LUCRU | REZOLVAT | INCHIS
+  messages   TicketMessage[]
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+}
+
+model TicketMessage {
+  id        String   @id @default(uuid())
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation("TicketMessages", fields: [authorId], references: [id])
+  body      String
+  createdAt DateTime @default(now())
 }
 
 model Notification {

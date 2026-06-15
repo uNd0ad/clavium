@@ -126,6 +126,23 @@ export const saleTermsSchema = z
     }
   })
 
+// Tichet nou deschis de chiriaș: subiect + categorie + prioritate + primul mesaj.
+export const ticketCreateSchema = z.object({
+  contractId: z.string().uuid('Contract invalid'),
+  subject: z.string().trim().min(4, 'Subiectul trebuie să aibă cel puțin 4 caractere').max(120, 'Subiectul este prea lung'),
+  category: z.enum(['MENTENANTA', 'PLATA', 'CONTRACT', 'ALTELE']).optional().default('ALTELE'),
+  priority: z.enum(['SCAZUTA', 'NORMALA', 'URGENTA']).optional().default('NORMALA'),
+  message: z.string().trim().min(10, 'Descrie problema în cel puțin 10 caractere').max(4000, 'Mesajul este prea lung'),
+})
+
+export const ticketReplySchema = z.object({
+  body: z.string().trim().min(1, 'Mesajul nu poate fi gol').max(4000, 'Mesajul este prea lung'),
+})
+
+export const ticketStatusSchema = z.object({
+  status: z.enum(['DESCHIS', 'IN_LUCRU', 'REZOLVAT', 'INCHIS']),
+})
+
 export const profileUpdateSchema = z.object({
   firstName: z.string().min(2, 'Prenumele trebuie să aibă cel puțin 2 caractere').optional(),
   lastName: z.string().min(2, 'Numele de familie trebuie să aibă cel puțin 2 caractere').optional(),

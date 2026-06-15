@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
-import { Home, ShoppingBag, FileText, Layers, CreditCard, User, ShieldCheck, Search } from 'lucide-react'
+import { Home, ShoppingBag, FileText, LifeBuoy, Layers, CreditCard, User, ShieldCheck, Search } from 'lucide-react'
 import { dashboardNavItems, UserProfile } from '@/types/dashboard'
 import LogoutButton from './LogoutButton'
 import NotificationTab from './NotificationTab'
@@ -15,6 +15,7 @@ const iconMap = {
   search: Search,
   offer: ShoppingBag,
   contracts: FileText,
+  tickets: LifeBuoy,
   properties: Layers,
   payments: CreditCard,
   profile: User,
