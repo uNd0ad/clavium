@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent, type KeyboardEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Plus } from 'lucide-react'
@@ -58,11 +58,21 @@ export default function NewTicketForm({ contracts }: { contracts: TicketableCont
     setLoading(false)
   }
 
+  // Cmd/Ctrl+Enter trimite formularul direct din textarea.
+  const handleTextareaKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+      event.preventDefault()
+      event.currentTarget.form?.requestSubmit()
+    }
+  }
+
   if (!open) {
     return (
-      <Button type="button" onClick={() => setOpen(true)} className="px-6 py-3 text-[13px]">
-        <Plus size={15} /> Deschide un tichet
-      </Button>
+      <div className="flex justify-end">
+        <Button type="button" onClick={() => setOpen(true)} className="px-6 py-3 text-[13px]">
+          <Plus size={15} /> Deschide un tichet
+        </Button>
+      </div>
     )
   }
 
@@ -81,13 +91,23 @@ export default function NewTicketForm({ contracts }: { contracts: TicketableCont
         </select>
       </label>
 
-      <FormField
-        label="Subiect"
-        value={subject}
-        onChange={(e) => setSubject(e.target.value)}
-        placeholder="Ex: Boilerul nu mai face apă caldă"
-        required
-      />
+      <div>
+        <FormField
+          label="Subiect"
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          placeholder="Ex: Boilerul nu mai face apă caldă"
+          minLength={4}
+          maxLength={120}
+          autoFocus
+          required
+        />
+        <p className="mt-1.5 text-[12px] text-[var(--muted)]">
+          {subject.trim().length < 4
+            ? `Încă ${4 - subject.trim().length} caractere până la minim`
+            : `${subject.trim().length}/120`}
+        </p>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block text-sm">
@@ -117,11 +137,19 @@ export default function NewTicketForm({ contracts }: { contracts: TicketableCont
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleTextareaKeyDown}
           rows={4}
+          minLength={10}
+          maxLength={4000}
           required
           className="w-full rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[14px] outline-none transition focus:border-[var(--brand)]"
           placeholder="Descrie pe scurt problema, când a apărut și orice detaliu util pentru proprietar."
         />
+        <p className="mt-1.5 text-[12px] text-[var(--muted)]">
+          {message.trim().length < 10
+            ? `Încă ${10 - message.trim().length} caractere până la minim`
+            : `${message.trim().length}/4000 · Cmd/Ctrl+Enter trimite`}
+        </p>
       </label>
 
       <div className="flex flex-wrap gap-3">

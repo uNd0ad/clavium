@@ -94,12 +94,19 @@ export type TicketView = {
   counterparty: string
   category: string
   priority: string
+  // Codul brut al priorității (SCAZUTA | NORMALA | URGENTA) pentru sortare în UI.
+  priorityCode: string
   priorityVariant: BadgeVariant
   status: string
   // Codul brut al statusului (DESCHIS | IN_LUCRU | REZOLVAT | INCHIS) pentru logica din UI.
   statusCode: string
   statusVariant: BadgeVariant
   date: string
+  // Numărul de mesaje și momentul ultimei activități (sortarea listei se face după `updatedAt`).
+  messageCount: number
+  lastActivity: string
+  // Ultimul mesaj e de la cealaltă parte (răspuns nou de citit), iar tichetul nu e închis.
+  hasNewReply: boolean
   messages: TicketMessageView[]
   // Poate schimba statusul prin orice tranziție (proprietar/admin); chiriașul are doar redeschide/închide.
   canManage: boolean
@@ -307,6 +314,7 @@ export async function getTickets(user: SessionUser): Promise<TicketView[]> {
     include: {
       contract: { include: { property: true, owner: true, tenant: true } },
       messages: { include: { author: true }, orderBy: { createdAt: 'asc' } },
+      reads: { where: { userId: user.id }, take: 1 },
     },
     orderBy: { updatedAt: 'desc' },
   })
@@ -317,6 +325,14 @@ export async function getTickets(user: SessionUser): Promise<TicketView[]> {
     const isAuthor = ticket.authorId === user.id
     const counterparty = isAuthor ? ticket.contract.owner : ticket.contract.tenant
     const canManage = ticket.contract.ownerId === user.id || user.role === 'ADMIN'
+    const lastMessage = ticket.messages[ticket.messages.length - 1]
+    const lastReadAt = ticket.reads[0]?.readAt
+    // Răspuns nou = ultimul mesaj e de la cealaltă parte și a sosit după ultima vizualizare a utilizatorului.
+    const hasNewReply =
+      ticket.status !== 'INCHIS' &&
+      !!lastMessage &&
+      lastMessage.authorId !== user.id &&
+      (!lastReadAt || lastMessage.createdAt > lastReadAt)
     return {
       id: ticket.id,
       subject: ticket.subject,
@@ -324,11 +340,15 @@ export async function getTickets(user: SessionUser): Promise<TicketView[]> {
       counterparty: `${counterparty.firstName} ${counterparty.lastName}`,
       category: TICKET_CATEGORY[ticket.category] ?? ticket.category,
       priority: priority.label,
+      priorityCode: ticket.priority,
       priorityVariant: priority.variant,
       status: status.label,
       statusCode: ticket.status,
       statusVariant: status.variant,
       date: formatDate(ticket.createdAt),
+      messageCount: ticket.messages.length,
+      lastActivity: timeAgo(ticket.updatedAt),
+      hasNewReply,
       messages: ticket.messages.map((message) => ({
         id: message.id,
         author: `${message.author.firstName} ${message.author.lastName}`,

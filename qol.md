@@ -37,5 +37,33 @@ plăcută fără a fi feature-uri mari. Bifează pe măsură ce se implementeaz�
 - [x] **Memorează ultimul tab** (Parolă/OTP) la login, pentru reveniri rapide. —
   `src/app/auth/login/page.tsx`
 
+## Tichete (review pe flux)
+
+Observații din parcurgerea fluxului de tichete (`/dashboard/tichete`) — toate cele de mai jos au fost
+implementate.
+
+- [x] **Validare live pe „Subiect" și „Descriere"** — `minLength`/`maxLength` pe câmpuri + indicator de
+  caractere care arată câte mai trebuie până la minim, în loc ca eroarea să apară abia după trimitere. —
+  `src/components/dashboard/NewTicketForm.tsx`
+- [x] **Autofocus pe „Subiect"** la deschiderea formularului de tichet nou. —
+  `src/components/dashboard/NewTicketForm.tsx`
+- [x] **Submit cu Cmd/Ctrl+Enter** în `textarea` de răspuns (`TicketCard`) și în descrierea tichetului
+  nou (`NewTicketForm`), prin `form.requestSubmit()`. —
+  `src/components/dashboard/TicketCard.tsx`, `src/components/dashboard/NewTicketForm.tsx`
+- [x] **Confirmare la „Închide tichetul"** — `ConfirmDialog` înainte de închidere (închiderea blochează
+  conversația până la redeschidere). — `src/components/dashboard/TicketCard.tsx`
+- [x] **Indicator „răspuns nou" pe rândul de tichet** — punct brand lângă subiect + badge „Răspuns nou"
+  când ultimul mesaj e de la cealaltă parte și a sosit după ultima vizualizare. Citirea e urmărită real
+  printr-un model `TicketRead` (readAt per tichet/utilizator), actualizat de `markTicketReadAction` la
+  deschiderea tichetului — așa indicatorul se golește când *citești*, nu doar când răspunzi. —
+  `prisma/schema.prisma`, `src/app/actions/tickets.ts`, `src/lib/dashboardData.ts`,
+  `src/components/dashboard/TicketCard.tsx`
+- [x] **Pe rândul colapsat: număr de mesaje + „ultima activitate"** — „N mesaje · activ {timeAgo}" lângă
+  data deschiderii, derivat din `messageCount`/`lastActivity`. —
+  `src/components/dashboard/TicketCard.tsx`, `src/lib/dashboardData.ts`
+- [x] **Filtru/sortare după status și prioritate** în lista de tichete — control client cu filtru pe
+  status și sortare activitate/prioritate (urgente întâi). —
+  `src/components/dashboard/TicketList.tsx`, `src/app/dashboard/tichete/page.tsx`
+
 > Acestea sunt opționale și se pot lua pe rând, independent. Articolele mai mari (plăți reale, QES,
 > Postgres) trăiesc în [TODO.md](TODO.md) și [UX-REVIEW.md](UX-REVIEW.md).

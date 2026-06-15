@@ -42,6 +42,7 @@ model User {
   emailTokens       EmailToken[]
   ticketsAuthored   Ticket[]        @relation("TicketsAuthored")
   ticketMessages    TicketMessage[] @relation("TicketMessages")
+  ticketReads       TicketRead[]    @relation("TicketReads")
 }
 
 model Session {
@@ -182,6 +183,7 @@ model Ticket {
   priority   String          @default("NORMALA") // SCAZUTA | NORMALA | URGENTA
   status     String          @default("DESCHIS") // DESCHIS | IN_LUCRU | REZOLVAT | INCHIS
   messages   TicketMessage[]
+  reads      TicketRead[]
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
 }
@@ -194,6 +196,18 @@ model TicketMessage {
   author    User     @relation("TicketMessages", fields: [authorId], references: [id])
   body      String
   createdAt DateTime @default(now())
+}
+
+// Ultima dată când un utilizator a deschis un tichet — pentru indicatorul „răspuns nou".
+model TicketRead {
+  id       String   @id @default(uuid())
+  ticketId String
+  ticket   Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User     @relation("TicketReads", fields: [userId], references: [id], onDelete: Cascade)
+  readAt   DateTime @default(now())
+
+  @@unique([ticketId, userId])
 }
 
 model Notification {

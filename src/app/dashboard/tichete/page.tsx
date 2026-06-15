@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import EmptyState from '@/components/dashboard/EmptyState'
 import NewTicketForm from '@/components/dashboard/NewTicketForm'
-import TicketCard from '@/components/dashboard/TicketCard'
+import TicketList from '@/components/dashboard/TicketList'
 import { getCurrentUser } from '@/lib/session'
 import { getTickets, getTicketableContracts } from '@/lib/dashboardData'
 
@@ -27,8 +27,9 @@ export default async function DashboardTicketsPage() {
         title="Tichete"
         accent="& sesizări"
         description={description}
-        action={canOpen ? <NewTicketForm contracts={ticketableContracts} /> : undefined}
       />
+
+      {canOpen ? <NewTicketForm contracts={ticketableContracts} /> : null}
 
       <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
         {tickets.length === 0 ? (
@@ -43,11 +44,7 @@ export default async function DashboardTicketsPage() {
             cta={user.role === 'CLIENT' && !canOpen ? { label: 'Vezi contractele', href: '/dashboard/contracte' } : undefined}
           />
         ) : (
-          <div className="space-y-4">
-            {tickets.map((ticket) => (
-              <TicketCard key={ticket.id} ticket={ticket} />
-            ))}
-          </div>
+          <TicketList tickets={tickets} />
         )}
       </div>
     </section>

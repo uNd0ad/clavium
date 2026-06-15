@@ -1,13 +1,14 @@
 'use client'
 
-import { useState, useTransition, type FormEvent } from 'react'
+import { useState, useTransition, type FormEvent, type KeyboardEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import clsx from 'clsx'
 import { ChevronDown, Send } from 'lucide-react'
 import Button from '@/components/ui/Button'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import StatusBadge from './StatusBadge'
-import { replyToTicketAction, setTicketStatusAction } from '@/app/actions/tickets'
+import { markTicketReadAction, replyToTicketAction, setTicketStatusAction } from '@/app/actions/tickets'
 import type { TicketView } from '@/lib/dashboardData'
 
 const MANAGER_STATUSES = [
@@ -21,6 +22,7 @@ export default function TicketCard({ ticket }: { ticket: TicketView }) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [reply, setReply] = useState('')
+  const [confirmClose, setConfirmClose] = useState(false)
   const [pending, startTransition] = useTransition()
 
   const closed = ticket.statusCode === 'INCHIS'
@@ -54,16 +56,43 @@ export default function TicketCard({ ticket }: { ticket: TicketView }) {
   const changeStatus = (status: string, success: string) =>
     run(() => setTicketStatusAction(ticket.id, { status }), success)
 
+  // La deschiderea unui tichet cu răspuns nou, îl marcăm ca citit (golește indicatorul).
+  const toggleOpen = () => {
+    const next = !open
+    setOpen(next)
+    if (next && ticket.hasNewReply) {
+      startTransition(async () => {
+        await markTicketReadAction(ticket.id)
+        router.refresh()
+      })
+    }
+  }
+
+  // Cmd/Ctrl+Enter trimite răspunsul direct din textarea.
+  const handleReplyKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+      event.preventDefault()
+      event.currentTarget.form?.requestSubmit()
+    }
+  }
+
   return (
     <div className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
-      <button onClick={() => setOpen((value) => !value)} className="flex w-full items-start justify-between gap-4 text-left">
+      <button onClick={toggleOpen} className="flex w-full items-start justify-between gap-4 text-left">
         <div className="min-w-0">
-          <p className="truncate text-lg font-semibold">{ticket.subject}</p>
+          <div className="flex items-center gap-2">
+            {ticket.hasNewReply ? (
+              <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-[var(--brand)]" aria-hidden />
+            ) : null}
+            <p className="truncate text-lg font-semibold">{ticket.subject}</p>
+          </div>
           <p className="mt-1 text-sm text-[var(--muted)]">
-            {ticket.property} · {ticket.counterparty} · deschis {ticket.date}
+            {ticket.property} · {ticket.counterparty} · deschis {ticket.date} · {ticket.messageCount}{' '}
+            {ticket.messageCount === 1 ? 'mesaj' : 'mesaje'} · activ {ticket.lastActivity}
           </p>
         </div>
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+          {ticket.hasNewReply ? <StatusBadge label="Răspuns nou" variant="success" /> : null}
           <StatusBadge label={ticket.category} variant="info" />
           <StatusBadge label={ticket.priority} variant={ticket.priorityVariant} />
           <StatusBadge label={ticket.status} variant={ticket.statusVariant} />
@@ -100,9 +129,11 @@ export default function TicketCard({ ticket }: { ticket: TicketView }) {
               <textarea
                 value={reply}
                 onChange={(e) => setReply(e.target.value)}
+                onKeyDown={handleReplyKeyDown}
                 rows={3}
+                maxLength={4000}
                 className="w-full rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[14px] outline-none transition focus:border-[var(--brand)]"
-                placeholder="Scrie un răspuns…"
+                placeholder="Scrie un răspuns… (Cmd/Ctrl+Enter trimite)"
               />
               <Button type="submit" loading={pending} disabled={!reply.trim()} className="px-5 py-2.5 text-[12px]">
                 <Send size={14} /> Trimite răspunsul
@@ -155,7 +186,7 @@ export default function TicketCard({ ticket }: { ticket: TicketView }) {
                     type="button"
                     variant="outline"
                     loading={pending}
-                    onClick={() => changeStatus('INCHIS', 'Tichet închis.')}
+                    onClick={() => setConfirmClose(true)}
                     className="px-5 py-2.5 text-[12px]"
                   >
                     Închide tichetul
@@ -166,6 +197,20 @@ export default function TicketCard({ ticket }: { ticket: TicketView }) {
           </div>
         </div>
       ) : null}
+
+      <ConfirmDialog
+        open={confirmClose}
+        title="Închizi tichetul?"
+        description="După închidere, conversația se blochează până la redeschidere. Poți redeschide tichetul oricând."
+        confirmLabel="Închide tichetul"
+        cancelLabel="Renunță"
+        loading={pending}
+        onConfirm={() => {
+          setConfirmClose(false)
+          changeStatus('INCHIS', 'Tichet închis.')
+        }}
+        onCancel={() => setConfirmClose(false)}
+      />
     </div>
   )
 }

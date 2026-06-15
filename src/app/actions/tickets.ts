@@ -108,6 +108,34 @@ export async function replyToTicketAction(ticketId: string, input: unknown) {
   }
 }
 
+// Marchează tichetul ca vizualizat de utilizatorul curent (golește indicatorul „răspuns nou").
+export async function markTicketReadAction(ticketId: string) {
+  try {
+    const user = await requireActionUser()
+
+    const ticket = await prisma.ticket.findUnique({
+      where: { id: ticketId },
+      include: { contract: { select: { ownerId: true } } },
+    })
+    if (!ticket) return { ok: false as const, error: 'Tichetul nu există.' }
+
+    const isParty = ticket.authorId === user.id || ticket.contract.ownerId === user.id || user.role === 'ADMIN'
+    if (!isParty) return { ok: false as const, error: 'Nu ești parte în acest tichet.' }
+
+    const now = new Date()
+    await prisma.ticketRead.upsert({
+      where: { ticketId_userId: { ticketId, userId: user.id } },
+      create: { ticketId, userId: user.id, readAt: now },
+      update: { readAt: now },
+    })
+
+    revalidatePath(TICKETS_PATH)
+    return { ok: true as const }
+  } catch (err) {
+    return { ok: false as const, error: errorMessage(err) }
+  }
+}
+
 export async function setTicketStatusAction(ticketId: string, input: unknown) {
   try {
     const user = await requireActionUser()
