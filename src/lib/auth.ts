@@ -19,6 +19,7 @@ import { sendSms } from './sms'
 import { sendEmail } from './email'
 import { sha256, randomToken } from './hash'
 import { JWT_SECRET, APP_URL } from './constants'
+import { captureException } from './logger'
 import type {
   AuthPayload,
   LoginRequest,
@@ -125,7 +126,7 @@ export async function registerUser(data: RegisterRequest) {
   try {
     await sendVerificationEmail(user)
   } catch (error) {
-    console.error('Nu s-a putut trimite emailul de verificare:', error)
+    captureException(error, { op: 'sendVerificationEmail', userId: user.id })
   }
   return user
 }

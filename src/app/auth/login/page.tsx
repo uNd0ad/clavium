@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, type FormEvent } from 'react'
+import { useState, useSyncExternalStore, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import FormField from '@/components/ui/FormField'
@@ -9,10 +9,23 @@ import Button from '@/components/ui/Button'
 import { useCooldown } from '@/hooks/useCooldown'
 
 const LOGIN_TAB_KEY = 'clavium_login_tab'
+type LoginTab = 'password' | 'otp'
+
+// Citim tab-ul memorat dintr-un „external store” (localStorage) prin useSyncExternalStore,
+// nu printr-un useEffect cu setState — evită atât renderurile în cascadă, cât și flash-ul
+// de hidratare (serverul randează mereu 'password', clientul corectează imediat).
+function subscribeTab(onChange: () => void) {
+  window.addEventListener('storage', onChange)
+  return () => window.removeEventListener('storage', onChange)
+}
+
+function readTab(): LoginTab {
+  return window.localStorage.getItem(LOGIN_TAB_KEY) === 'otp' ? 'otp' : 'password'
+}
 
 export default function LoginPage() {
   const router = useRouter()
-  const [mode, setMode] = useState<'password' | 'otp'>('password')
+  const mode = useSyncExternalStore(subscribeTab, readTab, () => 'password' as LoginTab)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [otp, setOtp] = useState('')
@@ -20,14 +33,10 @@ export default function LoginPage() {
   const [otpSent, setOtpSent] = useState(false)
   const resendCooldown = useCooldown(30)
 
-  useEffect(() => {
-    const saved = localStorage.getItem(LOGIN_TAB_KEY)
-    if (saved === 'password' || saved === 'otp') setMode(saved)
-  }, [])
-
-  const switchMode = (next: 'password' | 'otp') => {
-    setMode(next)
-    localStorage.setItem(LOGIN_TAB_KEY, next)
+  const switchMode = (next: LoginTab) => {
+    window.localStorage.setItem(LOGIN_TAB_KEY, next)
+    // `storage` nu se declanșează în tab-ul curent — îl emitem manual ca store-ul să re-citească.
+    window.dispatchEvent(new StorageEvent('storage', { key: LOGIN_TAB_KEY }))
   }
 
   const handlePasswordSubmit = async (event: FormEvent<HTMLFormElement>) => {

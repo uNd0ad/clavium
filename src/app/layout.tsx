@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { headers } from 'next/headers'
 import { Toaster } from 'sonner'
 import CookieBanner from '@/components/layout/CookieBanner'
 import './globals.css'
@@ -31,11 +32,13 @@ export const metadata: Metadata = {
 // Aplică tema salvată (sau preferința sistemului) înainte de paint, ca să nu apară un flash.
 const themeScript = `(function(){try{var e=localStorage.getItem('theme');var d=e?e==='dark':matchMedia('(prefers-color-scheme: dark)').matches;var c=document.documentElement.classList;d?c.add('dark'):c.remove('dark');}catch(_){}})();`
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Nonce-ul vine din middleware (CSP) — îl punem pe scriptul inline ca să treacă de politică.
+  const nonce = (await headers()).get('x-nonce') ?? undefined
   return (
     <html lang="ro" className={inter.variable} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
         {children}

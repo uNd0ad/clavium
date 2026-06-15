@@ -1,6 +1,7 @@
 // Trimitere SMS prin SMSO.ro (https://api-docs.smso.ro/).
 // Necesită în .env: SMS_API_URL, SMS_API_KEY și SMS_SENDER_ID (din GET /api/v1/senders).
 // Fără aceste variabile, codul se afișează doar în consola serverului (mod dev).
+import { logger } from './logger'
 
 const SMSO_ERRORS: Record<number, string> = {
   400: 'Cerere invalidă către furnizorul SMS.',
@@ -46,7 +47,7 @@ export async function sendSms(phone: string, message: string): Promise<void> {
   const status = result?.status ?? response.status
 
   if (!response.ok || status !== 200) {
-    console.error('SMSO error:', response.status, result)
+    logger.error('SMSO error', { httpStatus: response.status, result })
     throw new Error(SMSO_ERRORS[status] ?? 'Trimiterea SMS-ului a eșuat. Încearcă din nou.')
   }
 }

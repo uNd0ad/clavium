@@ -1,5 +1,6 @@
 import { prisma } from './prisma'
 import { sha256 } from './hash'
+import { captureException } from './logger'
 import type { User } from '@prisma/client'
 import type { User as AppUser, CompanyInput, AccountType } from './types/auth'
 import type { UserRole } from './types/roles'
@@ -38,7 +39,7 @@ export async function findUserByEmail(email: string): Promise<AppUser | null> {
     const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } })
     return user ? toUser(user) : null
   } catch (err) {
-    console.error('findUserByEmail error:', err)
+    captureException(err, { op: 'findUserByEmail' })
     return null
   }
 }
@@ -83,7 +84,7 @@ export async function getUserById(id: string): Promise<AppUser | null> {
     const user = await prisma.user.findUnique({ where: { id } })
     return user ? toUser(user) : null
   } catch (err) {
-    console.error('getUserById error:', err)
+    captureException(err, { op: 'getUserById' })
     return null
   }
 }
