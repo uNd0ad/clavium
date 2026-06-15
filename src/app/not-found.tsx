@@ -21,7 +21,7 @@ export default function NotFound() {
             Am pierdut firul acestei adrese
           </h1>
 
-          <p className="mx-auto mt-4 max-w-md text-[15px] leading-7 text-[var(--muted)]">
+          <p className="mx-auto mt-4 max-w-md text-base leading-7 text-[var(--muted)]">
             Pagina pe care o cauți nu există, a fost mutată sau linkul este greșit. Hai să te ducem înapoi pe drumul cel bun.
           </p>
 

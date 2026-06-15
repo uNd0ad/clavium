@@ -25,7 +25,7 @@ export default function HeroSection() {
               Real estate, construită ca un produs.
             </h1>
 
-            <p className="mt-8 max-w-xl text-[15px] lg:text-[16px] text-[var(--muted)] leading-8">
+            <p className="mt-8 max-w-xl text-base lg:text-base text-[var(--muted)] leading-8">
               Găsești și semnezi contractul imobiliar într-o interfață curată, rapidă și sigură. Fără comision, fără agitație, complet digital.
             </p>
 
@@ -40,9 +40,9 @@ export default function HeroSection() {
           </div>
 
           <div className="lg:col-span-5">
-            <div className="glass-panel p-8 lg:p-10 rounded-[32px] border border-white/85 backdrop-blur-xl">
+            <div className="glass-panel p-8 lg:p-10 rounded-4xl border border-white/85 backdrop-blur-xl">
               <div className="mb-8">
-                <span className="inline-flex items-center rounded-full bg-[var(--brand-soft)] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
+                <span className="inline-flex items-center rounded-full bg-[var(--brand-soft)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
                   100% digital · semnătură QES
                 </span>
               </div>
@@ -53,28 +53,28 @@ export default function HeroSection() {
                   { label: 'Digital complet', value: '24 h' },
                   { label: 'Contract legal', value: 'QES & eIDAS' },
                 ].map((item) => (
-                  <div key={item.label} className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
-                    <div className="text-[14px] uppercase tracking-[0.18em] text-[var(--muted)] mb-2">
+                  <div key={item.label} className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5">
+                    <div className="text-sm uppercase tracking-[0.18em] text-[var(--muted)] mb-2">
                       {item.label}
                     </div>
-                    <div className="text-[28px] font-semibold text-[var(--text)]">
+                    <div className="text-3xl font-semibold text-[var(--text)]">
                       {item.value}
                     </div>
                   </div>
                 ))}
               </div>*/}
 
-              <div className="mt-10 rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-5 shadow-[0_16px_40px_rgba(15,23,42,0.08)]">
+              <div className="mt-10 rounded-4xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-[0_16px_40px_rgba(15,23,42,0.08)]">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="relative">
-                    <label className="text-[11px] uppercase tracking-[0.22em] text-[var(--muted)] mb-2 block">
+                    <label className="text-2xs uppercase tracking-[0.22em] text-[var(--muted)] mb-2 block">
                       Tip tranzacție
                     </label>
                     <div className="relative">
                       <select
                         value={txType}
                         onChange={(e) => setTxType(e.target.value)}
-                        className="appearance-none w-full rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[14px] text-[var(--text)] outline-none"
+                        className="appearance-none w-full rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm text-[var(--text)] outline-none"
                       >
                         {TRANSACTION_TYPES.map((t) => (
                           <option key={t}>{t}</option>
@@ -85,14 +85,14 @@ export default function HeroSection() {
                   </div>
 
                   <div className="relative">
-                    <label className="text-[11px] uppercase tracking-[0.22em] text-[var(--muted)] mb-2 block">
+                    <label className="text-2xs uppercase tracking-[0.22em] text-[var(--muted)] mb-2 block">
                       Tip proprietate
                     </label>
                     <div className="relative">
                       <select
                         value={propType}
                         onChange={(e) => setPropType(e.target.value)}
-                        className="appearance-none w-full rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[14px] text-[var(--text)] outline-none"
+                        className="appearance-none w-full rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm text-[var(--text)] outline-none"
                       >
                         {PROPERTY_TYPES.map((t) => (
                           <option key={t}>{t}</option>
@@ -104,7 +104,7 @@ export default function HeroSection() {
                 </div>
 
                 <div className="mt-4 relative">
-                  <label className="text-[11px] uppercase tracking-[0.22em] text-[var(--muted)] mb-2 block">
+                  <label className="text-2xs uppercase tracking-[0.22em] text-[var(--muted)] mb-2 block">
                     Locație
                   </label>
                   <div className="relative">
@@ -112,7 +112,7 @@ export default function HeroSection() {
                     <input
                       type="text"
                       placeholder="Oraș sau cartier..."
-                      className="w-full rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 pl-11 text-[14px] text-[var(--text)] outline-none"
+                      className="w-full rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 pl-11 text-sm text-[var(--text)] outline-none"
                     />
                   </div>
                 </div>
@@ -123,7 +123,7 @@ export default function HeroSection() {
                 </button>
               </div>
 
-              <p className="mt-5 text-[12px] text-[var(--muted)] tracking-[0.16em] uppercase">
+              <p className="mt-5 text-xs text-[var(--muted)] tracking-[0.16em] uppercase">
                 Timișoara · Cluj-Napoca · București · Iași · Brașov · Oradea
               </p>
             </div>

@@ -19,7 +19,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(0,113,227,0.18),_transparent_22%),radial-gradient(circle_at_bottom_right,_rgba(0,113,227,0.12),_transparent_30%)] opacity-95" />
 
         <div className="page-transition relative w-full max-w-xl">
-          <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[28px] bg-[var(--brand-soft)] text-[var(--brand)]">
+          <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-4xl bg-[var(--brand-soft)] text-[var(--brand)]">
             <TriangleAlert size={44} strokeWidth={1.6} />
           </div>
 
@@ -29,12 +29,12 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
             Ceva nu a funcționat
           </h1>
 
-          <p className="mx-auto mt-4 max-w-md text-[15px] leading-7 text-[var(--muted)]">
+          <p className="mx-auto mt-4 max-w-md text-base leading-7 text-[var(--muted)]">
             Ne pare rău, a intervenit o eroare neașteptată. Încearcă din nou — dacă problema persistă, revino mai târziu.
           </p>
 
           {error.digest ? (
-            <p className="mt-4 text-[12px] uppercase tracking-[0.18em] text-[var(--muted)]">Cod eroare: {error.digest}</p>
+            <p className="mt-4 text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Cod eroare: {error.digest}</p>
           ) : null}
 
           <div className="mt-9 flex flex-wrap justify-center gap-4">

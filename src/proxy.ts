@@ -22,7 +22,9 @@ function buildCsp(nonce: string) {
     `base-uri 'self'`,
     `form-action 'self'`,
     `object-src 'none'`,
-    `upgrade-insecure-requests`,
+    // Doar în producție (HTTPS). În dev pe http://localhost ar forța upgrade-ul subresurselor
+    // (CSS/JS) la https, pe care serverul de dev nu-l servește — pagina ar rămâne nestilizată.
+    ...(isDev ? [] : ['upgrade-insecure-requests']),
   ].join('; ')
 }
 

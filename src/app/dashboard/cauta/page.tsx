@@ -37,11 +37,11 @@ export default async function DashboardSearchPage({ searchParams }: { searchPara
         <EmptyState
           message="Nicio proprietate nu corespunde căutării. Încearcă alte filtre."
           cta={hasFilters ? { label: 'Resetează filtrele', href: '/dashboard/cauta' } : undefined}
-          className="p-8 text-[15px]"
+          className="p-8 text-base"
         />
       ) : (
         <div className="space-y-6">
-          <p className="text-[13px] uppercase tracking-[0.18em] text-[var(--muted)]">
+          <p className="text-sm uppercase tracking-[0.18em] text-[var(--muted)]">
             {properties.length} {properties.length === 1 ? 'proprietate disponibilă' : 'proprietăți disponibile'}
           </p>
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">

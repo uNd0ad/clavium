@@ -49,7 +49,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
           >
             <ArrowLeft size={15} /> Înapoi la căutare
           </Link>
-          <CopyLinkButton path={`/proprietati/${property.id}`} className="py-3 text-[13px]" />
+          <CopyLinkButton path={`/proprietati/${property.id}`} className="py-3 text-sm" />
         </div>
         <div className="grid gap-8 lg:grid-cols-[1.6fr_1fr]">
           <div className="space-y-8">
@@ -93,15 +93,15 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             </div>
 
             {property.description ? (
-              <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">
+              <div className="rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6">
                 <h2 className="text-xl font-semibold">Descriere</h2>
-                <p className="mt-4 whitespace-pre-line text-[15px] leading-7 text-[var(--muted)]">{property.description}</p>
+                <p className="mt-4 whitespace-pre-line text-base leading-7 text-[var(--muted)]">{property.description}</p>
               </div>
             ) : null}
 
-            <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">
+            <div className="rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6">
               <h2 className="text-xl font-semibold">Proprietar</h2>
-              <p className="mt-3 text-[15px] text-[var(--muted)]">
+              <p className="mt-3 text-base text-[var(--muted)]">
                 {property.owner.firstName} {property.owner.lastName} · membru din{' '}
                 {new Intl.DateTimeFormat('ro-RO', { year: 'numeric', month: 'long' }).format(property.owner.createdAt)}
               </p>

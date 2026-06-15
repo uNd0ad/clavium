@@ -64,27 +64,27 @@ function ResetForm() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-semibold text-[var(--text)]">{token ? 'Setează o parolă nouă' : 'Resetează parola'}</h1>
-        <p className="mt-2 text-[15px] text-[var(--muted)]">
+        <p className="mt-2 text-base text-[var(--muted)]">
           {token ? 'Alege o parolă nouă pentru contul tău.' : 'Introdu adresa de email și îți trimitem un link de resetare.'}
         </p>
       </div>
 
       {done ? (
-        <p className="rounded-[24px] border border-emerald-200 bg-emerald-50 p-5 text-sm font-semibold text-emerald-800">
+        <p className="rounded-3xl border border-emerald-200 bg-emerald-50 p-5 text-sm font-semibold text-emerald-800">
           Dacă există un cont cu această adresă, vei primi un email cu linkul de resetare.
         </p>
       ) : token ? (
         <form onSubmit={handleConfirm} className="space-y-5">
           <FormField label="Parola nouă" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
           <FormField label="Confirmă parola" type="password" autoComplete="new-password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" required />
-          <Button type="submit" loading={loading} disabled={password.length < 8} className="w-full py-4 text-[14px]">
+          <Button type="submit" loading={loading} disabled={password.length < 8} className="w-full py-4 text-sm">
             Resetează parola
           </Button>
         </form>
       ) : (
         <form onSubmit={handleRequest} className="space-y-5">
           <FormField label="Email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="exemplu@domeniu.ro" required />
-          <Button type="submit" loading={loading} className="w-full py-4 text-[14px]">
+          <Button type="submit" loading={loading} className="w-full py-4 text-sm">
             Trimite link de resetare
           </Button>
         </form>

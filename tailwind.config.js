@@ -16,9 +16,20 @@ module.exports = {
         sans:  ['var(--font-sans)', 'system-ui', 'sans-serif'],
       },
       fontSize: {
+        // Scala de bază rămâne cea Tailwind (xs=12, sm=14, base=16, lg=18, xl=20, 2xl=24, 3xl=30);
+        // adăugăm doar treapta lipsă de 11px folosită pentru etichete mici/uppercase.
+        '2xs': ['11px', { lineHeight: '1.45' }],
         display: ['clamp(52px,7vw,96px)', { lineHeight: '1.02', letterSpacing: '-0.02em' }],
         hero:    ['clamp(40px,5vw,72px)',  { lineHeight: '1.06', letterSpacing: '-0.015em' }],
         title:   ['clamp(28px,3vw,44px)',  { lineHeight: '1.15', letterSpacing: '-0.01em' }],
+      },
+      // Scală de rază unică (xl=14, 2xl=18, 3xl=24, 4xl=32) — valorile reale ale designului, ca
+      // tokenuri în loc de zeci de `rounded-[..px]` ad-hoc. `rounded-full` rămâne pentru pastile/avatare.
+      borderRadius: {
+        xl: '14px',
+        '2xl': '18px',
+        '3xl': '24px',
+        '4xl': '32px',
       },
       animation: {
         'fade-up':   'fadeUp 0.7s ease forwards',

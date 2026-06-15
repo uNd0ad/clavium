@@ -109,13 +109,13 @@ export default function LoginPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-semibold text-[var(--text)]">Bine ai revenit</h1>
-        <p className="mt-2 text-[15px] text-[var(--muted)]">
+        <p className="mt-2 text-base text-[var(--muted)]">
           Nu ai cont încă?{' '}
           <a href="/auth/register" className="font-semibold text-[var(--brand)]">Înregistrează-te gratuit</a>
         </p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-4 text-[13px] text-[var(--muted)]">
+      <div className="flex flex-wrap items-center gap-3 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--muted)]">
         <button
           type="button"
           onClick={() => switchMode('password')}
@@ -136,7 +136,7 @@ export default function LoginPage() {
         <form onSubmit={handlePasswordSubmit} className="space-y-5">
           <FormField label="Email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="exemplu@domeniu.ro" />
           <FormField label="Parolă" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="••••••••" />
-          <Button type="submit" loading={loading} className="w-full py-4 text-[14px]">
+          <Button type="submit" loading={loading} className="w-full py-4 text-sm">
             Conectează-te
           </Button>
           <p className="text-sm text-[var(--muted)]">
@@ -147,15 +147,15 @@ export default function LoginPage() {
         <div className="space-y-5">
           <FormField label="Email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="exemplu@domeniu.ro" />
           <div className="grid gap-4 sm:grid-cols-2">
-            <Button type="button" variant="outline" loading={loading} disabled={resendCooldown.active} onClick={handleOtpSend} className="w-full py-4 text-[14px]">
+            <Button type="button" variant="outline" loading={loading} disabled={resendCooldown.active} onClick={handleOtpSend} className="w-full py-4 text-sm">
               {resendCooldown.active ? `Retrimite în ${resendCooldown.remaining}s` : otpSent ? 'Retrimite codul' : 'Trimite cod OTP'}
             </Button>
-            <Button type="button" loading={loading} disabled={otp.length < 6} onClick={handleOtpVerify} className="w-full py-4 text-[14px]">
+            <Button type="button" loading={loading} disabled={otp.length < 6} onClick={handleOtpVerify} className="w-full py-4 text-sm">
               Verifică cod OTP
             </Button>
           </div>
           <div>
-            <label className="mb-2 block text-[13px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+            <label className="mb-2 block text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
               Cod OTP
             </label>
             <OtpInput value={otp} onChange={setOtp} />

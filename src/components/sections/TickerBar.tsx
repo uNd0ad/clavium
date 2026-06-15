@@ -18,7 +18,7 @@ export default function TickerBar() {
           {[...items, ...items].map((item, i) => (
             <span
               key={i}
-              className="flex items-center gap-6 px-8 text-[11px] tracking-[0.18em] uppercase text-[var(--muted)]"
+              className="flex items-center gap-6 px-8 text-2xs tracking-[0.18em] uppercase text-[var(--muted)]"
             >
               {item}
               <span className="w-1 h-1 rounded-full bg-[var(--brand)]/60 shrink-0" />

@@ -77,7 +77,7 @@ export default function TicketCard({ ticket }: { ticket: TicketView }) {
   }
 
   return (
-    <div className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
+    <div className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5">
       <button onClick={toggleOpen} className="flex w-full items-start justify-between gap-4 text-left">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
@@ -107,21 +107,21 @@ export default function TicketCard({ ticket }: { ticket: TicketView }) {
               <div
                 key={message.id}
                 className={clsx(
-                  'rounded-[18px] border border-[var(--border)] p-4',
+                  'rounded-2xl border border-[var(--border)] p-4',
                   message.mine ? 'bg-[var(--brand-soft)]' : 'bg-[var(--surface)]'
                 )}
               >
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-[13px] font-semibold">{message.mine ? 'Tu' : message.author}</p>
-                  <p className="text-[12px] text-[var(--muted)]">{message.date}</p>
+                  <p className="text-sm font-semibold">{message.mine ? 'Tu' : message.author}</p>
+                  <p className="text-xs text-[var(--muted)]">{message.date}</p>
                 </div>
-                <p className="mt-2 whitespace-pre-wrap text-[14px] leading-6 text-[var(--text)]">{message.body}</p>
+                <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-[var(--text)]">{message.body}</p>
               </div>
             ))}
           </div>
 
           {closed ? (
-            <p className="rounded-[18px] border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--muted)]">
+            <p className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--muted)]">
               Tichetul este închis. Redeschide-l pentru a continua conversația.
             </p>
           ) : (
@@ -132,10 +132,10 @@ export default function TicketCard({ ticket }: { ticket: TicketView }) {
                 onKeyDown={handleReplyKeyDown}
                 rows={3}
                 maxLength={4000}
-                className="w-full rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[14px] outline-none transition focus:border-[var(--brand)]"
+                className="w-full rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm outline-none transition focus:border-[var(--brand)]"
                 placeholder="Scrie un răspuns… (Cmd/Ctrl+Enter trimite)"
               />
-              <Button type="submit" loading={pending} disabled={!reply.trim()} className="px-5 py-2.5 text-[12px]">
+              <Button type="submit" loading={pending} disabled={!reply.trim()} className="px-5 py-2.5 text-xs">
                 <Send size={14} /> Trimite răspunsul
               </Button>
             </form>
@@ -143,13 +143,13 @@ export default function TicketCard({ ticket }: { ticket: TicketView }) {
 
           <div className="flex flex-wrap items-center gap-3 border-t border-[var(--border)] pt-4">
             {ticket.canManage ? (
-              <label className="inline-flex items-center gap-2 text-[13px] text-[var(--muted)]">
+              <label className="inline-flex items-center gap-2 text-sm text-[var(--muted)]">
                 Status
                 <select
                   value={ticket.statusCode}
                   disabled={pending}
                   onChange={(e) => changeStatus(e.target.value, 'Statusul tichetului a fost actualizat.')}
-                  className="rounded-[14px] border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--text)] outline-none transition focus:border-[var(--brand)]"
+                  className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none transition focus:border-[var(--brand)]"
                 >
                   {MANAGER_STATUSES.map((item) => (
                     <option key={item.value} value={item.value}>
@@ -166,7 +166,7 @@ export default function TicketCard({ ticket }: { ticket: TicketView }) {
                     variant="outline"
                     loading={pending}
                     onClick={() => changeStatus('REZOLVAT', 'Tichet marcat ca rezolvat.')}
-                    className="px-5 py-2.5 text-[12px]"
+                    className="px-5 py-2.5 text-xs"
                   >
                     Marchează rezolvat
                   </Button>
@@ -177,7 +177,7 @@ export default function TicketCard({ ticket }: { ticket: TicketView }) {
                     variant="outline"
                     loading={pending}
                     onClick={() => changeStatus('DESCHIS', 'Tichet redeschis.')}
-                    className="px-5 py-2.5 text-[12px]"
+                    className="px-5 py-2.5 text-xs"
                   >
                     Redeschide tichetul
                   </Button>
@@ -187,7 +187,7 @@ export default function TicketCard({ ticket }: { ticket: TicketView }) {
                     variant="outline"
                     loading={pending}
                     onClick={() => setConfirmClose(true)}
-                    className="px-5 py-2.5 text-[12px]"
+                    className="px-5 py-2.5 text-xs"
                   >
                     Închide tichetul
                   </Button>

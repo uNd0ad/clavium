@@ -61,25 +61,25 @@ export default function PropertyForm() {
 
   if (!open) {
     return (
-      <Button type="button" onClick={() => setOpen(true)} className="px-6 py-3 text-[13px]">
+      <Button type="button" onClick={() => setOpen(true)} className="px-6 py-3 text-sm">
         <Plus size={16} /> Adaugă proprietate
       </Button>
     )
   }
 
   return (
-    <form onSubmit={handleSubmit} className="step-transition space-y-5 rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">
+    <form onSubmit={handleSubmit} className="step-transition space-y-5 rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6">
       <h2 className="text-xl font-semibold">Proprietate nouă</h2>
       <FormField label="Titlu" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Apartament 2 camere Dorobanți" required />
       <div>
-        <span className="mb-2 block text-[13px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Tip tranzacție</span>
+        <span className="mb-2 block text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Tip tranzacție</span>
         <div className="grid grid-cols-2 gap-2">
           {([['INCHIRIERE', 'Închiriere'], ['VANZARE', 'Vânzare']] as const).map(([value, label]) => (
             <button
               key={value}
               type="button"
               onClick={() => setTransactionType(value)}
-              className={`rounded-[18px] border px-4 py-3 text-[13px] font-semibold transition ${
+              className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
                 transactionType === value
                   ? 'border-[var(--brand)] bg-[var(--brand-soft)] text-[var(--brand)]'
                   : 'border-[var(--border)] text-[var(--muted)] hover:border-[var(--brand)]'
@@ -101,12 +101,12 @@ export default function PropertyForm() {
         <FormField label="Suprafață m² (opțional)" type="number" min={1} value={surface} onChange={(e) => setSurface(e.target.value)} placeholder="56" />
       </div>
       <label className="block text-sm">
-        <span className="mb-2 block text-[13px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Descriere (opțional)</span>
+        <span className="mb-2 block text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Descriere (opțional)</span>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={4}
-          className="w-full rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[14px] outline-none transition focus:border-[var(--brand)]"
+          className="w-full rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm outline-none transition focus:border-[var(--brand)]"
           placeholder="Detalii despre proprietate..."
         />
       </label>
@@ -114,7 +114,7 @@ export default function PropertyForm() {
         <button
           type="button"
           onClick={() => photosRef.current?.click()}
-          className="flex items-center gap-2 rounded-[18px] border border-dashed border-[var(--border)] px-5 py-3 text-[13px] text-[var(--muted)] transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
+          className="flex items-center gap-2 rounded-2xl border border-dashed border-[var(--border)] px-5 py-3 text-sm text-[var(--muted)] transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
         >
           <ImagePlus size={16} />
           {photoCount > 0 ? `${photoCount} fotografii selectate` : 'Adaugă fotografii (max 8, JPEG/PNG/WebP, 5 MB)'}
@@ -129,10 +129,10 @@ export default function PropertyForm() {
         />
       </div>
       <div className="flex flex-wrap gap-3">
-        <Button type="submit" loading={loading} className="px-6 py-3 text-[13px]">
+        <Button type="submit" loading={loading} className="px-6 py-3 text-sm">
           Publică proprietatea
         </Button>
-        <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading} className="px-6 py-3 text-[13px]">
+        <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading} className="px-6 py-3 text-sm">
           Renunță
         </Button>
       </div>

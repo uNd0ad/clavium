@@ -24,16 +24,16 @@ export default async function DashboardPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {stats.map((item) => (
-          <div key={item.label} className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
-            <p className="text-[13px] uppercase tracking-[0.18em] text-[var(--muted)]">{item.label}</p>
-            <p className="mt-3 text-[32px] font-semibold tracking-[-0.02em]">{item.value}</p>
+          <div key={item.label} className="rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
+            <p className="text-sm uppercase tracking-[0.18em] text-[var(--muted)]">{item.label}</p>
+            <p className="mt-3 text-3xl font-semibold tracking-[-0.02em]">{item.value}</p>
             {item.highlight ? <p className="mt-4 text-sm text-[var(--muted)]">{item.highlight}</p> : null}
           </div>
         ))}
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
-        <div className="space-y-6 rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
+        <div className="space-y-6 rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold">Alerte</h2>
@@ -43,7 +43,7 @@ export default async function DashboardPage() {
           </div>
           <div className="space-y-4">
             {alerts.length === 0 ? (
-              <p className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5 text-sm text-[var(--muted)]">
+              <p className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5 text-sm text-[var(--muted)]">
                 Nu ai alerte active. Totul este la zi.
               </p>
             ) : (
@@ -51,7 +51,7 @@ export default async function DashboardPage() {
                 <Link
                   key={alert.id}
                   href={alert.href}
-                  className="group block rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5 transition hover:border-[var(--brand)]"
+                  className="group block rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5 transition hover:border-[var(--brand)]"
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div>
@@ -69,7 +69,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
+        <div className="rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold">Activitate recentă</h2>
@@ -78,12 +78,12 @@ export default async function DashboardPage() {
           </div>
           <div className="mt-5 space-y-4">
             {activity.length === 0 ? (
-              <p className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-4 text-sm text-[var(--muted)]">
+              <p className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-4 text-sm text-[var(--muted)]">
                 Nicio activitate încă. Acțiunile tale vor apărea aici.
               </p>
             ) : (
               activity.map((item) => (
-                <div key={item.id} className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-4">
+                <div key={item.id} className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-4">
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="font-semibold">{item.title}</p>

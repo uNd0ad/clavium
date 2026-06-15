@@ -16,14 +16,14 @@ const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
 
     return (
       <label className="block text-sm text-[var(--text)]">
-        <span className="mb-2 block text-[13px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+        <span className="mb-2 block text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
           {label}
         </span>
         <div className="relative">
           <input
             ref={ref}
             type={inputType}
-            className={`w-full rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 ${isPassword ? 'pr-12' : ''} text-[14px] text-[var(--text)] outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[rgba(0,113,227,0.16)] ${className}`}
+            className={`w-full rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 ${isPassword ? 'pr-12' : ''} text-sm text-[var(--text)] outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[rgba(0,113,227,0.16)] ${className}`}
             {...props}
           />
           {isPassword ? (
@@ -38,7 +38,7 @@ const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
             </button>
           ) : null}
         </div>
-        {error ? <p className="mt-2 text-[12px] text-rose-600">{error}</p> : null}
+        {error ? <p className="mt-2 text-xs text-rose-600">{error}</p> : null}
       </label>
     )
   }

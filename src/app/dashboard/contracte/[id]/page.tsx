@@ -32,7 +32,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
         <PrintButton />
       </div>
 
-      <article className="print-document rounded-[32px] border border-[var(--border)] bg-[var(--card)] p-8 shadow-[var(--shadow)]">
+      <article className="print-document rounded-4xl border border-[var(--border)] bg-[var(--card)] p-8 shadow-[var(--shadow)]">
         <header className="border-b border-[var(--border)] pb-6">
           <p className="section-label">{isSale ? 'Antecontract de vânzare-cumpărare' : 'Contract de închiriere'}</p>
           <h1 className="mt-3 text-2xl font-semibold tracking-[-0.02em]">{doc.number}</h1>
@@ -42,7 +42,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
           {[doc.owner, doc.tenant].map((party) => (
             <div key={party.role}>
-              <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
                 {party.role} · {party.kind === 'COMPANY' ? 'persoană juridică' : 'persoană fizică'}
               </p>
               <p className="mt-1 font-semibold">{party.name}</p>
@@ -53,7 +53,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
           ))}
         </div>
 
-        <div className="mt-8 space-y-5 text-[15px] leading-7 text-[var(--muted)]">
+        <div className="mt-8 space-y-5 text-base leading-7 text-[var(--muted)]">
           {isSale ? (
             <>
               <div>
@@ -104,7 +104,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
           </div>
         </div>
 
-        <p className="mt-8 border-t border-[var(--border)] pt-4 text-[12px] text-[var(--muted)]">
+        <p className="mt-8 border-t border-[var(--border)] pt-4 text-xs text-[var(--muted)]">
           Document generat de Clavium.ro · semnătură electronică calificată conformă eIDAS / Legea 214/2024.
         </p>
       </article>

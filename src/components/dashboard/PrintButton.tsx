@@ -8,7 +8,7 @@ export default function PrintButton() {
     <button
       type="button"
       onClick={() => window.print()}
-      className="btn-outline px-5 py-2.5 text-[12px]"
+      className="btn-outline px-5 py-2.5 text-xs"
     >
       <Printer size={15} /> Descarcă / Printează
     </button>

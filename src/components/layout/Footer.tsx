@@ -9,7 +9,7 @@ export default function Footer() {
             <div className="font-sans text-2xl font-semibold text-[var(--text)] mb-4">
               Clavium<span className="italic text-[var(--brand)]">.ro</span>
             </div>
-            <p className="text-[14px] leading-relaxed text-[var(--muted)]/85">
+            <p className="text-sm leading-relaxed text-[var(--muted)]/85">
               Prima platformă din România pentru tranzacții imobiliare curate, rapide și complet digitale.
             </p>
           </div>
@@ -42,13 +42,13 @@ export default function Footer() {
             },
           ].map((col) => (
             <div key={col.title}>
-              <h4 className="text-[11px] tracking-[0.22em] uppercase text-[var(--brand)] mb-6 font-semibold">
+              <h4 className="text-2xs tracking-[0.22em] uppercase text-[var(--brand)] mb-6 font-semibold">
                 {col.title}
               </h4>
               <ul className="space-y-3">
                 {col.links.map((l) => (
                   <li key={l.label}>
-                    <a href={l.href} className="text-[14px] text-[var(--muted)]/80 hover:text-[var(--text)] transition-colors no-underline">
+                    <a href={l.href} className="text-sm text-[var(--muted)]/80 hover:text-[var(--text)] transition-colors no-underline">
                       {l.label}
                     </a>
                   </li>
@@ -59,10 +59,10 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-[var(--border)] pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-[13px] text-[var(--muted)]/70">
+          <p className="text-sm text-[var(--muted)]/70">
             © {year} Clavium.ro · Toate drepturile rezervate
           </p>
-          <span className="text-[12px] tracking-[0.18em] uppercase text-[var(--muted)]/70">
+          <span className="text-xs tracking-[0.18em] uppercase text-[var(--muted)]/70">
             Semnătură electronică conformă eIDAS · Legea 214/2024
           </span>
         </div>

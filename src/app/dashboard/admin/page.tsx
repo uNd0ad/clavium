@@ -46,14 +46,14 @@ export default async function AdminPage() {
           { label: 'Contracte', value: contractCount },
           { label: 'Oferte', value: offerCount },
         ].map((stat) => (
-          <div key={stat.label} className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
-            <p className="text-[13px] uppercase tracking-[0.18em] text-[var(--muted)]">{stat.label}</p>
-            <p className="mt-3 text-[32px] font-semibold tracking-[-0.02em]">{stat.value}</p>
+          <div key={stat.label} className="rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
+            <p className="text-sm uppercase tracking-[0.18em] text-[var(--muted)]">{stat.label}</p>
+            <p className="mt-3 text-3xl font-semibold tracking-[-0.02em]">{stat.value}</p>
           </div>
         ))}
       </div>
 
-      <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
+      <div className="rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
         <h2 className="text-xl font-semibold">Utilizatori</h2>
         <p className="mt-2 text-sm text-[var(--muted)]">
           Schimbă rolurile sau dezactivează conturi. Modificările revocă sesiunile active ale utilizatorului.

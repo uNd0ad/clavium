@@ -12,14 +12,14 @@ export default function TrustBar() {
         <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-[var(--border)]">
           {TRUST_ITEMS.map((item) => (
             <div key={item.value} className="py-8 px-6 lg:px-10 flex items-start gap-4">
-              <span className="mt-1 text-[20px]" aria-hidden>
+              <span className="mt-1 text-xl" aria-hidden>
                 {item.icon}
               </span>
               <div>
-                <div className="font-sans text-[17px] font-semibold text-[var(--text)] leading-tight">
+                <div className="font-sans text-lg font-semibold text-[var(--text)] leading-tight">
                   {item.value}
                 </div>
-                <div className="text-[13px] text-[var(--muted)] leading-snug mt-1">
+                <div className="text-sm text-[var(--muted)] leading-snug mt-1">
                   {item.label}
                 </div>
               </div>

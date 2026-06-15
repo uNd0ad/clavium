@@ -170,14 +170,14 @@ export default function RegisterPage() {
   if (registered) {
     return (
       <div className="step-transition space-y-6">
-        <div className="rounded-[24px] border border-emerald-200 bg-emerald-50 p-6 text-[var(--text)]">
+        <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 text-[var(--text)]">
           <h3 className="text-xl font-semibold">Contul a fost creat!</h3>
-          <p className="mt-3 text-[15px] text-[var(--muted)]">
+          <p className="mt-3 text-base text-[var(--muted)]">
             Te-ai înregistrat cu succes ca {role === 'OWNER' ? 'proprietar' : 'client'}. Vei fi redirecționat către dashboard în{' '}
             <span className="font-semibold text-[var(--text)]">{countdown}</span> {countdown === 1 ? 'secundă' : 'secunde'}.
           </p>
         </div>
-        <button type="button" onClick={() => router.push('/dashboard')} className="btn-primary w-full py-4 text-[14px]">
+        <button type="button" onClick={() => router.push('/dashboard')} className="btn-primary w-full py-4 text-sm">
           Mergi acum la dashboard
         </button>
       </div>
@@ -188,13 +188,13 @@ export default function RegisterPage() {
     <form onSubmit={handleSubmit} className="space-y-8">
       <div>
         <h1 className="text-3xl font-semibold text-[var(--text)]">Creează-ți contul</h1>
-        <p className="mt-2 text-[15px] text-[var(--muted)]">
+        <p className="mt-2 text-base text-[var(--muted)]">
           Ai deja cont?{' '}
           <a href="/auth/login" className="font-semibold text-[var(--brand)]">Conectează-te</a>
         </p>
       </div>
 
-      <div className="rounded-[24px] bg-[var(--surface)] p-5">
+      <div className="rounded-3xl bg-[var(--surface)] p-5">
         <div className="mb-6 flex items-center gap-2 overflow-x-auto pb-3">
           {steps.map((label, index) => {
             const done = index < step
@@ -206,7 +206,7 @@ export default function RegisterPage() {
                   disabled={!done}
                   onClick={() => done && setStep(index)}
                   title={done ? `Înapoi la „${label}”` : undefined}
-                  className={`flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-[13px] font-semibold transition ${
+                  className={`flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
                     active
                       ? 'border-[var(--brand)] bg-[var(--brand)] text-white'
                       : done
@@ -215,7 +215,7 @@ export default function RegisterPage() {
                   }`}
                 >
                   <span
-                    className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] ${
+                    className={`flex h-5 w-5 items-center justify-center rounded-full text-2xs ${
                       active ? 'bg-white/20' : done ? 'bg-emerald-100' : 'bg-[var(--border)]/40'
                     }`}
                   >
@@ -234,7 +234,7 @@ export default function RegisterPage() {
         <div key={step} className="step-transition">
           {step === 0 && (
             <div className="space-y-5">
-              <div className="flex gap-2 rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-2 text-[13px]">
+              <div className="flex gap-2 rounded-3xl border border-[var(--border)] bg-[var(--card)] p-2 text-sm">
                 {([['PERSON', 'Persoană fizică'], ['COMPANY', 'Persoană juridică']] as const).map(([value, label]) => (
                   <button
                     key={value}
@@ -256,19 +256,19 @@ export default function RegisterPage() {
                       key={option.value}
                       type="button"
                       onClick={() => setRole(option.value)}
-                      className={`rounded-[24px] border p-5 text-left transition ${selected ? 'border-[var(--brand)] bg-[var(--brand-soft)]' : 'border-[var(--border)] bg-[var(--card)] hover:border-[var(--brand)]'}`}
+                      className={`rounded-3xl border p-5 text-left transition ${selected ? 'border-[var(--brand)] bg-[var(--brand-soft)]' : 'border-[var(--border)] bg-[var(--card)] hover:border-[var(--brand)]'}`}
                     >
                       <Icon size={22} className={selected ? 'text-[var(--brand)]' : 'text-[var(--muted)]'} />
                       <p className="mt-3 font-semibold">{option.title}</p>
-                      <p className="mt-2 text-[13px] leading-5 text-[var(--muted)]">{option.description}</p>
+                      <p className="mt-2 text-sm leading-5 text-[var(--muted)]">{option.description}</p>
                     </button>
                   )
                 })}
               </div>
 
               {accountType === 'COMPANY' ? (
-                <div className="space-y-5 rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
-                  <p className="text-[13px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Date firmă</p>
+                <div className="space-y-5 rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5">
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Date firmă</p>
                   <FormField label="Denumire firmă" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Exemplu SRL" />
                   <div className="grid gap-4 sm:grid-cols-2">
                     <FormField label="CUI / CIF" value={companyCui} onChange={(e) => setCompanyCui(e.target.value)} placeholder="RO12345678" />
@@ -327,23 +327,23 @@ export default function RegisterPage() {
                 disabled={phoneVerified}
               />
               {phoneVerified ? (
-                <p className="rounded-[24px] border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800">
+                <p className="rounded-3xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800">
                   Numărul de telefon a fost verificat ✓
                 </p>
               ) : (
                 <>
-                  <Button type="button" variant="outline" loading={loading} disabled={resendCooldown.active} onClick={handleSendPhoneOtp} className="w-full py-4 text-[14px]">
+                  <Button type="button" variant="outline" loading={loading} disabled={resendCooldown.active} onClick={handleSendPhoneOtp} className="w-full py-4 text-sm">
                     {resendCooldown.active ? `Retrimite în ${resendCooldown.remaining}s` : otpSent ? 'Retrimite codul SMS' : 'Trimite cod SMS'}
                   </Button>
                   {otpSent ? (
                     <div className="space-y-4">
                       <div>
-                        <label className="mb-2 block text-[13px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+                        <label className="mb-2 block text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
                           Cod OTP
                         </label>
                         <OtpInput value={otp} onChange={setOtp} />
                       </div>
-                      <Button type="button" loading={loading} disabled={otp.length < 6} onClick={handleVerifyPhoneOtp} className="w-full py-4 text-[14px]">
+                      <Button type="button" loading={loading} disabled={otp.length < 6} onClick={handleVerifyPhoneOtp} className="w-full py-4 text-sm">
                         Verifică codul
                       </Button>
                     </div>
@@ -355,10 +355,10 @@ export default function RegisterPage() {
 
           {step === 3 && (
             <div className="space-y-4">
-              <p className="text-[15px] text-[var(--muted)] leading-7">
+              <p className="text-base text-[var(--muted)] leading-7">
                 Verifică datele și continuă pentru a finaliza înregistrarea.
               </p>
-              <div className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5 text-sm text-[var(--text)]">
+              <div className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5 text-sm text-[var(--text)]">
                 <p className="font-semibold">Rezumat cont</p>
                 <p className="mt-3">Tip: {accountType === 'COMPANY' ? 'Persoană juridică' : 'Persoană fizică'} · {role === 'OWNER' ? 'Proprietar' : 'Client'}</p>
                 {accountType === 'COMPANY' ? (
@@ -377,7 +377,7 @@ export default function RegisterPage() {
                 <p>Telefon: {phone || '—'} {phoneVerified ? '(verificat)' : ''}</p>
                 <p>Parolă: {password ? 'Setată' : 'Nedefinită'}</p>
               </div>
-              <label className="flex cursor-pointer items-start gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5 text-sm leading-6 text-[var(--muted)]">
+              <label className="flex cursor-pointer items-start gap-3 rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5 text-sm leading-6 text-[var(--muted)]">
                 <input
                   type="checkbox"
                   checked={consent}
@@ -396,10 +396,10 @@ export default function RegisterPage() {
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <Button type="button" variant="outline" onClick={handleBack} disabled={step === 0 || loading} className="w-full py-4 text-[14px] sm:w-auto">
+        <Button type="button" variant="outline" onClick={handleBack} disabled={step === 0 || loading} className="w-full py-4 text-sm sm:w-auto">
           Înapoi
         </Button>
-        <Button type="submit" loading={loading} className="w-full py-4 text-[14px] sm:w-auto">
+        <Button type="submit" loading={loading} className="w-full py-4 text-sm sm:w-auto">
           {step === 3 ? 'Creează cont' : 'Continuă'}
         </Button>
       </div>

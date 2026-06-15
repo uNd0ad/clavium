@@ -47,7 +47,7 @@ export default function ListingActions({ propertyId, initialSaved, canOffer, tra
           type="button"
           onClick={toggleSave}
           disabled={loading}
-          className="flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-[12px] font-semibold transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
+          className="flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-xs font-semibold transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
         >
           {saved ? <BookmarkCheck size={14} className="text-[var(--brand)]" /> : <Bookmark size={14} />}
           {saved ? 'Salvată' : 'Salvează'}
@@ -60,13 +60,13 @@ export default function ListingActions({ propertyId, initialSaved, canOffer, tra
               value={amount}
               onChange={(event) => setAmount(event.target.value)}
               placeholder={transactionType === 'VANZARE' ? 'RON' : 'RON / lună'}
-              className="w-full min-w-0 flex-1 rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-[12px] outline-none transition focus:border-[var(--brand)]"
+              className="w-full min-w-0 flex-1 rounded-full border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-xs outline-none transition focus:border-[var(--brand)]"
             />
             <button
               type="button"
               onClick={sendOffer}
               disabled={loading || !amount}
-              className="btn-primary shrink-0 px-4 py-2 text-[11px]"
+              className="btn-primary shrink-0 px-4 py-2 text-2xs"
             >
               <Send size={13} /> Ofertă
             </button>

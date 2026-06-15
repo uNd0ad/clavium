@@ -48,10 +48,10 @@ export function OfferActions({ offerId }: { offerId: string }) {
 
   return (
     <div className="mt-4 flex flex-wrap gap-3">
-      <Button type="button" loading={loading} onClick={() => act('accept')} className="px-5 py-2.5 text-[12px]">
+      <Button type="button" loading={loading} onClick={() => act('accept')} className="px-5 py-2.5 text-xs">
         Acceptă
       </Button>
-      <Button type="button" variant="outline" disabled={loading} onClick={() => act('reject')} className="px-5 py-2.5 text-[12px]">
+      <Button type="button" variant="outline" disabled={loading} onClick={() => act('reject')} className="px-5 py-2.5 text-xs">
         Respinge
       </Button>
     </div>
@@ -90,7 +90,7 @@ export function ContractActions({
   return (
     <div className="mt-4 space-y-3">
       {canSign ? (
-        <p className="inline-flex items-center gap-2 rounded-full bg-[var(--brand-soft)] px-4 py-1.5 text-[12px] font-semibold text-[var(--brand)]">
+        <p className="inline-flex items-center gap-2 rounded-full bg-[var(--brand-soft)] px-4 py-1.5 text-xs font-semibold text-[var(--brand)]">
           Rândul tău să semnezi
         </p>
       ) : null}
@@ -100,7 +100,7 @@ export function ContractActions({
             type="button"
             loading={loading}
             onClick={() => run(() => signContractAction(contractId), { success: 'Contract semnat cu QES.' })}
-            className="px-5 py-2.5 text-[12px]"
+            className="px-5 py-2.5 text-xs"
           >
             Semnează cu QES
           </Button>
@@ -112,7 +112,7 @@ export function ContractActions({
             onClick={() =>
               run(() => (isSalePayment ? paySaleAction(contractId) : payRentAction(contractId)), { success: paySuccess })
             }
-            className="px-5 py-2.5 text-[12px]"
+            className="px-5 py-2.5 text-xs"
           >
             {payLabel}
           </Button>
@@ -139,7 +139,7 @@ export function PropertyStatusToggle({ propertyId, status }: { propertyId: strin
             success: inactive ? 'Listare reactivată.' : 'Listare dezactivată.',
           })
         }
-        className="px-5 py-2.5 text-[12px]"
+        className="px-5 py-2.5 text-xs"
       >
         {inactive ? 'Reactivează listarea' : 'Dezactivează listarea'}
       </Button>
@@ -162,7 +162,7 @@ export function MarkNotificationsRead({ hasUnread }: { hasUnread: boolean }) {
   }
 
   return (
-    <Button type="button" variant="outline" loading={loading} onClick={markRead} className="px-5 py-2.5 text-[12px]">
+    <Button type="button" variant="outline" loading={loading} onClick={markRead} className="px-5 py-2.5 text-xs">
       Marchează tot ca citit
     </Button>
   )

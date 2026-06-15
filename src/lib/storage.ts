@@ -1,6 +1,7 @@
 import { mkdir, writeFile, unlink } from 'fs/promises'
 import path from 'path'
 import { randomBytes } from 'crypto'
+import sharp from 'sharp'
 
 // Storage local pe disc (public/uploads). În producție se înlocuiește cu S3/R2
 // păstrând aceleași semnături — apelanții lucrează doar cu URL-uri publice.
@@ -13,6 +14,13 @@ const ALLOWED_TYPES: Record<string, string> = {
   'image/webp': '.webp',
 }
 
+// Formatele de intrare acceptate, validate după conținutul real (nu după tipul declarat de client).
+const ALLOWED_INPUT_FORMATS = new Set(['jpeg', 'png', 'webp'])
+// Latura maximă păstrată; imaginile mai mari sunt micșorate. Suficient pentru galerie + retină.
+const MAX_DIMENSION = 2560
+// Plafon de pixeli la decodare — apără împotriva „decompression bombs" (imagini mici pe disc, uriașe în RAM).
+const MAX_INPUT_PIXELS = 50_000_000
+
 export const MAX_PHOTO_BYTES = 5 * 1024 * 1024
 export const MAX_PHOTOS_PER_PROPERTY = 8
 
@@ -20,14 +28,30 @@ export function photoExtension(mimeType: string): string | null {
   return ALLOWED_TYPES[mimeType] ?? null
 }
 
-export async function savePropertyPhoto(propertyId: string, data: Buffer, mimeType: string): Promise<string> {
-  const ext = photoExtension(mimeType)
-  if (!ext) throw new Error('Format de imagine neacceptat. Folosește JPEG, PNG sau WebP.')
+// Re-encodează fotografia prin sharp: validează că e o imagine reală (după conținut, nu după
+// mimeType-ul declarat), aplică orientarea EXIF, elimină metadatele (EXIF/GPS), o micșorează dacă
+// e prea mare și o normalizează la WebP. Astfel un fișier ne-imagine deghizat în „image/jpeg" e respins.
+export async function savePropertyPhoto(propertyId: string, data: Buffer): Promise<string> {
+  let output: Buffer
+  try {
+    const pipeline = sharp(data, { limitInputPixels: MAX_INPUT_PIXELS, failOn: 'error' })
+    const meta = await pipeline.metadata()
+    if (!meta.format || !ALLOWED_INPUT_FORMATS.has(meta.format)) {
+      throw new Error('unsupported-format')
+    }
+    output = await pipeline
+      .rotate() // aplică orientarea EXIF înainte de a o elimina prin re-encodare
+      .resize({ width: MAX_DIMENSION, height: MAX_DIMENSION, fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 82 })
+      .toBuffer()
+  } catch {
+    throw new Error('Fișier invalid: trimite o imagine JPEG, PNG sau WebP.')
+  }
 
-  const fileName = `${randomBytes(8).toString('hex')}${ext}`
+  const fileName = `${randomBytes(8).toString('hex')}.webp`
   const dir = path.join(UPLOADS_ROOT, 'properties', propertyId)
   await mkdir(dir, { recursive: true })
-  await writeFile(path.join(dir, fileName), data)
+  await writeFile(path.join(dir, fileName), output)
   return `/uploads/properties/${propertyId}/${fileName}`
 }
 

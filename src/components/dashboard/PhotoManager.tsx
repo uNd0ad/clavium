@@ -42,7 +42,7 @@ export default function PhotoManager({ propertyId, photos }: { propertyId: strin
           <div key={url} className="group relative h-16 w-20 overflow-hidden rounded-xl border border-[var(--border)]">
             <Image src={url} alt="Fotografie proprietate" fill sizes="80px" className="object-cover" />
             {index === 0 ? (
-              <span className="absolute bottom-0 left-0 right-0 bg-[var(--brand)]/85 py-0.5 text-center text-[9px] font-semibold uppercase tracking-wide text-white">
+              <span className="absolute bottom-0 left-0 right-0 bg-[var(--brand)]/85 py-0.5 text-center text-2xs font-semibold uppercase tracking-wide text-white">
                 Copertă
               </span>
             ) : null}
@@ -61,7 +61,7 @@ export default function PhotoManager({ propertyId, photos }: { propertyId: strin
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={loading}
-          className="flex h-16 w-20 flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[var(--border)] text-[11px] text-[var(--muted)] transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
+          className="flex h-16 w-20 flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[var(--border)] text-2xs text-[var(--muted)] transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
         >
           <ImagePlus size={16} />
           {loading ? '...' : 'Foto'}

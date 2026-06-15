@@ -61,7 +61,7 @@ export default function PropertyEditForm({ propertyId, title: t0, location: l0, 
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="mt-3 inline-flex items-center gap-2 rounded-full border border-[var(--border)] px-4 py-2 text-[12px] font-semibold transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
+        className="mt-3 inline-flex items-center gap-2 rounded-full border border-[var(--border)] px-4 py-2 text-xs font-semibold transition hover:border-[var(--brand)] hover:text-[var(--brand)]"
       >
         <Pencil size={13} /> Editează
       </button>
@@ -69,7 +69,7 @@ export default function PropertyEditForm({ propertyId, title: t0, location: l0, 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="step-transition mt-3 space-y-4 rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
+    <form onSubmit={handleSubmit} className="step-transition mt-3 space-y-4 rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5">
       <FormField label="Titlu" value={title} onChange={(e) => setTitle(e.target.value)} required />
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField label="Localitate" value={location} onChange={(e) => setLocation(e.target.value)} required />
@@ -82,19 +82,19 @@ export default function PropertyEditForm({ propertyId, title: t0, location: l0, 
         <FormField label="Suprafață m² (opțional)" type="number" min={1} value={surface} onChange={(e) => setSurface(e.target.value)} />
       </div>
       <label className="block text-sm">
-        <span className="mb-2 block text-[13px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Descriere (opțional)</span>
+        <span className="mb-2 block text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Descriere (opțional)</span>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
-          className="w-full rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[14px] outline-none transition focus:border-[var(--brand)]"
+          className="w-full rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm outline-none transition focus:border-[var(--brand)]"
         />
       </label>
       <div className="flex flex-wrap gap-3">
-        <Button type="submit" loading={loading} className="px-6 py-3 text-[13px]">
+        <Button type="submit" loading={loading} className="px-6 py-3 text-sm">
           Salvează
         </Button>
-        <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading} className="px-6 py-3 text-[13px]">
+        <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading} className="px-6 py-3 text-sm">
           Renunță
         </Button>
       </div>

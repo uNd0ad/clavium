@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { resetPassword } from '@/lib/auth'
 import { errorMessage } from '@/lib/apiError'
+import { passwordSchema } from '@/lib/validations'
 
 const resetConfirmSchema = z.object({
   token: z.string().min(10, 'Token invalid.'),
-  password: z.string().min(8, 'Parola trebuie să aibă cel puțin 8 caractere'),
+  password: passwordSchema,
 })
 
 export async function POST(request: NextRequest) {

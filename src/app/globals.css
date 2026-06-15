@@ -96,7 +96,7 @@ summary:focus-visible,
 
 @layer components {
   .section-label {
-    @apply inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.22em] text-[var(--muted)] font-semibold;
+    @apply inline-flex items-center gap-3 text-2xs uppercase tracking-[0.22em] text-[var(--muted)] font-semibold;
   }
   .section-label::before {
     content: '';
@@ -104,7 +104,7 @@ summary:focus-visible,
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-[var(--brand)] text-white px-6 py-3 text-[13px] font-semibold uppercase tracking-[0.08em] transition duration-300 ease-out-expo shadow-[0_20px_45px_rgba(0,113,227,0.18)];
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-[var(--brand)] text-white px-6 py-3 text-sm font-semibold uppercase tracking-[0.08em] transition duration-300 ease-out-expo shadow-[0_20px_45px_rgba(0,113,227,0.18)];
   }
   .btn-primary:hover {
     background: var(--brand-dark);
@@ -122,7 +122,7 @@ summary:focus-visible,
   }
 
   .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-[var(--border)] bg-[var(--card)] text-[var(--text)] px-6 py-3 text-[13px] font-semibold uppercase tracking-[0.08em] transition duration-300 ease-out-expo;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-[var(--border)] bg-[var(--card)] text-[var(--text)] px-6 py-3 text-sm font-semibold uppercase tracking-[0.08em] transition duration-300 ease-out-expo;
   }
   .btn-outline:hover {
     border-color: rgba(0,113,227,0.25);
@@ -130,7 +130,7 @@ summary:focus-visible,
   }
 
   .btn-outline-light {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 text-white px-6 py-3 text-[13px] font-semibold uppercase tracking-[0.08em] transition duration-300 ease-out-expo;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 text-white px-6 py-3 text-sm font-semibold uppercase tracking-[0.08em] transition duration-300 ease-out-expo;
   }
   .btn-outline-light:hover {
     background: rgba(255,255,255,0.18);

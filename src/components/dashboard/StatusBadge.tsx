@@ -12,7 +12,7 @@ const badgeStyles: Record<NonNullable<StatusBadgeProps['variant']>, string> = {
 
 export default function StatusBadge({ label, variant = 'info' }: StatusBadgeProps) {
   return (
-    <span className={`inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-semibold tracking-[0.16em] uppercase ${badgeStyles[variant]}`}>
+    <span className={`inline-flex items-center rounded-full border px-3 py-1 text-2xs font-semibold tracking-[0.16em] uppercase ${badgeStyles[variant]}`}>
       {label}
     </span>
   )

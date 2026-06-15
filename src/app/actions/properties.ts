@@ -118,6 +118,8 @@ export async function uploadPhotosAction(propertyId: string, formData: FormData)
     if (existing.length + files.length > MAX_PHOTOS_PER_PROPERTY) {
       return { ok: false as const, error: `Maxim ${MAX_PHOTOS_PER_PROPERTY} fotografii per proprietate.` }
     }
+    // Verificare rapidă (tip declarat + dimensiune) înainte de a citi fișierele; conținutul real
+    // e validat și re-encodat de savePropertyPhoto, sursa de adevăr.
     for (const file of files) {
       if (!photoExtension(file.type)) return { ok: false as const, error: 'Format neacceptat. Folosește JPEG, PNG sau WebP.' }
       if (file.size > MAX_PHOTO_BYTES) return { ok: false as const, error: 'Fiecare fotografie poate avea maxim 5 MB.' }
@@ -126,7 +128,7 @@ export async function uploadPhotosAction(propertyId: string, formData: FormData)
     const urls: string[] = []
     for (const file of files) {
       const buffer = Buffer.from(await file.arrayBuffer())
-      urls.push(await savePropertyPhoto(propertyId, buffer, file.type))
+      urls.push(await savePropertyPhoto(propertyId, buffer))
     }
     await prisma.property.update({
       where: { id: propertyId },

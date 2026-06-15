@@ -29,7 +29,14 @@ export async function searchAvailableProperties(filters: PropertyFilters): Promi
   const range = minAmount || maxAmount ? { ...(minAmount ? { gte: minAmount } : {}), ...(maxAmount ? { lte: maxAmount } : {}) } : undefined
 
   const and: Prisma.PropertyWhereInput[] = []
-  if (filters.q) and.push({ OR: [{ title: { contains: filters.q } }, { location: { contains: filters.q } }] })
+  // `mode: 'insensitive'` — pe Postgres `contains` e altfel sensibil la majuscule (ex: „cluj" nu ar prinde „Cluj").
+  if (filters.q)
+    and.push({
+      OR: [
+        { title: { contains: filters.q, mode: 'insensitive' } },
+        { location: { contains: filters.q, mode: 'insensitive' } },
+      ],
+    })
   if (rooms) and.push({ rooms: { gte: rooms } })
   if (minSurface) and.push({ surface: { gte: minSurface } })
   if (type) {

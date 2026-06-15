@@ -10,6 +10,13 @@ export const phoneSchema = z
   .transform((value) => value.replace(/[\s.-]/g, ''))
   .pipe(z.string().regex(/^(\+?40|0)7\d{8}$/, 'Numărul de telefon nu este valid (ex: 07XX XXX XXX)'))
 
+// bcrypt ignoră octeții peste 72 — plafonăm la 72 ca politica de parolă să fie reală
+// (altfel caracterele în plus sunt trunchiate silențios la hash și nu contează).
+export const passwordSchema = z
+  .string()
+  .min(8, 'Parola trebuie să aibă cel puțin 8 caractere')
+  .max(72, 'Parola poate avea cel mult 72 de caractere')
+
 export const loginSchema = z.object({
   email: z.string().email('Adresa de email nu este validă'),
   password: z.string().min(8, 'Parola trebuie să aibă cel puțin 8 caractere'),
@@ -21,7 +28,7 @@ export const registerSchema = z
     firstName: z.string().min(2, 'Prenumele trebuie să aibă cel puțin 2 caractere'),
     lastName: z.string().min(2, 'Numele de familie trebuie să aibă cel puțin 2 caractere'),
     email: z.string().email('Adresa de email nu este validă'),
-    password: z.string().min(8, 'Parola trebuie să aibă cel puțin 8 caractere'),
+    password: passwordSchema,
     role: registrationRoleEnum.optional().default(ROLES.CLIENT),
     phone: phoneSchema,
     // Câmpuri de firmă — obligatorii doar pentru persoană juridică (validate mai jos).
@@ -149,10 +156,16 @@ export const profileUpdateSchema = z.object({
   phone: phoneSchema.optional(),
 })
 
-export const changePasswordSchema = z.object({
-  currentPassword: z.string().min(8, 'Parola trebuie să aibă cel puțin 8 caractere'),
-  newPassword: z.string().min(8, 'Parola nouă trebuie să aibă cel puțin 8 caractere'),
-})
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(8, 'Parola trebuie să aibă cel puțin 8 caractere'),
+    newPassword: passwordSchema,
+  })
+  .superRefine((data, ctx) => {
+    if (data.newPassword === data.currentPassword) {
+      ctx.addIssue({ code: 'custom', path: ['newPassword'], message: 'Parola nouă trebuie să difere de cea actuală' })
+    }
+  })
 
 export const adminUserUpdateSchema = z.object({
   role: z.enum(['ADMIN', 'OWNER', 'CLIENT']).optional(),

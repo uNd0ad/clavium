@@ -66,7 +66,7 @@ export default function Navbar() {
               <a
                 key={l.label}
                 href={l.href}
-                className="text-[12px] tracking-[0.08em] uppercase text-[var(--muted)] hover:text-[var(--text)] transition-colors duration-200 no-underline"
+                className="text-xs tracking-[0.08em] uppercase text-[var(--muted)] hover:text-[var(--text)] transition-colors duration-200 no-underline"
               >
                 {l.label}
               </a>
@@ -74,7 +74,7 @@ export default function Navbar() {
             {currentUser && (
               <a
                 href="/dashboard"
-                className="text-[12px] tracking-[0.08em] uppercase text-[var(--muted)] hover:text-[var(--text)] transition-colors duration-200 no-underline"
+                className="text-xs tracking-[0.08em] uppercase text-[var(--muted)] hover:text-[var(--text)] transition-colors duration-200 no-underline"
               >
                 Dashboard
               </a>
@@ -85,19 +85,19 @@ export default function Navbar() {
             <ThemeToggle />
             {currentUser ? (
               <>
-                <span className="text-[12px] tracking-[0.08em] uppercase text-[var(--text)]">
+                <span className="text-xs tracking-[0.08em] uppercase text-[var(--text)]">
                   {`Bun venit, ${currentUser.firstName}`}
                 </span>
-                <button onClick={handleLogout} className="btn-outline text-[12px] px-6 py-3">
+                <button onClick={handleLogout} className="btn-outline text-xs px-6 py-3">
                   Deconectare
                 </button>
               </>
             ) : (
               <>
-                <a href="/auth/login" className="text-[12px] tracking-[0.08em] uppercase text-[var(--muted)] hover:text-[var(--text)] transition-colors no-underline">
+                <a href="/auth/login" className="text-xs tracking-[0.08em] uppercase text-[var(--muted)] hover:text-[var(--text)] transition-colors no-underline">
                   Autentificare
                 </a>
-                <a href="/auth/register" className="btn-primary text-[12px] px-6 py-3">
+                <a href="/auth/register" className="btn-primary text-xs px-6 py-3">
                   Cont nou →
                 </a>
               </>
@@ -129,7 +129,7 @@ export default function Navbar() {
               key={l.label}
               href={l.href}
               onClick={() => setMenuOpen(false)}
-              className="block font-sans text-[32px] font-medium text-[var(--text)] no-underline hover:text-[var(--brand)] transition-colors"
+              className="block font-sans text-3xl font-medium text-[var(--text)] no-underline hover:text-[var(--brand)] transition-colors"
               style={{ animationDelay: `${i * 0.07}s` }}
             >
               {l.label}

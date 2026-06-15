@@ -29,12 +29,12 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
               Aplicația a întâmpinat o eroare
             </h1>
 
-            <p className="mx-auto mt-4 max-w-md text-[15px] leading-7 text-[var(--muted)]">
+            <p className="mx-auto mt-4 max-w-md text-base leading-7 text-[var(--muted)]">
               Ne pare rău, ceva nu a funcționat. Reîncarcă pagina — dacă problema persistă, revino mai târziu.
             </p>
 
             {error.digest ? (
-              <p className="mt-4 text-[12px] uppercase tracking-[0.18em] text-[var(--muted)]">Cod eroare: {error.digest}</p>
+              <p className="mt-4 text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Cod eroare: {error.digest}</p>
             ) : null}
 
             <div className="mt-9 flex justify-center">

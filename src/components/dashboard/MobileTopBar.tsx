@@ -30,7 +30,7 @@ export default function MobileTopBar({ user }: { user: UserProfile }) {
     <div className="lg:hidden border-b border-[var(--border)] bg-[var(--surface)] px-4 py-4 print:hidden">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-[13px] uppercase tracking-[0.28em] text-[var(--muted)]">Dashboard</p>
+          <p className="text-sm uppercase tracking-[0.28em] text-[var(--muted)]">Dashboard</p>
           <p className="text-base font-semibold">Bun venit, {user.firstName}</p>
         </div>
         <div className="flex items-center gap-2">
@@ -42,7 +42,7 @@ export default function MobileTopBar({ user }: { user: UserProfile }) {
               className="relative rounded-full border border-[var(--border)] p-3 text-[var(--brand)]"
             >
               <Bell size={20} />
-              <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[var(--brand)] px-1 text-[10px] font-semibold text-white">
+              <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[var(--brand)] px-1 text-2xs font-semibold text-white">
                 {unread > 99 ? '99+' : unread}
               </span>
             </Link>

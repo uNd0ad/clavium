@@ -18,7 +18,7 @@ function PropertyList({ properties, emptyMessage, emptyCta, manageable = false }
   return (
     <div className="mt-6 space-y-4">
       {properties.map((property) => (
-        <div key={property.id} className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
+        <div key={property.id} className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="font-semibold">{property.title}</p>
@@ -28,7 +28,7 @@ function PropertyList({ properties, emptyMessage, emptyCta, manageable = false }
           </div>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-[var(--muted)]">
-              <span className="mr-2 rounded-full bg-[var(--brand-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--brand)]">
+              <span className="mr-2 rounded-full bg-[var(--brand-soft)] px-2 py-0.5 text-2xs font-semibold text-[var(--brand)]">
                 {property.transactionType === 'VANZARE' ? 'Vânzare' : 'Închiriere'}
               </span>
               {property.price}
@@ -90,12 +90,12 @@ export default async function DashboardPropertiesPage() {
       <PropertyForm />
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
+        <div className="rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
           <h2 className="text-xl font-semibold">Proprietăți active</h2>
           <PropertyList properties={owned} emptyMessage="Nu ai adăugat nicio proprietate încă." manageable />
         </div>
 
-        <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
+        <div className="rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
           <h2 className="text-xl font-semibold">Proprietăți salvate</h2>
           <PropertyList
             properties={saved}

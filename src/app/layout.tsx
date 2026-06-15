@@ -38,7 +38,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="ro" className={inter.variable} suppressHydrationWarning>
       <head>
-        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {/* Browserul golește atributul `nonce` după încărcare (măsură anti-exfiltrare CSP),
+            deci la hidratare clientul vede nonce="" iar serverul nonce-ul real — diferență
+            așteptată, o marcăm explicit ca să nu producă avertisment de hidratare. */}
+        <script nonce={nonce} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
         {children}

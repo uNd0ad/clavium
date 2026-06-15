@@ -61,8 +61,8 @@ export default function PropertyActions({ propertyId, initialSaved, isAuthentica
   }
 
   return (
-    <div className="space-y-5 rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6">
-      <Button type="button" variant="outline" loading={loading} onClick={handleSave} className="w-full py-4 text-[14px]">
+    <div className="space-y-5 rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6">
+      <Button type="button" variant="outline" loading={loading} onClick={handleSave} className="w-full py-4 text-sm">
         {saved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
         {saved ? 'Salvată' : 'Salvează proprietatea'}
       </Button>
@@ -77,7 +77,7 @@ export default function PropertyActions({ propertyId, initialSaved, isAuthentica
             onChange={(event) => setAmount(event.target.value)}
             placeholder={transactionType === 'VANZARE' ? '250000' : '1800'}
           />
-          <Button type="button" loading={loading} disabled={!amount} onClick={handleOffer} className="w-full py-4 text-[14px]">
+          <Button type="button" loading={loading} disabled={!amount} onClick={handleOffer} className="w-full py-4 text-sm">
             Trimite oferta
           </Button>
         </div>

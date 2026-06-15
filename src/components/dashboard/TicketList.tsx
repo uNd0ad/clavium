@@ -22,7 +22,7 @@ const SORTS = [
 const PRIORITY_RANK: Record<string, number> = { URGENTA: 0, NORMALA: 1, SCAZUTA: 2 }
 
 const controlClass =
-  'rounded-[14px] border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--text)] outline-none transition focus:border-[var(--brand)]'
+  'rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none transition focus:border-[var(--brand)]'
 
 // Filtrare după status și sortare (activitate sau prioritate) pe lista deja încărcată de pe server.
 export default function TicketList({ tickets }: { tickets: TicketView[] }) {
@@ -43,7 +43,7 @@ export default function TicketList({ tickets }: { tickets: TicketView[] }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <label className="inline-flex items-center gap-2 text-[13px] text-[var(--muted)]">
+        <label className="inline-flex items-center gap-2 text-sm text-[var(--muted)]">
           Status
           <select value={status} onChange={(e) => setStatus(e.target.value)} className={controlClass}>
             {STATUS_FILTERS.map((item) => (
@@ -53,7 +53,7 @@ export default function TicketList({ tickets }: { tickets: TicketView[] }) {
             ))}
           </select>
         </label>
-        <label className="inline-flex items-center gap-2 text-[13px] text-[var(--muted)]">
+        <label className="inline-flex items-center gap-2 text-sm text-[var(--muted)]">
           Sortează
           <select value={sort} onChange={(e) => setSort(e.target.value)} className={controlClass}>
             {SORTS.map((item) => (

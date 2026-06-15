@@ -44,32 +44,32 @@ export default function TransactionTypesSection() {
 
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {TYPES.map((type) => (
-            <a key={type.name} href={type.href} className="surface-card group rounded-[32px] p-8 border border-[var(--border)] transition hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(15,23,42,0.08)]">
+            <a key={type.name} href={type.href} className="surface-card group rounded-4xl p-8 border border-[var(--border)] transition hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(15,23,42,0.08)]">
               <div className="inline-flex items-center gap-3 mb-6">
                 <span className="h-1.5 w-12 rounded-full bg-[var(--brand)]/30" />
-                <span className="text-[11px] uppercase tracking-[0.24em] text-[var(--brand)] font-semibold">
+                <span className="text-2xs uppercase tracking-[0.24em] text-[var(--brand)] font-semibold">
                   {type.tag}
                 </span>
               </div>
 
-              <h3 className="font-semibold text-[24px] text-[var(--text)] mb-4">
+              <h3 className="font-semibold text-2xl text-[var(--text)] mb-4">
                 {type.name}
               </h3>
 
-              <p className="text-[15px] text-[var(--muted)] leading-8 mb-8">
+              <p className="text-base text-[var(--muted)] leading-8 mb-8">
                 {type.desc}
               </p>
 
               <ul className="space-y-3 mb-8">
                 {type.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3 text-[14px] text-[var(--text)]">
+                  <li key={feature} className="flex items-start gap-3 text-sm text-[var(--text)]">
                     <span className="mt-2 h-2 w-2 rounded-full bg-[var(--brand)]" />
                     {feature}
                   </li>
                 ))}
               </ul>
 
-              <div className="inline-flex items-center gap-2 text-[13px] uppercase tracking-[0.18em] text-[var(--brand)] font-semibold">
+              <div className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.18em] text-[var(--brand)] font-semibold">
                 Explorează
                 <ArrowRight size={14} />
               </div>

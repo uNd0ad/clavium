@@ -199,6 +199,7 @@ export async function payRentAction(contractId: string) {
       amount: due.amount,
       description: `Chirie „${contract.property.title}” (${due.reference})`,
       payerEmail: user.email,
+      idempotencyKey: due.reference,
     })
     if (!result.ok) {
       await prisma.payment.update({ where: { id: due.id }, data: { status: 'ESUATA' } })
@@ -206,16 +207,19 @@ export async function payRentAction(contractId: string) {
     }
 
     const commission = Math.round((due.amount * COMMISSION_PERCENT) / 100)
-    const paidCount = await prisma.payment.count({
-      where: { contractId: contract.id, type: 'CHIRIE', status: 'FINALIZATA' },
-    })
     const nextDueDate = due.dueDate
       ? new Date(new Date(due.dueDate).setMonth(due.dueDate.getMonth() + 1))
       : new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
-    const hasNextRent = paidCount + 1 < contract.months
 
-    await prisma.$transaction(async (tx) => {
-      await tx.payment.update({ where: { id: due.id }, data: { status: 'FINALIZATA', paidAt: new Date() } })
+    const settled = await prisma.$transaction(async (tx) => {
+      // Tranziție atomică: doar prima cerere care prinde plata IN_CURS o finalizează.
+      // Apără împotriva dublării (cerere concurentă / reîncercare după charge reușit, dar tranzacție eșuată).
+      const claimed = await tx.payment.updateMany({
+        where: { id: due.id, status: 'IN_CURS' },
+        data: { status: 'FINALIZATA', paidAt: new Date() },
+      })
+      if (claimed.count === 0) return false
+
       // Comisionul platformei, înregistrat în contul proprietarului.
       await tx.payment.create({
         data: {
@@ -228,7 +232,11 @@ export async function payRentAction(contractId: string) {
           paidAt: new Date(),
         },
       })
-      if (hasNextRent) {
+      // Numărăm chiriile achitate (inclusiv cea de acum) în interiorul tranzacției, ca să fie consistent.
+      const paidCount = await tx.payment.count({
+        where: { contractId: contract.id, type: 'CHIRIE', status: 'FINALIZATA' },
+      })
+      if (paidCount < contract.months) {
         await tx.payment.create({
           data: {
             reference: paymentReference(),
@@ -245,7 +253,11 @@ export async function payRentAction(contractId: string) {
         await tx.contract.update({ where: { id: contract.id }, data: { status: 'INCHEIAT' } })
         await tx.property.update({ where: { id: contract.propertyId }, data: { status: 'DISPONIBILA' } })
       }
+      return true
     })
+
+    // Plata era deja finalizată (reîncercare / cerere concurentă) — idempotent, fără efecte duplicate.
+    if (!settled) return { ok: true as const, reference: due.reference }
 
     await notify(
       contract.ownerId,
@@ -287,6 +299,7 @@ export async function paySaleAction(contractId: string) {
       amount: due.amount,
       description: `${due.type === 'AVANS' ? 'Avans' : 'Diferență preț'} „${contract.property.title}” (${due.reference})`,
       payerEmail: user.email,
+      idempotencyKey: due.reference,
     })
     if (!result.ok) {
       await prisma.payment.update({ where: { id: due.id }, data: { status: 'ESUATA' } })
@@ -296,12 +309,20 @@ export async function paySaleAction(contractId: string) {
     const isAvans = due.type === 'AVANS'
     const balance = contract.price - contract.deposit
     const commission = Math.round((contract.price * COMMISSION_PERCENT) / 100)
+    // Dacă avansul acoperă tot prețul (avans == preț), nu mai rămâne diferență: vânzarea se finalizează acum,
+    // fără să creăm o tranșă REST de 0 lei.
+    const finalized = !isAvans || balance <= 0
 
-    await prisma.$transaction(async (tx) => {
-      await tx.payment.update({ where: { id: due.id }, data: { status: 'FINALIZATA', paidAt: new Date() } })
+    const settled = await prisma.$transaction(async (tx) => {
+      // Tranziție atomică: doar prima cerere care prinde plata IN_CURS o finalizează (anti-dublare).
+      const claimed = await tx.payment.updateMany({
+        where: { id: due.id, status: 'IN_CURS' },
+        data: { status: 'FINALIZATA', paidAt: new Date() },
+      })
+      if (claimed.count === 0) return false
 
-      if (isAvans) {
-        // Avans achitat: diferența de preț devine scadentă.
+      if (!finalized) {
+        // Avans achitat, mai rămâne diferență: diferența de preț devine scadentă.
         await tx.payment.create({
           data: {
             reference: paymentReference(),
@@ -313,7 +334,7 @@ export async function paySaleAction(contractId: string) {
           },
         })
       } else {
-        // Diferența achitată: comision pentru proprietar, vânzare finalizată, transfer de proprietate.
+        // Preț integral achitat: comision pentru proprietar, vânzare finalizată, transfer de proprietate.
         await tx.payment.create({
           data: {
             reference: paymentReference(),
@@ -331,9 +352,13 @@ export async function paySaleAction(contractId: string) {
           data: { status: 'VANDUTA', ownerId: contract.tenantId },
         })
       }
+      return true
     })
 
-    if (isAvans) {
+    // Plata era deja finalizată (reîncercare / cerere concurentă) — idempotent.
+    if (!settled) return { ok: true as const, reference: due.reference }
+
+    if (!finalized) {
       await notify(
         contract.ownerId,
         'Avans încasat',

@@ -14,7 +14,7 @@ function OfferList({ offers, emptyMessage, emptyCta }: { offers: OfferView[]; em
   return (
     <div className="mt-6 space-y-4">
       {offers.map((offer) => (
-        <div key={offer.id} className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
+        <div key={offer.id} className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="font-semibold">{offer.property}</p>
@@ -51,7 +51,7 @@ export default async function DashboardOffersPage() {
       />
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
+        <div className="rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
           <h2 className="text-xl font-semibold">Oferte trimise</h2>
           <p className="mt-2 text-sm text-[var(--muted)]">Urmărește ofertele trimise și starea lor curentă.</p>
           <OfferList
@@ -61,7 +61,7 @@ export default async function DashboardOffersPage() {
           />
         </div>
 
-        <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
+        <div className="rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
           <h2 className="text-xl font-semibold">Oferte primite</h2>
           <p className="mt-2 text-sm text-[var(--muted)]">Răspunde rapid ofertelor primite.</p>
           <OfferList offers={received} emptyMessage="Nu ai primit nicio ofertă încă." />

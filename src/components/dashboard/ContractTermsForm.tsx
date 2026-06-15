@@ -38,14 +38,14 @@ export default function ContractTermsForm({ contractId, terms }: { contractId: s
 
   if (!open) {
     return (
-      <Button type="button" variant="outline" onClick={() => setOpen(true)} className="px-5 py-2.5 text-[12px]">
+      <Button type="button" variant="outline" onClick={() => setOpen(true)} className="px-5 py-2.5 text-xs">
         <Pencil size={14} /> Editează termenii
       </Button>
     )
   }
 
   return (
-    <form onSubmit={handleSubmit} className="step-transition space-y-4 rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
+    <form onSubmit={handleSubmit} className="step-transition space-y-4 rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5">
       <h3 className="text-lg font-semibold">Termenii contractului</h3>
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField label="Chirie (RON / lună)" type="number" min={1} value={rent} onChange={(e) => setRent(e.target.value)} required />
@@ -55,20 +55,20 @@ export default function ContractTermsForm({ contractId, terms }: { contractId: s
         <FormField label="Dată început" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} required />
       </div>
       <label className="block text-sm">
-        <span className="mb-2 block text-[13px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Clauze speciale (opțional)</span>
+        <span className="mb-2 block text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Clauze speciale (opțional)</span>
         <textarea
           value={clauses}
           onChange={(e) => setClauses(e.target.value)}
           rows={4}
-          className="w-full rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[14px] outline-none transition focus:border-[var(--brand)]"
+          className="w-full rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm outline-none transition focus:border-[var(--brand)]"
           placeholder="Ex: animalele de companie sunt permise; întreținerea cade în sarcina chiriașului…"
         />
       </label>
       <div className="flex flex-wrap gap-3">
-        <Button type="submit" loading={loading} className="px-6 py-3 text-[13px]">
+        <Button type="submit" loading={loading} className="px-6 py-3 text-sm">
           Salvează termenii
         </Button>
-        <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading} className="px-6 py-3 text-[13px]">
+        <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading} className="px-6 py-3 text-sm">
           Renunță
         </Button>
       </div>

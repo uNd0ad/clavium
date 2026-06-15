@@ -25,7 +25,7 @@ export default function AuthLayout({ children }: PropsWithChildren) {
   return (
     <section className="min-h-screen bg-[var(--bg)] py-6 lg:py-10">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 sm:px-6 lg:flex-row lg:gap-10 lg:px-12">
-        <aside className="relative hidden flex-1 flex-col overflow-hidden rounded-[32px] bg-[var(--brand)] px-10 py-12 text-white shadow-[0_30px_80px_rgba(0,113,227,0.18)] lg:flex">
+        <aside className="relative hidden flex-1 flex-col overflow-hidden rounded-4xl bg-[var(--brand)] px-10 py-12 text-white shadow-[0_30px_80px_rgba(0,113,227,0.18)] lg:flex">
           <Link href="/" className="font-sans text-xl font-semibold tracking-wide text-white no-underline">
             Clavium<span className="text-white/70">.ro</span>
           </Link>
@@ -37,7 +37,7 @@ export default function AuthLayout({ children }: PropsWithChildren) {
                 <br />
                 intermediari.
               </h1>
-              <p className="mt-5 max-w-md text-[15px] leading-7 text-white/80">
+              <p className="mt-5 max-w-md text-base leading-7 text-white/80">
                 Găsește sau listează proprietăți, negociază prin oferte și semnează contractul online — totul dintr-un singur cont.
               </p>
             </div>
@@ -57,12 +57,12 @@ export default function AuthLayout({ children }: PropsWithChildren) {
             </ul>
           </div>
 
-          <p className="mt-auto pt-10 text-[12px] uppercase tracking-[0.18em] text-white/60">
+          <p className="mt-auto pt-10 text-xs uppercase tracking-[0.18em] text-white/60">
             Semnătură electronică conformă eIDAS · Legea 214/2024
           </p>
         </aside>
 
-        <div className="flex flex-1 flex-col rounded-[32px] bg-[var(--card)] p-6 shadow-[0_30px_80px_rgba(15,23,42,0.08)] sm:p-8 lg:p-12">
+        <div className="flex flex-1 flex-col rounded-4xl bg-[var(--card)] p-6 shadow-[0_30px_80px_rgba(15,23,42,0.08)] sm:p-8 lg:p-12">
           <div className="mb-8 flex items-center justify-between gap-4">
             <Link href="/" className="font-sans text-lg font-semibold tracking-wide text-[var(--text)] no-underline lg:hidden">
               Clavium<span className="text-[var(--brand)]">.ro</span>
@@ -70,7 +70,7 @@ export default function AuthLayout({ children }: PropsWithChildren) {
             <div className="ml-auto flex items-center gap-3">
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 text-[13px] font-semibold text-[var(--muted)] transition hover:text-[var(--brand)]"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--muted)] transition hover:text-[var(--brand)]"
               >
                 <ArrowLeft size={15} /> Înapoi la site
               </Link>

@@ -31,7 +31,7 @@ export default async function DashboardTicketsPage() {
 
       {canOpen ? <NewTicketForm contracts={ticketableContracts} /> : null}
 
-      <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
+      <div className="rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
         {tickets.length === 0 ? (
           <EmptyState
             message={

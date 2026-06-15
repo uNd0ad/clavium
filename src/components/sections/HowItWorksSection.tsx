@@ -47,7 +47,7 @@ export default function HowItWorksSection() {
               <br />
               <span className="text-[var(--brand)]">fără efort inutil.</span>
             </h2>
-            <p className="mt-5 text-[15px] text-[var(--muted)] max-w-2xl leading-8">
+            <p className="mt-5 text-base text-[var(--muted)] max-w-2xl leading-8">
               Totul a fost simplificat pentru a oferi o experiență premium: structură clară, etape vizibile și rezultate rapide.
             </p>
           </div>
@@ -55,20 +55,20 @@ export default function HowItWorksSection() {
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((step) => (
-            <div key={step.num} className="surface-card rounded-[32px] p-8 border border-[var(--border)]">
+            <div key={step.num} className="surface-card rounded-4xl p-8 border border-[var(--border)]">
               <div className="inline-flex h-12 w-12 items-center justify-center rounded-3xl bg-[var(--brand-soft)] text-[var(--brand)] text-xl font-semibold mb-6">
                 {step.icon}
               </div>
-              <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--muted)] mb-3">
+              <p className="text-2xs uppercase tracking-[0.22em] text-[var(--muted)] mb-3">
                 Pasul {step.num}
               </p>
-              <h3 className="text-[20px] font-semibold text-[var(--text)] mb-4">
+              <h3 className="text-xl font-semibold text-[var(--text)] mb-4">
                 {step.title}
               </h3>
-              <p className="text-[14px] text-[var(--muted)] leading-7 mb-5">
+              <p className="text-sm text-[var(--muted)] leading-7 mb-5">
                 {step.desc}
               </p>
-              <div className="text-[13px] font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
+              <div className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
                 {step.detail}
               </div>
             </div>

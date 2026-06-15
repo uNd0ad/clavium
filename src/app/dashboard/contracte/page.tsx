@@ -24,7 +24,7 @@ export default async function DashboardContractsPage() {
         description="Verifică semnăturile și statutul fiecărui contract."
       />
 
-      <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
+      <div className="rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold">Verifică statutul semnăturilor</h2>
@@ -35,12 +35,12 @@ export default async function DashboardContractsPage() {
 
         <div className="mt-6 space-y-4">
           {contracts.length === 0 ? (
-            <p className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5 text-sm text-[var(--muted)]">
+            <p className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5 text-sm text-[var(--muted)]">
               Nu ai niciun contract încă. Contractele tale vor apărea aici după prima ofertă acceptată.
             </p>
           ) : (
             contracts.map((contract) => (
-              <div key={contract.id} className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
+              <div key={contract.id} className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div>
                     <p className="text-lg font-semibold">{contract.property}</p>

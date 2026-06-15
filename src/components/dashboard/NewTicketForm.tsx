@@ -10,7 +10,7 @@ import { createTicketAction } from '@/app/actions/tickets'
 import type { TicketableContract } from '@/lib/dashboardData'
 
 const selectClass =
-  'w-full rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[14px] text-[var(--text)] outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[rgba(0,113,227,0.16)]'
+  'w-full rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm text-[var(--text)] outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[rgba(0,113,227,0.16)]'
 
 const CATEGORIES = [
   { value: 'MENTENANTA', label: 'Mentenanță' },
@@ -69,7 +69,7 @@ export default function NewTicketForm({ contracts }: { contracts: TicketableCont
   if (!open) {
     return (
       <div className="flex justify-end">
-        <Button type="button" onClick={() => setOpen(true)} className="px-6 py-3 text-[13px]">
+        <Button type="button" onClick={() => setOpen(true)} className="px-6 py-3 text-sm">
           <Plus size={15} /> Deschide un tichet
         </Button>
       </div>
@@ -77,11 +77,11 @@ export default function NewTicketForm({ contracts }: { contracts: TicketableCont
   }
 
   return (
-    <form onSubmit={handleSubmit} className="step-transition space-y-4 rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
+    <form onSubmit={handleSubmit} className="step-transition space-y-4 rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5">
       <h3 className="text-lg font-semibold">Deschide un tichet</h3>
 
       <label className="block text-sm">
-        <span className="mb-2 block text-[13px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Contract</span>
+        <span className="mb-2 block text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Contract</span>
         <select value={contractId} onChange={(e) => setContractId(e.target.value)} className={selectClass} required>
           {contracts.map((contract) => (
             <option key={contract.id} value={contract.id}>
@@ -102,7 +102,7 @@ export default function NewTicketForm({ contracts }: { contracts: TicketableCont
           autoFocus
           required
         />
-        <p className="mt-1.5 text-[12px] text-[var(--muted)]">
+        <p className="mt-1.5 text-xs text-[var(--muted)]">
           {subject.trim().length < 4
             ? `Încă ${4 - subject.trim().length} caractere până la minim`
             : `${subject.trim().length}/120`}
@@ -111,7 +111,7 @@ export default function NewTicketForm({ contracts }: { contracts: TicketableCont
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block text-sm">
-          <span className="mb-2 block text-[13px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Categorie</span>
+          <span className="mb-2 block text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Categorie</span>
           <select value={category} onChange={(e) => setCategory(e.target.value)} className={selectClass}>
             {CATEGORIES.map((item) => (
               <option key={item.value} value={item.value}>
@@ -121,7 +121,7 @@ export default function NewTicketForm({ contracts }: { contracts: TicketableCont
           </select>
         </label>
         <label className="block text-sm">
-          <span className="mb-2 block text-[13px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Prioritate</span>
+          <span className="mb-2 block text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Prioritate</span>
           <select value={priority} onChange={(e) => setPriority(e.target.value)} className={selectClass}>
             {PRIORITIES.map((item) => (
               <option key={item.value} value={item.value}>
@@ -133,7 +133,7 @@ export default function NewTicketForm({ contracts }: { contracts: TicketableCont
       </div>
 
       <label className="block text-sm">
-        <span className="mb-2 block text-[13px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Descrierea problemei</span>
+        <span className="mb-2 block text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Descrierea problemei</span>
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -142,10 +142,10 @@ export default function NewTicketForm({ contracts }: { contracts: TicketableCont
           minLength={10}
           maxLength={4000}
           required
-          className="w-full rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[14px] outline-none transition focus:border-[var(--brand)]"
+          className="w-full rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm outline-none transition focus:border-[var(--brand)]"
           placeholder="Descrie pe scurt problema, când a apărut și orice detaliu util pentru proprietar."
         />
-        <p className="mt-1.5 text-[12px] text-[var(--muted)]">
+        <p className="mt-1.5 text-xs text-[var(--muted)]">
           {message.trim().length < 10
             ? `Încă ${10 - message.trim().length} caractere până la minim`
             : `${message.trim().length}/4000 · Cmd/Ctrl+Enter trimite`}
@@ -153,10 +153,10 @@ export default function NewTicketForm({ contracts }: { contracts: TicketableCont
       </label>
 
       <div className="flex flex-wrap gap-3">
-        <Button type="submit" loading={loading} className="px-6 py-3 text-[13px]">
+        <Button type="submit" loading={loading} className="px-6 py-3 text-sm">
           Trimite tichetul
         </Button>
-        <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading} className="px-6 py-3 text-[13px]">
+        <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading} className="px-6 py-3 text-sm">
           Renunță
         </Button>
       </div>

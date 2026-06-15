@@ -1,12 +1,12 @@
 import type { PropertyFilters } from '@/lib/propertyQuery'
 
 const inputClass =
-  'rounded-[18px] border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[14px] outline-none transition focus:border-[var(--brand)]'
+  'rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm outline-none transition focus:border-[var(--brand)]'
 
 // Formular GET — filtrele trăiesc în URL, deci sunt shareable și SSR-friendly.
 export default function PropertyFiltersForm({ filters, action }: { filters: PropertyFilters; action?: string }) {
   return (
-    <form method="get" action={action} className="grid gap-4 rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 sm:grid-cols-2 lg:grid-cols-8">
+    <form method="get" action={action} className="grid gap-4 rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:grid-cols-2 lg:grid-cols-8">
       <input name="q" defaultValue={filters.q ?? ''} placeholder="Localitate sau titlu" className={`${inputClass} lg:col-span-2`} />
       <select name="type" defaultValue={filters.type ?? ''} className={inputClass}>
         <option value="">Toate</option>
@@ -21,7 +21,7 @@ export default function PropertyFiltersForm({ filters, action }: { filters: Prop
         <option value="pret-asc">Preț crescător</option>
         <option value="pret-desc">Preț descrescător</option>
       </select>
-      <button type="submit" className="btn-primary py-3 text-[13px]">
+      <button type="submit" className="btn-primary py-3 text-sm">
         Caută
       </button>
     </form>

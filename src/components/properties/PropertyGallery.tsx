@@ -57,7 +57,7 @@ export default function PropertyGallery({ photos, title }: { photos: string[]; t
               setOpen(true)
             }}
             aria-label={`Deschide fotografia ${i + 1}`}
-            className={`group relative overflow-hidden rounded-[24px] ${i === 0 && photos.length > 1 ? 'col-span-2 h-80' : i === 0 ? 'h-80' : 'h-44'}`}
+            className={`group relative overflow-hidden rounded-3xl ${i === 0 && photos.length > 1 ? 'col-span-2 h-80' : i === 0 ? 'h-80' : 'h-44'}`}
           >
             <Image
               src={url}
@@ -98,7 +98,7 @@ export default function PropertyGallery({ photos, title }: { photos: string[]; t
                   <button type="button" onClick={(event) => { event.stopPropagation(); next() }} aria-label="Fotografia următoare" className={`${navButton} right-4`}>
                     <ChevronRight size={26} />
                   </button>
-                  <p className="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-4 py-1.5 text-[13px] font-semibold text-white">
+                  <p className="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-semibold text-white">
                     {index + 1} / {photos.length}
                   </p>
                 </>

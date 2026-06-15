@@ -18,7 +18,7 @@ export default function NotificationTab() {
         <Bell size={18} className="text-[var(--brand)]" />
         Notificări
       </span>
-      <span className="flex h-6 min-w-[24px] items-center justify-center rounded-full bg-[var(--brand)] px-2 text-[12px] font-semibold text-white">
+      <span className="flex h-6 min-w-[24px] items-center justify-center rounded-full bg-[var(--brand)] px-2 text-xs font-semibold text-white">
         {count > 99 ? '99+' : count}
       </span>
     </Link>

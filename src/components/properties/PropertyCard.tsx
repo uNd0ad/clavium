@@ -18,7 +18,7 @@ export type PropertyCardData = {
 
 export default function PropertyCard({ property, children }: { property: PropertyCardData; children?: React.ReactNode }) {
   return (
-    <div className="group flex flex-col overflow-hidden rounded-[32px] border border-[var(--border)] bg-[var(--surface)] transition hover:-translate-y-1 hover:shadow-[var(--shadow)]">
+    <div className="group flex flex-col overflow-hidden rounded-4xl border border-[var(--border)] bg-[var(--surface)] transition hover:-translate-y-1 hover:shadow-[var(--shadow)]">
       <Link href={`/proprietati/${property.id}`} className="relative block h-44 bg-[var(--brand-soft)] no-underline">
         {property.photos[0] ? (
           <Image

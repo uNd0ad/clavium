@@ -33,7 +33,7 @@ export default function Sidebar({ user }: { user: UserProfile }) {
           <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-[var(--brand-soft)] text-[var(--brand)]">{user.firstName[0]}</div>
           <div>
             <p className="text-sm font-semibold">{`${user.firstName} ${user.lastName}`}</p>
-            <p className="text-[13px] text-[var(--muted)]">{user.role}</p>
+            <p className="text-sm text-[var(--muted)]">{user.role}</p>
           </div>
         </div>
         <p className="text-sm text-[var(--muted)]">{ROLE_DESCRIPTIONS[user.role]}</p>
@@ -61,9 +61,9 @@ export default function Sidebar({ user }: { user: UserProfile }) {
       </nav>
 
       <div className="mt-auto space-y-3">
-        <div className="rounded-[32px] border border-[var(--border)] bg-[var(--card)] p-5 text-sm text-[var(--text)]">
+        <div className="rounded-4xl border border-[var(--border)] bg-[var(--card)] p-5 text-sm text-[var(--text)]">
           <p className="font-semibold">Tip utilizator</p>
-          <p className="mt-2 text-[13px] text-[var(--muted)]">Acest panou afișează informații și acțiuni disponibile pentru rolul tău.</p>
+          <p className="mt-2 text-sm text-[var(--muted)]">Acest panou afișează informații și acțiuni disponibile pentru rolul tău.</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex-1">

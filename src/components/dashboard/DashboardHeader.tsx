@@ -19,7 +19,7 @@ export default function DashboardHeader({ eyebrow, title, accent, description, a
           {title}
           {accent ? <span className="text-[var(--brand)]"> {accent}</span> : null}
         </h1>
-        {description ? <p className="mt-3 max-w-2xl text-[15px] leading-7 text-[var(--muted)]">{description}</p> : null}
+        {description ? <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">{description}</p> : null}
       </div>
       {action ? <div className="shrink-0">{action}</div> : null}
     </div>
