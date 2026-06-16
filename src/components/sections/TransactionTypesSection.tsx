@@ -33,7 +33,7 @@ export default function TransactionTypesSection() {
   return (
     <section id="proprietati" className="bg-[var(--bg)] py-24 lg:py-32" ref={ref}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="mb-16">
+        <div className="mb-16 reveal">
           <div className="section-label mb-5">Tipuri de tranzacții</div>
           <h2 className="font-sans text-[clamp(34px,4vw,50px)] font-semibold tracking-[-0.03em] text-[var(--text)] leading-tight">
             Orice tranzacție imobiliară,
@@ -43,8 +43,8 @@ export default function TransactionTypesSection() {
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {TYPES.map((type) => (
-            <a key={type.name} href={type.href} className="surface-card group rounded-4xl p-8 border border-[var(--border)] transition hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(15,23,42,0.08)]">
+          {TYPES.map((type, i) => (
+            <a key={type.name} href={type.href} className={`surface-card group rounded-4xl p-8 border border-[var(--border)] transition hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(15,23,42,0.08)] reveal reveal-delay-${i + 1}`}>
               <div className="inline-flex items-center gap-3 mb-6">
                 <span className="h-1.5 w-12 rounded-full bg-[var(--brand)]/30" />
                 <span className="text-2xs uppercase tracking-[0.24em] text-[var(--brand)] font-semibold">

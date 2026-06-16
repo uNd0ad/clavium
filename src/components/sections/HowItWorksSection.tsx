@@ -40,7 +40,7 @@ export default function HowItWorksSection() {
   return (
     <section id="cum-functioneaza" className="bg-[var(--bg)] py-24 lg:py-32" ref={ref}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="mb-16">
+        <div className="mb-16 reveal">
           <div className="section-label mb-5">Procesul</div>
           <div className="max-w-4xl">
             <h2 className="font-sans text-[clamp(34px,4vw,50px)] font-semibold tracking-[-0.03em] text-[var(--text)] leading-tight">
@@ -55,8 +55,8 @@ export default function HowItWorksSection() {
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {STEPS.map(({ num, icon: Icon, title, desc, detail }) => (
-            <div key={num} className="surface-card rounded-4xl p-8 border border-[var(--border)]">
+          {STEPS.map(({ num, icon: Icon, title, desc, detail }, i) => (
+            <div key={num} className={`surface-card rounded-4xl p-8 border border-[var(--border)] reveal reveal-delay-${i + 1}`}>
               <div className="inline-flex h-12 w-12 items-center justify-center rounded-3xl bg-[var(--brand-soft)] text-[var(--brand)] mb-6">
                 <Icon size={22} strokeWidth={1.75} />
               </div>

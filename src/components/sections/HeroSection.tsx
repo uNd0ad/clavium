@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, MapPin, ChevronDown } from 'lucide-react'
+import { useReveal } from '@/hooks/useReveal'
 
 const TRANSACTION_TYPES = ['Cumpărare', 'Închiriere', 'Leasing']
 const PROPERTY_TYPES = ['Apartament', 'Casă', 'Teren', 'Comercial']
@@ -17,6 +18,7 @@ const TX_TO_FILTER: Record<string, string | undefined> = {
 
 export default function HeroSection() {
   const router = useRouter()
+  const ref = useReveal()
   const [txType, setTxType] = useState('Cumpărare')
   const [propType, setPropType] = useState('Apartament')
   const [location, setLocation] = useState('')
@@ -32,25 +34,25 @@ export default function HeroSection() {
   }
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-[var(--bg)]">
+    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-[var(--bg)]" ref={ref}>
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(0,113,227,0.18),_transparent_22%),radial-gradient(circle_at_bottom_right,_rgba(0,113,227,0.12),_transparent_30%)] opacity-95" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-28 pb-16 sm:pt-24 sm:pb-20 w-full">
         <div className="grid lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7">
-            <div className="section-label mb-6">
+            <div className="section-label mb-6 reveal">
               Prima platformă imobiliară cu design modern
             </div>
 
-            <h1 className="font-sans text-[clamp(42px,6vw,88px)] leading-[0.96] font-semibold tracking-[-0.04em] text-[var(--text)] max-w-none sm:max-w-[20ch] md:max-w-[16ch] lg:max-w-[12ch]">
+            <h1 className="reveal reveal-delay-1 font-sans text-[clamp(42px,6vw,88px)] leading-[0.96] font-semibold tracking-[-0.04em] text-[var(--text)] max-w-none sm:max-w-[20ch] md:max-w-[16ch] lg:max-w-[12ch]">
               Real estate, construită ca un produs.
             </h1>
 
-            <p className="mt-8 max-w-xl text-base lg:text-base text-[var(--muted)] leading-8">
+            <p className="reveal reveal-delay-2 mt-8 max-w-xl text-base lg:text-base text-[var(--muted)] leading-8">
               Găsești și semnezi contractul imobiliar într-o interfață curată, rapidă și sigură. Fără comision, fără agitație, complet digital.
             </p>
 
-            <div className="mt-10 grid gap-5 sm:grid-cols-[minmax(0,1fr)_auto]">
+            <div className="reveal reveal-delay-3 mt-10 grid gap-5 sm:grid-cols-[minmax(0,1fr)_auto]">
               <a href="/auth/register" className="btn-primary w-full justify-center">
                 Începe gratuit
               </a>
@@ -60,7 +62,7 @@ export default function HeroSection() {
             </div>
           </div>
 
-          <div className="lg:col-span-5">
+          <div className="reveal reveal-delay-3 lg:col-span-5">
             <div className="glass-panel p-8 lg:p-10 rounded-4xl border border-[var(--border)] backdrop-blur-xl">
               <div className="mb-8">
                 <span className="inline-flex items-center rounded-full bg-[var(--brand-soft)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
