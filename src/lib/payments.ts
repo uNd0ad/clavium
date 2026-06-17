@@ -1,25 +1,55 @@
-// Procesare plăți — furnizorul real (Stripe/Netopia) se conectează aici.
-// Fără PAYMENTS_API_KEY, plățile sunt procesate în mod dev (acceptate instant).
-export type PaymentResult = { ok: boolean; providerRef: string; error?: string }
+// Procesare plăți prin Stripe Checkout (hosted).
+// Fără STRIPE_SECRET_KEY, plățile rulează în „mod dev” (acceptate instant, fără redirect) —
+// apelantul decontează direct plata cu settlePayment().
+import { stripe, STRIPE_ENABLED } from './stripe'
 
-export async function processPayment(params: {
-  amount: number
-  currency?: string
+export type CheckoutResult =
+  // Mod dev: nu există furnizor configurat. Apelantul trebuie să deconteze plata pe loc.
+  | { mode: 'dev' }
+  // Producție: redirect către pagina de plată găzduită de Stripe.
+  | { mode: 'redirect'; url: string }
+
+export async function createCheckoutSession(params: {
+  // Plata scadentă din baza de date (sursa de adevăr a sumei și referinței).
+  payment: { id: string; reference: string; amount: number }
   description: string
   payerEmail: string
-  // Cheie stabilă per plată (referința tranzacției). O reîncercare după o eroare de rețea/DB
-  // refolosește aceeași cheie, ca procesatorul să NU genereze o a doua tranzacție.
-  idempotencyKey: string
-}): Promise<PaymentResult> {
-  const apiKey = process.env.PAYMENTS_API_KEY
+  successUrl: string
+  cancelUrl: string
+}): Promise<CheckoutResult> {
+  const { payment, description, payerEmail, successUrl, cancelUrl } = params
 
-  if (!apiKey) {
-    console.log(`[DEV] Plată acceptată: ${params.amount} ${params.currency ?? 'RON'} — ${params.description} (${params.payerEmail})`)
-    // providerRef determinist din cheie: reîncercarea returnează același ref, ca un procesator real.
-    return { ok: true, providerRef: `dev_${params.idempotencyKey}` }
+  if (!STRIPE_ENABLED || !stripe) {
+    console.log(`[DEV] Plată acceptată: ${payment.amount} RON — ${description} (${payerEmail})`)
+    return { mode: 'dev' }
   }
 
-  // TODO: integrare Stripe PaymentIntents sau Netopia — depinde de furnizorul ales.
-  // Important: trimite `params.idempotencyKey` ca antet Idempotency-Key (Stripe) / orderId (Netopia).
-  throw new Error('Furnizorul de plăți nu este încă integrat.')
+  const session = await stripe.checkout.sessions.create(
+    {
+      mode: 'payment',
+      customer_email: payerEmail,
+      client_reference_id: payment.reference,
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: 'ron',
+            // Stripe lucrează în cea mai mică unitate monetară (bani).
+            unit_amount: payment.amount * 100,
+            product_data: { name: description },
+          },
+        },
+      ],
+      // Decontarea se face în webhook pe baza acestui paymentId.
+      metadata: { paymentId: payment.id, reference: payment.reference },
+      payment_intent_data: { metadata: { paymentId: payment.id } },
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+    },
+    // Cheie stabilă per plată: o reîncercare nu creează o a doua sesiune.
+    { idempotencyKey: `checkout_${payment.reference}` }
+  )
+
+  if (!session.url) throw new Error('Stripe nu a returnat un URL de plată.')
+  return { mode: 'redirect', url: session.url }
 }

@@ -8,11 +8,15 @@ import { COOKIE_NAME } from './lib/constants'
 function buildCsp(nonce: string) {
   const isDev = process.env.NODE_ENV !== 'production'
   // În dev, Turbopack/React Fast Refresh au nevoie de 'unsafe-eval' și de un canal websocket.
-  const scriptSrc = isDev ? `'self' 'unsafe-eval' 'nonce-${nonce}'` : `'self' 'nonce-${nonce}'`
+  // 'strict-dynamic' invalidează allowlist-ul pe gazdă ('self'), așa că în dev ar bloca chunk-urile
+  // HMR servite de pe /_next/static (ChunkLoadError). Îl aplicăm doar în producție.
+  const scriptSrc = isDev
+    ? `'self' 'unsafe-eval' 'nonce-${nonce}'`
+    : `'self' 'nonce-${nonce}' 'strict-dynamic'`
   const connectSrc = isDev ? `'self' ws:` : `'self'`
   return [
     `default-src 'self'`,
-    `script-src ${scriptSrc} 'strict-dynamic'`,
+    `script-src ${scriptSrc}`,
     // Tailwind/Sonner/next-font injectează stiluri inline — nonce pe stiluri e impracticabil.
     `style-src 'self' 'unsafe-inline'`,
     `img-src 'self' data: blob:`,

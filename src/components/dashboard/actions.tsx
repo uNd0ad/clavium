@@ -10,7 +10,7 @@ import { signContractAction, payRentAction, paySaleAction } from '@/app/actions/
 import { updatePropertyStatusAction } from '@/app/actions/properties'
 import { markNotificationsReadAction } from '@/app/actions/notifications'
 
-type ActionResult = { ok: boolean; error?: string }
+type ActionResult = { ok: boolean; error?: string; redirectUrl?: string }
 type RunOptions = { success?: string; successAction?: { label: string; href: string } }
 
 function useAction() {
@@ -22,6 +22,12 @@ function useAction() {
       startTransition(async () => {
         const res = await action()
         if (res.ok) {
+          // Stripe configurat: navigăm către pagina de plată găzduită; pagina se va reîncărca.
+          if (res.redirectUrl) {
+            window.location.href = res.redirectUrl
+            resolve(true)
+            return
+          }
           if (opts?.success) {
             const sa = opts.successAction
             toast.success(opts.success, sa ? { action: { label: sa.label, onClick: () => router.push(sa.href) } } : undefined)

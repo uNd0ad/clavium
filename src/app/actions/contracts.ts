@@ -7,10 +7,11 @@ import { errorMessage } from '@/lib/apiError'
 import { contractTermsSchema, saleTermsSchema } from '@/lib/validations'
 import { notify } from '@/lib/notify'
 import { signWithQes } from '@/lib/qes'
-import { processPayment } from '@/lib/payments'
+import { createCheckoutSession } from '@/lib/payments'
+import { settlePayment } from '@/lib/paymentSettle'
 import { paymentReference } from '@/lib/hash'
 import { formatRon } from '@/lib/dashboardData'
-import { COMMISSION_PERCENT } from '@/lib/constants'
+import { APP_URL } from '@/lib/constants'
 import { firstRentDueDate } from '@/lib/contractDates'
 
 // Proprietarul editează termenii contractului înainte de semnare (cât e IN_ASTEPTARE).
@@ -195,79 +196,21 @@ export async function payRentAction(contractId: string) {
     })
     if (!due) return { ok: false as const, error: 'Nu există nicio chirie scadentă.' }
 
-    const result = await processPayment({
-      amount: due.amount,
+    const checkout = await createCheckoutSession({
+      payment: due,
       description: `Chirie „${contract.property.title}” (${due.reference})`,
       payerEmail: user.email,
-      idempotencyKey: due.reference,
+      successUrl: `${APP_URL}/dashboard/contracte?plata=succes`,
+      cancelUrl: `${APP_URL}/dashboard/contracte?plata=anulat`,
     })
-    if (!result.ok) {
-      await prisma.payment.update({ where: { id: due.id }, data: { status: 'ESUATA' } })
-      return { ok: false as const, error: result.error ?? 'Plata a eșuat.' }
+
+    // Producție: clientul este redirecționat către Stripe; decontarea se face în webhook.
+    if (checkout.mode === 'redirect') {
+      return { ok: true as const, redirectUrl: checkout.url }
     }
 
-    const commission = Math.round((due.amount * COMMISSION_PERCENT) / 100)
-    const nextDueDate = due.dueDate
-      ? new Date(new Date(due.dueDate).setMonth(due.dueDate.getMonth() + 1))
-      : new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
-
-    const settled = await prisma.$transaction(async (tx) => {
-      // Tranziție atomică: doar prima cerere care prinde plata IN_CURS o finalizează.
-      // Apără împotriva dublării (cerere concurentă / reîncercare după charge reușit, dar tranzacție eșuată).
-      const claimed = await tx.payment.updateMany({
-        where: { id: due.id, status: 'IN_CURS' },
-        data: { status: 'FINALIZATA', paidAt: new Date() },
-      })
-      if (claimed.count === 0) return false
-
-      // Comisionul platformei, înregistrat în contul proprietarului.
-      await tx.payment.create({
-        data: {
-          reference: paymentReference(),
-          userId: contract.ownerId,
-          contractId: contract.id,
-          amount: commission,
-          type: 'COMISION',
-          status: 'FINALIZATA',
-          paidAt: new Date(),
-        },
-      })
-      // Numărăm chiriile achitate (inclusiv cea de acum) în interiorul tranzacției, ca să fie consistent.
-      const paidCount = await tx.payment.count({
-        where: { contractId: contract.id, type: 'CHIRIE', status: 'FINALIZATA' },
-      })
-      if (paidCount < contract.months) {
-        await tx.payment.create({
-          data: {
-            reference: paymentReference(),
-            userId: contract.tenantId,
-            contractId: contract.id,
-            amount: contract.rent,
-            type: 'CHIRIE',
-            status: 'IN_CURS',
-            dueDate: nextDueDate,
-          },
-        })
-      } else {
-        // Ultima chirie: contractul se încheie, proprietatea redevine disponibilă.
-        await tx.contract.update({ where: { id: contract.id }, data: { status: 'INCHEIAT' } })
-        await tx.property.update({ where: { id: contract.propertyId }, data: { status: 'DISPONIBILA' } })
-      }
-      return true
-    })
-
-    // Plata era deja finalizată (reîncercare / cerere concurentă) — idempotent, fără efecte duplicate.
-    if (!settled) return { ok: true as const, reference: due.reference }
-
-    await notify(
-      contract.ownerId,
-      'Chirie încasată',
-      `${user.firstName} ${user.lastName} a plătit ${formatRon(due.amount)} pentru „${contract.property.title}”.`,
-      'success'
-    )
-
-    revalidatePath('/dashboard', 'layout')
-    revalidatePath('/proprietati', 'layout')
+    // Mod dev (fără Stripe configurat): decontăm plata pe loc.
+    await settlePayment(due.id)
     return { ok: true as const, reference: due.reference }
   } catch (err) {
     return { ok: false as const, error: errorMessage(err) }
@@ -295,93 +238,21 @@ export async function paySaleAction(contractId: string) {
     })
     if (!due) return { ok: false as const, error: 'Nu există nicio plată scadentă.' }
 
-    const result = await processPayment({
-      amount: due.amount,
+    const checkout = await createCheckoutSession({
+      payment: due,
       description: `${due.type === 'AVANS' ? 'Avans' : 'Diferență preț'} „${contract.property.title}” (${due.reference})`,
       payerEmail: user.email,
-      idempotencyKey: due.reference,
-    })
-    if (!result.ok) {
-      await prisma.payment.update({ where: { id: due.id }, data: { status: 'ESUATA' } })
-      return { ok: false as const, error: result.error ?? 'Plata a eșuat.' }
-    }
-
-    const isAvans = due.type === 'AVANS'
-    const balance = contract.price - contract.deposit
-    const commission = Math.round((contract.price * COMMISSION_PERCENT) / 100)
-    // Dacă avansul acoperă tot prețul (avans == preț), nu mai rămâne diferență: vânzarea se finalizează acum,
-    // fără să creăm o tranșă REST de 0 lei.
-    const finalized = !isAvans || balance <= 0
-
-    const settled = await prisma.$transaction(async (tx) => {
-      // Tranziție atomică: doar prima cerere care prinde plata IN_CURS o finalizează (anti-dublare).
-      const claimed = await tx.payment.updateMany({
-        where: { id: due.id, status: 'IN_CURS' },
-        data: { status: 'FINALIZATA', paidAt: new Date() },
-      })
-      if (claimed.count === 0) return false
-
-      if (!finalized) {
-        // Avans achitat, mai rămâne diferență: diferența de preț devine scadentă.
-        await tx.payment.create({
-          data: {
-            reference: paymentReference(),
-            userId: contract.tenantId,
-            contractId: contract.id,
-            amount: balance,
-            type: 'REST',
-            status: 'IN_CURS',
-          },
-        })
-      } else {
-        // Preț integral achitat: comision pentru proprietar, vânzare finalizată, transfer de proprietate.
-        await tx.payment.create({
-          data: {
-            reference: paymentReference(),
-            userId: contract.ownerId,
-            contractId: contract.id,
-            amount: commission,
-            type: 'COMISION',
-            status: 'FINALIZATA',
-            paidAt: new Date(),
-          },
-        })
-        await tx.contract.update({ where: { id: contract.id }, data: { status: 'INCHEIAT' } })
-        await tx.property.update({
-          where: { id: contract.propertyId },
-          data: { status: 'VANDUTA', ownerId: contract.tenantId },
-        })
-      }
-      return true
+      successUrl: `${APP_URL}/dashboard/contracte?plata=succes`,
+      cancelUrl: `${APP_URL}/dashboard/contracte?plata=anulat`,
     })
 
-    // Plata era deja finalizată (reîncercare / cerere concurentă) — idempotent.
-    if (!settled) return { ok: true as const, reference: due.reference }
-
-    if (!finalized) {
-      await notify(
-        contract.ownerId,
-        'Avans încasat',
-        `${user.firstName} ${user.lastName} a plătit avansul de ${formatRon(due.amount)} pentru „${contract.property.title}”.`,
-        'success'
-      )
-    } else {
-      await notify(
-        contract.ownerId,
-        'Vânzare finalizată',
-        `Vânzarea pentru „${contract.property.title}” a fost finalizată. Diferența de ${formatRon(due.amount)} a fost încasată.`,
-        'success'
-      )
-      await notify(
-        contract.tenantId,
-        'Proprietate achiziționată',
-        `Felicitări! Ești noul proprietar al imobilului „${contract.property.title}”.`,
-        'success'
-      )
+    // Producție: clientul este redirecționat către Stripe; decontarea se face în webhook.
+    if (checkout.mode === 'redirect') {
+      return { ok: true as const, redirectUrl: checkout.url }
     }
 
-    revalidatePath('/dashboard', 'layout')
-    revalidatePath('/proprietati', 'layout')
+    // Mod dev (fără Stripe configurat): decontăm plata pe loc.
+    await settlePayment(due.id)
     return { ok: true as const, reference: due.reference }
   } catch (err) {
     return { ok: false as const, error: errorMessage(err) }
