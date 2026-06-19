@@ -65,8 +65,8 @@ export default async function KycVerificationPage() {
 
           <h2 className="text-xl font-semibold">Verificare prin cameră</h2>
           <p className="mt-2 text-sm text-[var(--muted)]">
-            Capturează live actul tău de identitate și un selfie. Comparăm fața de pe act cu selfie-ul pentru a confirma că
-            ești tu. Ai nevoie de acces la cameră și de lumină bună.
+            Fotografiază actul tău de identitate și un selfie. Comparăm fața de pe act cu selfie-ul pentru a confirma că ești
+            tu. Pe desktop folosim camera live; pe telefon, camera nativă (funcționează și fără HTTPS).
           </p>
 
           <div className="mt-6">

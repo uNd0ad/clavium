@@ -3,6 +3,7 @@
 // apelantul decontează direct plata cu settlePayment().
 import { stripe, STRIPE_ENABLED } from './stripe'
 import { settlePayment } from './paymentSettle'
+import { sha256 } from './hash'
 
 export type CheckoutResult =
   // Mod dev: nu există furnizor configurat. Apelantul trebuie să deconteze plata pe loc.
@@ -47,8 +48,10 @@ export async function createCheckoutSession(params: {
       success_url: successUrl,
       cancel_url: cancelUrl,
     },
-    // Cheie stabilă per plată: o reîncercare nu creează o a doua sesiune.
-    { idempotencyKey: `checkout_${payment.reference}` }
+    // Cheie stabilă per plată + parametri: o reîncercare identică reutilizează sesiunea, dar dacă se
+    // schimbă parametrii (ex. success_url cu altă gazdă: localhost vs IP din LAN) primim o cheie nouă,
+    // ca să nu lovim eroarea Stripe „idempotency key reused with different parameters”.
+    { idempotencyKey: `checkout_${payment.reference}_${sha256(`${successUrl}|${cancelUrl}|${payment.amount}`).slice(0, 12)}` }
   )
 
   if (!session.url) throw new Error('Stripe nu a returnat un URL de plată.')

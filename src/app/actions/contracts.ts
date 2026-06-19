@@ -11,7 +11,7 @@ import { createCheckoutSession } from '@/lib/payments'
 import { settlePayment } from '@/lib/paymentSettle'
 import { paymentReference } from '@/lib/hash'
 import { formatRon } from '@/lib/dashboardData'
-import { APP_URL } from '@/lib/constants'
+import { requestBaseUrl } from '@/lib/appUrl'
 import { firstRentDueDate } from '@/lib/contractDates'
 
 // Proprietarul editează termenii contractului înainte de semnare (cât e IN_ASTEPTARE).
@@ -223,13 +223,14 @@ export async function payRentAction(contractId: string) {
     })
     if (!due) return { ok: false as const, error: 'Nu există nicio chirie scadentă.' }
 
+    const baseUrl = await requestBaseUrl()
     const checkout = await createCheckoutSession({
       payment: due,
       description: `Chirie „${contract.property.title}” (${due.reference})`,
       payerEmail: user.email,
       // Trecem prin /api/payments/confirm: decontează pe loc la întoarcere (nu așteptăm webhook-ul).
-      successUrl: `${APP_URL}/api/payments/confirm?session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${APP_URL}/dashboard/contracte?plata=anulat`,
+      successUrl: `${baseUrl}/api/payments/confirm?session_id={CHECKOUT_SESSION_ID}`,
+      cancelUrl: `${baseUrl}/dashboard/contracte?plata=anulat`,
     })
 
     // Producție: clientul este redirecționat către Stripe; decontarea se face în webhook.
@@ -266,13 +267,14 @@ export async function paySaleAction(contractId: string) {
     })
     if (!due) return { ok: false as const, error: 'Nu există nicio plată scadentă.' }
 
+    const baseUrl = await requestBaseUrl()
     const checkout = await createCheckoutSession({
       payment: due,
       description: `${due.type === 'AVANS' ? 'Avans' : 'Diferență preț'} „${contract.property.title}” (${due.reference})`,
       payerEmail: user.email,
       // Trecem prin /api/payments/confirm: decontează pe loc la întoarcere (nu așteptăm webhook-ul).
-      successUrl: `${APP_URL}/api/payments/confirm?session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${APP_URL}/dashboard/contracte?plata=anulat`,
+      successUrl: `${baseUrl}/api/payments/confirm?session_id={CHECKOUT_SESSION_ID}`,
+      cancelUrl: `${baseUrl}/dashboard/contracte?plata=anulat`,
     })
 
     // Producție: clientul este redirecționat către Stripe; decontarea se face în webhook.

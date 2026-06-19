@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { confirmCheckoutSession } from '@/lib/payments'
-import { APP_URL } from '@/lib/constants'
 import { captureException } from '@/lib/logger'
 
 // Punctul de întoarcere de pe Stripe Checkout (success_url). Verifică sesiunea la Stripe și
@@ -11,7 +10,9 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   const sessionId = request.nextUrl.searchParams.get('session_id')
-  const target = new URL('/dashboard/contracte', APP_URL)
+  // Rămânem pe gazda pe care a folosit-o utilizatorul (localhost, IP din LAN sau domeniul de prod),
+  // ca întoarcerea finală după plată să nu sară pe localhost.
+  const target = new URL('/dashboard/contracte', request.nextUrl.origin)
 
   if (!sessionId) {
     target.searchParams.set('plata', 'anulat')

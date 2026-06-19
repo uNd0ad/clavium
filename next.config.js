@@ -21,7 +21,7 @@ const nextConfig = {
       bodySizeLimit: '45mb',
     },
   },
-  allowedDevOrigins: ['127.0.0.1', 'localhost'],
+  allowedDevOrigins: ['127.0.0.1', 'localhost', '192.168.1.227'],
   async headers() {
     return [{ source: '/(.*)', headers: securityHeaders }]
   },

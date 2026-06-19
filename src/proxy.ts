@@ -13,7 +13,8 @@ function buildCsp(nonce: string) {
   const scriptSrc = isDev
     ? `'self' 'unsafe-eval' 'nonce-${nonce}'`
     : `'self' 'nonce-${nonce}' 'strict-dynamic'`
-  const connectSrc = isDev ? `'self' ws:` : `'self'`
+  // Canal HMR: ws:// pe dev http, wss:// pe dev https (next dev --experimental-https / testare LAN).
+  const connectSrc = isDev ? `'self' ws: wss:` : `'self'`
   return [
     `default-src 'self'`,
     `script-src ${scriptSrc}`,
