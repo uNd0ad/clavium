@@ -1,6 +1,8 @@
 // Trimitere SMS prin SMSO.ro (https://api-docs.smso.ro/).
 // Necesită în .env: SMS_API_URL, SMS_API_KEY și SMS_SENDER_ID (din GET /api/v1/senders).
 // Fără aceste variabile, codul se afișează doar în consola serverului (mod dev).
+// În producție, lipsa configurării aruncă imediat — altfel codul OTP nu ar ajunge
+// niciodată la utilizator, fără nicio eroare (vezi PRODUCTION-READINESS.md, P0 #1).
 import { logger } from './logger'
 
 const SMSO_ERRORS: Record<number, string> = {
@@ -24,6 +26,9 @@ export async function sendSms(phone: string, message: string): Promise<void> {
   const senderId = process.env.SMS_SENDER_ID
 
   if (!apiUrl || !apiKey || !senderId) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('Furnizorul SMS nu este configurat (SMS_API_URL / SMS_API_KEY / SMS_SENDER_ID).')
+    }
     console.log(`[DEV] SMS către ${phone}: ${message}`)
     return
   }

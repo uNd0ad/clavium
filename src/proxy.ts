@@ -51,7 +51,10 @@ export function proxy(req: NextRequest) {
   // ChunkLoadError și buclă de reload. Mediul de dev rulează intenționat fără securitatea de prod.
   // CSP_DISABLED=1 dezactivează CSP și pe un build de producție rulat local pe HTTP (test pe telefon
   // prin IP-ul din LAN): altfel `upgrade-insecure-requests` ar forța HTTPS pe subresurse și ar pica.
-  if (process.env.NODE_ENV === 'production' && process.env.CSP_DISABLED !== '1') {
+  // Dar pe un host real (Vercel) ignorăm CSP_DISABLED, ca să nu poată dezactiva CSP din greșeală
+  // în producție (vezi PRODUCTION-READINESS.md, P1 #4).
+  const cspDisabled = process.env.CSP_DISABLED === '1' && process.env.VERCEL !== '1'
+  if (process.env.NODE_ENV === 'production' && !cspDisabled) {
     const csp = buildCsp(nonce)
     requestHeaders.set('Content-Security-Policy', csp)
     response.headers.set('Content-Security-Policy', csp)
