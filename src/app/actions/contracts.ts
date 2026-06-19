@@ -6,7 +6,7 @@ import { requireActionUser } from '@/lib/actionUser'
 import { errorMessage } from '@/lib/apiError'
 import { contractTermsSchema, saleTermsSchema } from '@/lib/validations'
 import { notify } from '@/lib/notify'
-import { signWithQes } from '@/lib/qes'
+import { signWithQes, contractDocumentHash } from '@/lib/qes'
 import { createCheckoutSession } from '@/lib/payments'
 import { settlePayment } from '@/lib/paymentSettle'
 import { paymentReference } from '@/lib/hash'
@@ -104,10 +104,14 @@ export async function signContractAction(contractId: string) {
       return { ok: false as const, error: 'Ai semnat deja acest contract.' }
     }
 
+    // Amprenta documentului în momentul semnării — leagă semnătura de termenii curenți.
+    const documentHash = contractDocumentHash(contract)
+    const signerName = `${user.firstName} ${user.lastName}`
     const qes = await signWithQes({
       contractId: contract.id,
       signerEmail: user.email,
-      signerName: `${user.firstName} ${user.lastName}`,
+      signerName,
+      documentHash,
     })
     if (!qes.ok) return { ok: false as const, error: 'Semnarea QES a eșuat.' }
 
@@ -122,6 +126,29 @@ export async function signContractAction(contractId: string) {
         signedByClient,
         qes: true,
         status: bothSigned ? 'ACTIV' : 'SEMNAT',
+      },
+    })
+
+    // Pistă de audit a semnăturii (cine, când, ce referință QES, ce amprentă de document).
+    await prisma.signature.upsert({
+      where: { contractId_signerId: { contractId: contract.id, signerId: user.id } },
+      create: {
+        contractId: contract.id,
+        signerId: user.id,
+        role: isOwner ? 'OWNER' : 'CLIENT',
+        signerName,
+        signerEmail: user.email,
+        signatureRef: qes.signatureRef,
+        provider: qes.provider,
+        qes: qes.qes,
+        documentHash,
+      },
+      update: {
+        signatureRef: qes.signatureRef,
+        provider: qes.provider,
+        qes: qes.qes,
+        documentHash,
+        signedAt: new Date(),
       },
     })
 
@@ -200,7 +227,8 @@ export async function payRentAction(contractId: string) {
       payment: due,
       description: `Chirie „${contract.property.title}” (${due.reference})`,
       payerEmail: user.email,
-      successUrl: `${APP_URL}/dashboard/contracte?plata=succes`,
+      // Trecem prin /api/payments/confirm: decontează pe loc la întoarcere (nu așteptăm webhook-ul).
+      successUrl: `${APP_URL}/api/payments/confirm?session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${APP_URL}/dashboard/contracte?plata=anulat`,
     })
 
@@ -242,7 +270,8 @@ export async function paySaleAction(contractId: string) {
       payment: due,
       description: `${due.type === 'AVANS' ? 'Avans' : 'Diferență preț'} „${contract.property.title}” (${due.reference})`,
       payerEmail: user.email,
-      successUrl: `${APP_URL}/dashboard/contracte?plata=succes`,
+      // Trecem prin /api/payments/confirm: decontează pe loc la întoarcere (nu așteptăm webhook-ul).
+      successUrl: `${APP_URL}/api/payments/confirm?session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${APP_URL}/dashboard/contracte?plata=anulat`,
     })
 

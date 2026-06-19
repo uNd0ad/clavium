@@ -21,6 +21,7 @@ function toUser(user: User): AppUser {
     passwordHash: user.passwordHash,
     role: mapUserRole(user.role),
     emailVerified: user.emailVerified,
+    kycStatus: user.kycStatus,
     isActive: user.isActive,
     avatar: user.avatar,
     accountType: (user.accountType as AccountType) || 'PERSON',

@@ -32,6 +32,8 @@ function useAction() {
             const sa = opts.successAction
             toast.success(opts.success, sa ? { action: { label: sa.label, onClick: () => router.push(sa.href) } } : undefined)
           }
+          // Reîmprospătăm componentele server ca schimbarea (plată decontată, contract semnat) să fie vizibilă imediat.
+          router.refresh()
           resolve(true)
         } else {
           toast.error(res.error || 'A apărut o eroare.')

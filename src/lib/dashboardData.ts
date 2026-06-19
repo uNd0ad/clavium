@@ -32,6 +32,10 @@ export type ContractView = {
   dueAmount: string | null
   // Tipul plății scadente, pentru a apela acțiunea potrivită (CHIRIE → payRent, AVANS/REST → paySale).
   dueType: 'CHIRIE' | 'AVANS' | 'REST' | null
+  // Progresul plăților, vizibil pe card („3 din 12 chirii achitate”, „Avans achitat”…).
+  paymentProgress: string | null
+  // Data următoarei scadențe (chirie), ca utilizatorul să vadă că s-a schimbat după plată.
+  nextDueDate: string | null
 }
 
 export type PropertyView = {
@@ -256,10 +260,10 @@ export async function getContracts(user: SessionUser): Promise<ContractView[]> {
     include: {
       property: true,
       tenant: true,
+      // Toate plățile contractului — folosim cele IN_CURS pentru scadență și cele FINALIZATA pentru progres.
       payments: {
-        where: { type: { in: [...PAYABLE_TYPES] }, status: 'IN_CURS' },
+        where: { type: { in: [...PAYABLE_TYPES] } },
         orderBy: [{ dueDate: 'asc' }, { createdAt: 'asc' }],
-        take: 1,
       },
     },
     orderBy: { createdAt: 'desc' },
@@ -272,8 +276,9 @@ export async function getContracts(user: SessionUser): Promise<ContractView[]> {
       signable &&
       ((contract.ownerId === user.id && !contract.signedByOwner) ||
         (contract.tenantId === user.id && !contract.signedByClient))
-    const due = contract.payments[0]
+    const due = contract.payments.find((p) => p.status === 'IN_CURS') ?? null
     const isSale = contract.type === 'VANZARE'
+    const { paymentProgress, nextDueDate } = contractPaymentProgress(contract, contract.payments, due)
     return {
       id: contract.id,
       property: contract.property.title,
@@ -289,8 +294,38 @@ export async function getContracts(user: SessionUser): Promise<ContractView[]> {
       canPay: contract.status === 'ACTIV' && contract.tenantId === user.id && Boolean(due),
       dueAmount: due ? formatRon(due.amount) : null,
       dueType: (due?.type as 'CHIRIE' | 'AVANS' | 'REST' | undefined) ?? null,
+      paymentProgress,
+      nextDueDate,
     }
   })
+}
+
+// Rezumatul plăților pentru cardul de contract — astfel încât fiecare plată să producă o schimbare vizibilă.
+type ContractPayment = { type: string; status: string; dueDate: Date | null }
+function contractPaymentProgress(
+  contract: { type: string; status: string; months: number },
+  payments: ContractPayment[],
+  due: ContractPayment | null
+): { paymentProgress: string | null; nextDueDate: string | null } {
+  const isSale = contract.type === 'VANZARE'
+
+  if (isSale) {
+    if (contract.status === 'INCHEIAT') return { paymentProgress: 'Vânzare finalizată — preț achitat integral', nextDueDate: null }
+    const avansPaid = payments.some((p) => p.type === 'AVANS' && p.status === 'FINALIZATA')
+    if (avansPaid) return { paymentProgress: 'Avans achitat — diferența rămâne de plată', nextDueDate: null }
+    return { paymentProgress: null, nextDueDate: null }
+  }
+
+  if (contract.status === 'INCHEIAT') {
+    return { paymentProgress: `Toate cele ${contract.months} chirii au fost achitate`, nextDueDate: null }
+  }
+  if (contract.status !== 'ACTIV') return { paymentProgress: null, nextDueDate: null }
+
+  const paidRents = payments.filter((p) => p.type === 'CHIRIE' && p.status === 'FINALIZATA').length
+  return {
+    paymentProgress: `${paidRents} din ${contract.months} chirii achitate`,
+    nextDueDate: due?.type === 'CHIRIE' && due.dueDate ? formatDate(due.dueDate) : null,
+  }
 }
 
 // Contractele de închiriere active în care utilizatorul e chiriaș — singurele pe care poate deschide tichete.

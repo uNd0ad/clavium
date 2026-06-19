@@ -8,10 +8,12 @@ export async function resetDb() {
   await prisma.ticketMessage.deleteMany()
   await prisma.ticket.deleteMany()
   await prisma.payment.deleteMany()
+  await prisma.signature.deleteMany()
   await prisma.contract.deleteMany()
   await prisma.offer.deleteMany()
   await prisma.savedProperty.deleteMany()
   await prisma.notification.deleteMany()
+  await prisma.kycVerification.deleteMany()
   await prisma.property.deleteMany()
   await prisma.session.deleteMany()
   await prisma.emailToken.deleteMany()
@@ -34,6 +36,7 @@ export function sessionFor(user: { id: string; firstName: string; lastName: stri
     role: user.role as UserRole,
     email: user.email,
     emailVerified: true,
+    kycStatus: 'VERIFIED',
     accountType: 'PERSON',
     companyVatPayer: false,
   }

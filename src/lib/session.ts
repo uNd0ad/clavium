@@ -11,6 +11,7 @@ export type SessionUser = {
   role: UserRole
   email: string
   emailVerified: boolean
+  kycStatus: string
   phone?: string
   avatar?: string
   accountType: AccountType
@@ -36,6 +37,7 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
     role: user.role,
     email: user.email,
     emailVerified: user.emailVerified,
+    kycStatus: user.kycStatus,
     phone: user.phone ?? undefined,
     avatar: user.avatar ?? undefined,
     accountType: user.accountType,

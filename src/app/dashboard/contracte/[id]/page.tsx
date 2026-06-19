@@ -98,8 +98,31 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
           <div>
             <h2 className="text-lg font-semibold text-[var(--text)]">{doc.clauses ? '4' : '3'}. Semnături electronice (QES)</h2>
             <div className="mt-2 grid gap-3 sm:grid-cols-2">
-              <p>{doc.owner.role}: {doc.signedByOwner ? <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400"><Check size={14} strokeWidth={3} />Semnat</span> : <span className="font-semibold text-[var(--text)]">În așteptare</span>}</p>
-              <p>{doc.tenant.role}: {doc.signedByClient ? <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400"><Check size={14} strokeWidth={3} />Semnat</span> : <span className="font-semibold text-[var(--text)]">În așteptare</span>}</p>
+              {([
+                { party: doc.owner, signed: doc.signedByOwner, role: 'OWNER' as const },
+                { party: doc.tenant, signed: doc.signedByClient, role: 'CLIENT' as const },
+              ]).map(({ party, signed, role }) => {
+                const sig = doc.signatures.find((s) => s.role === role)
+                return (
+                  <div key={role}>
+                    <p>
+                      {party.role}:{' '}
+                      {signed ? (
+                        <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
+                          <Check size={14} strokeWidth={3} />Semnat
+                        </span>
+                      ) : (
+                        <span className="font-semibold text-[var(--text)]">În așteptare</span>
+                      )}
+                    </p>
+                    {sig ? (
+                      <p className="mt-1 text-xs text-[var(--muted)]">
+                        {sig.signedAt} · ref. <span className="font-mono">{sig.signatureRef}</span>
+                      </p>
+                    ) : null}
+                  </div>
+                )
+              })}
             </div>
           </div>
         </div>

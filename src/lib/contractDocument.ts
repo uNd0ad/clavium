@@ -28,6 +28,15 @@ export type ContractDocument = {
   signedByOwner: boolean
   signedByClient: boolean
   qes: boolean
+  signatures: SignatureRecord[]
+}
+
+export type SignatureRecord = {
+  role: 'OWNER' | 'CLIENT'
+  signerName: string
+  signatureRef: string
+  provider: string
+  signedAt: string
 }
 
 type PartyUser = {
@@ -104,6 +113,7 @@ export async function getContractDetail(contractId: string, user: SessionUser): 
         orderBy: [{ dueDate: 'asc' }, { createdAt: 'asc' }],
         take: 1,
       },
+      signatures: { orderBy: { signedAt: 'asc' } },
     },
   })
   if (!contract) return null
@@ -139,6 +149,19 @@ export async function getContractDetail(contractId: string, user: SessionUser): 
     signedByOwner: contract.signedByOwner,
     signedByClient: contract.signedByClient,
     qes: contract.qes,
+    signatures: contract.signatures.map((s) => ({
+      role: s.role as 'OWNER' | 'CLIENT',
+      signerName: s.signerName,
+      signatureRef: s.signatureRef,
+      provider: s.provider,
+      signedAt: new Intl.DateTimeFormat('ro-RO', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(s.signedAt),
+    })),
   }
 
   return {

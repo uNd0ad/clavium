@@ -2,6 +2,7 @@
 // Fără STRIPE_SECRET_KEY, plățile rulează în „mod dev” (acceptate instant, fără redirect) —
 // apelantul decontează direct plata cu settlePayment().
 import { stripe, STRIPE_ENABLED } from './stripe'
+import { settlePayment } from './paymentSettle'
 
 export type CheckoutResult =
   // Mod dev: nu există furnizor configurat. Apelantul trebuie să deconteze plata pe loc.
@@ -52,4 +53,20 @@ export async function createCheckoutSession(params: {
 
   if (!session.url) throw new Error('Stripe nu a returnat un URL de plată.')
   return { mode: 'redirect', url: session.url }
+}
+
+// La întoarcerea pe success_url, verificăm direct la Stripe dacă sesiunea e achitată și
+// decontăm pe loc — fără să așteptăm webhook-ul. Webhook-ul rămâne plasa de siguranță;
+// `settlePayment` e idempotent, deci dubla decontare (redirect + webhook) nu strică nimic.
+// Întoarce: 'paid' (decontat acum sau deja), 'unpaid' (încă neachitat), 'disabled' (fără Stripe).
+export async function confirmCheckoutSession(sessionId: string): Promise<'paid' | 'unpaid' | 'disabled'> {
+  if (!STRIPE_ENABLED || !stripe) return 'disabled'
+
+  const session = await stripe.checkout.sessions.retrieve(sessionId)
+  const paymentId = session.metadata?.paymentId
+  if (paymentId && session.payment_status === 'paid') {
+    await settlePayment(paymentId)
+    return 'paid'
+  }
+  return 'unpaid'
 }

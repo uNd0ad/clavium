@@ -1,9 +1,11 @@
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { ChevronRight } from 'lucide-react'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import StatusBadge from '@/components/dashboard/StatusBadge'
 import { ContractActions } from '@/components/dashboard/actions'
+import PaymentToast from '@/components/dashboard/PaymentToast'
 import { getCurrentUser } from '@/lib/session'
 import { getContracts } from '@/lib/dashboardData'
 
@@ -17,6 +19,9 @@ export default async function DashboardContractsPage() {
 
   return (
     <section className="space-y-8">
+      <Suspense fallback={null}>
+        <PaymentToast />
+      </Suspense>
       <DashboardHeader
         eyebrow="Contracte"
         title="Contracte active"
@@ -66,6 +71,14 @@ export default async function DashboardContractsPage() {
                     <p className="mt-2 font-semibold">{contract.signedByClient ? 'Semnat' : 'În așteptare'}</p>
                   </div>
                 </div>
+                {contract.paymentProgress ? (
+                  <div className="mt-4 flex flex-wrap items-center gap-2 rounded-3xl bg-[var(--surface)] px-4 py-3 text-sm">
+                    <span className="font-semibold text-[var(--text)]">{contract.paymentProgress}</span>
+                    {contract.nextDueDate ? (
+                      <span className="text-[var(--muted)]">· următoarea scadență: {contract.nextDueDate}</span>
+                    ) : null}
+                  </div>
+                ) : null}
                 <ContractActions
                   contractId={contract.id}
                   canSign={contract.canSign}

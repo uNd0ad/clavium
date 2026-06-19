@@ -19,6 +19,9 @@ model User {
   role          String   @default("CLIENT")
   emailVerified Boolean  @default(false)
   phoneVerified Boolean  @default(false)
+  // Verificare identitate (KYC): UNVERIFIED | PENDING | VERIFIED | REJECTED.
+  // Coloană de citire rapidă (sesiune/gating); detaliile stau în KycVerification.
+  kycStatus     String   @default("UNVERIFIED")
   isActive      Boolean  @default(true)
   avatar        String?
   // Tip cont: PERSON (persoană fizică) sau COMPANY (persoană juridică).
@@ -45,6 +48,8 @@ model User {
   ticketsAuthored   Ticket[]        @relation("TicketsAuthored")
   ticketMessages    TicketMessage[] @relation("TicketMessages")
   ticketReads       TicketRead[]    @relation("TicketReads")
+  signatures        Signature[]     @relation("UserSignatures")
+  kyc               KycVerification?
 }
 
 model Session {
@@ -154,7 +159,51 @@ model Contract {
   status         String    @default("IN_ASTEPTARE") // IN_ASTEPTARE | SEMNAT | ACTIV | INCHEIAT
   payments       Payment[]
   tickets        Ticket[]
+  signatures     Signature[]
   createdAt      DateTime  @default(now())
+}
+
+// Semnătură electronică calificată (QES) a unei părți pe un contract.
+// Pistă de audit conformă eIDAS: cine a semnat, când, cu ce referință de la furnizorul
+// QES și peste ce amprentă a documentului (leagă semnătura de conținutul semnat — orice
+// modificare ulterioară a termenilor ar invalida amprenta).
+model Signature {
+  id           String   @id @default(uuid())
+  contractId   String
+  contract     Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  signerId     String
+  signer       User     @relation("UserSignatures", fields: [signerId], references: [id])
+  role         String // OWNER | CLIENT
+  signerName   String
+  signerEmail  String
+  signatureRef String // referința semnăturii returnată de furnizorul QES
+  provider     String   @default("dev") // dev | certsign | namirial | docusign
+  qes          Boolean  @default(true)
+  documentHash String // sha256 al documentului semnat
+  signedAt     DateTime @default(now())
+
+  // O singură semnătură per parte per contract (re-semnarea actualizează aceeași înregistrare).
+  @@unique([contractId, signerId])
+}
+
+// Verificarea identității (KYC) a unui utilizator — dosarul de verificare la furnizorul de
+// identitate (Onfido, Veriff, Sumsub…). Mod dev: decizia e simulată (verificat instant), la
+// fel ca plățile fără Stripe și semnarea fără furnizor QES. Un singur dosar curent per
+// utilizator (re-trimiterea actualizează aceeași înregistrare). Documentele încărcate NU se
+// stochează public: păstrăm doar amprentele (sha256) + numărul lor, ca pistă de audit.
+model KycVerification {
+  id              String    @id @default(uuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status          String    @default("PENDING") // PENDING | VERIFIED | REJECTED
+  provider        String    @default("dev") // dev | onfido | veriff | sumsub
+  reference       String // referința dosarului returnată de furnizorul de identitate
+  method          String    @default("id_document") // tipul verificării
+  documentHashes  String    @default("[]") // JSON: array de amprente sha256 ale documentelor încărcate
+  documentCount   Int       @default(0)
+  rejectionReason String?
+  submittedAt     DateTime  @default(now())
+  verifiedAt      DateTime?
 }
 
 model Payment {

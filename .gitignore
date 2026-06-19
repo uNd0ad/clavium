@@ -35,3 +35,5 @@ package-lock.json
 # VS Code
 .vscode/
 public/uploads/
+# Documente KYC stocate privat (act de identitate, selfie) — niciodată în git.
+private/

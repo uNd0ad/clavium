@@ -19,6 +19,7 @@ export type User = {
   passwordHash: string
   role: UserRole
   emailVerified: boolean
+  kycStatus: string
   isActive: boolean
   avatar?: string | null
   accountType: AccountType

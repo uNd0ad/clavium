@@ -17,6 +17,11 @@ export default defineConfig({
       DATABASE_URL: TEST_DATABASE_URL,
       DIRECT_URL: TEST_DATABASE_URL,
       JWT_SECRET: TEST_JWT_SECRET,
+      // Forțăm „modul dev" pentru plăți: testele de ciclu decontează pe loc (settlePayment),
+      // nu prin redirect Stripe + webhook. Altfel cheile Stripe din `.env`-ul local ar fi
+      // încărcate de Vitest și ar ruta plățile spre Checkout, lăsându-le IN_CURS.
+      STRIPE_SECRET_KEY: '',
+      STRIPE_WEBHOOK_SECRET: '',
     },
     globalSetup: ['./src/test/globalSetup.ts'],
     setupFiles: ['./src/test/setup.ts'],
