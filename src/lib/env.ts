@@ -24,8 +24,8 @@ export function validateEnv(): void {
   // OTP / emailuri. Nu blocăm pornirea (poate fi un deploy parțial, în curs de configurare), dar
   // la apel email.ts / sms.ts aruncă în producție dacă tot nu sunt configurați.
   const warnings: string[] = []
-  if (!process.env.EMAIL_API_URL || isPlaceholder(process.env.EMAIL_API_KEY)) {
-    warnings.push('Email neconfigurat (EMAIL_API_URL / EMAIL_API_KEY) — emailurile vor eșua.')
+  if (!process.env.SMTP_HOST || isPlaceholder(process.env.SMTP_PASS)) {
+    warnings.push('Email neconfigurat (SMTP_HOST / SMTP_USER / SMTP_PASS) — emailurile vor eșua.')
   }
   if (!process.env.SMS_API_URL || !process.env.SMS_API_KEY || !process.env.SMS_SENDER_ID) {
     warnings.push('SMS neconfigurat (SMS_API_URL / SMS_API_KEY / SMS_SENDER_ID) — OTP-ul prin SMS va eșua.')
