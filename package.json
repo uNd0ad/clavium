@@ -1,12 +1,13 @@
 {
   "name": "clavium",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "dev:https": "next dev --experimental-https -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
+    "start:lan": "next start -H 0.0.0.0",
     "postinstall": "prisma generate",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",

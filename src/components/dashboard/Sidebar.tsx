@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
-import { Home, ShoppingBag, FileText, LifeBuoy, Layers, CreditCard, User, ShieldCheck, BadgeCheck, Search } from 'lucide-react'
+import { Home, ShoppingBag, FileText, LifeBuoy, Layers, CreditCard, User, ShieldCheck, BadgeCheck, Search, HeartHandshake } from 'lucide-react'
 import { dashboardNavItems, UserProfile } from '@/types/dashboard'
 import LogoutButton from './LogoutButton'
 import NotificationTab from './NotificationTab'
@@ -18,6 +18,7 @@ const iconMap = {
   tickets: LifeBuoy,
   properties: Layers,
   payments: CreditCard,
+  services: HeartHandshake,
   profile: User,
   verify: BadgeCheck,
   admin: ShieldCheck,
