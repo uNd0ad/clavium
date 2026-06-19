@@ -34,7 +34,7 @@ export async function updateProfileAction(input: unknown) {
 export async function changePasswordAction(input: unknown) {
   try {
     const user = await requireActionUser()
-    if (!rateLimit(`change-password:${user.id}`, 5, 15 * 60 * 1000)) {
+    if (!(await rateLimit(`change-password:${user.id}`, 5, 15 * 60 * 1000))) {
       return { ok: false as const, error: RATE_LIMIT_MESSAGE }
     }
     const data = changePasswordSchema.parse(input)

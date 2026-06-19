@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const data = loginSchema.parse(body)
 
-    if (!rateLimit(`login:${clientIp(request)}:${data.email.toLowerCase()}`, 10, 15 * 60 * 1000)) {
+    if (!(await rateLimit(`login:${clientIp(request)}:${data.email.toLowerCase()}`, 10, 15 * 60 * 1000))) {
       return NextResponse.json({ error: RATE_LIMIT_MESSAGE }, { status: 429 })
     }
 

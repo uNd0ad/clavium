@@ -10,8 +10,8 @@ export async function POST(request: NextRequest) {
     const data = otpSendSchema.parse(body)
 
     if (
-      !rateLimit(`reset:${data.email.toLowerCase()}`, 3, 15 * 60 * 1000) ||
-      !rateLimit(`reset-ip:${clientIp(request)}`, 10, 60 * 60 * 1000)
+      !(await rateLimit(`reset:${data.email.toLowerCase()}`, 3, 15 * 60 * 1000)) ||
+      !(await rateLimit(`reset-ip:${clientIp(request)}`, 10, 60 * 60 * 1000))
     ) {
       return NextResponse.json({ error: RATE_LIMIT_MESSAGE }, { status: 429 })
     }

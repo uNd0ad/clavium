@@ -7,7 +7,7 @@ import { rateLimit, clientIp, RATE_LIMIT_MESSAGE } from '@/lib/rateLimit'
 
 export async function POST(request: NextRequest) {
   try {
-    if (!rateLimit(`register:${clientIp(request)}`, 5, 60 * 60 * 1000)) {
+    if (!(await rateLimit(`register:${clientIp(request)}`, 5, 60 * 60 * 1000))) {
       return NextResponse.json({ error: RATE_LIMIT_MESSAGE }, { status: 429 })
     }
 

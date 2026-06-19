@@ -12,7 +12,7 @@ export async function POST() {
       return NextResponse.json({ error: 'Neautentificat.' }, { status: 401 })
     }
 
-    if (!rateLimit(`verify-email:${sessionUser.id}`, 3, 60 * 60 * 1000)) {
+    if (!(await rateLimit(`verify-email:${sessionUser.id}`, 3, 60 * 60 * 1000))) {
       return NextResponse.json({ error: RATE_LIMIT_MESSAGE }, { status: 429 })
     }
 

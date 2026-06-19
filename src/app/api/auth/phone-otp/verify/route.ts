@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const data = phoneOtpVerifySchema.parse(body)
 
-    if (!rateLimit(`phone-otp-verify:${data.phone}`, 5, 10 * 60 * 1000)) {
+    if (!(await rateLimit(`phone-otp-verify:${data.phone}`, 5, 10 * 60 * 1000))) {
       return NextResponse.json({ error: RATE_LIMIT_MESSAGE }, { status: 429 })
     }
 

@@ -11,8 +11,8 @@ export async function POST(request: NextRequest) {
 
     // SMS-urile costă bani — limităm strict trimiterile.
     if (
-      !rateLimit(`phone-otp-send:${data.phone}`, 3, 10 * 60 * 1000) ||
-      !rateLimit(`phone-otp-send-ip:${clientIp(request)}`, 10, 60 * 60 * 1000)
+      !(await rateLimit(`phone-otp-send:${data.phone}`, 3, 10 * 60 * 1000)) ||
+      !(await rateLimit(`phone-otp-send-ip:${clientIp(request)}`, 10, 60 * 60 * 1000))
     ) {
       return NextResponse.json({ error: RATE_LIMIT_MESSAGE }, { status: 429 })
     }
