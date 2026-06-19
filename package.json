@@ -1,6 +1,6 @@
 {
   "name": "clavium",
-  "version": "0.8.4",
+  "version": "0.9.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.15.0",
+    "@vladmandic/face-api": "^1.7.15",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
     "jose": "^5.2.0",

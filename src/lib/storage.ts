@@ -29,8 +29,9 @@ export const MAX_PHOTO_BYTES = 5 * 1024 * 1024
 export const MAX_PHOTOS_PER_PROPERTY = 8
 
 export const MAX_KYC_BYTES = 8 * 1024 * 1024
-// Documentele cerute la verificarea identității, în ordinea pașilor din formular.
-export const KYC_DOCUMENT_KINDS = ['id_front', 'id_back', 'selfie'] as const
+// Documentele cerute la verificarea identității (potrivire facială): actul de identitate
+// (fața cu poza) și un selfie, capturate live din cameră.
+export const KYC_DOCUMENT_KINDS = ['id', 'selfie'] as const
 export type KycDocumentKind = (typeof KYC_DOCUMENT_KINDS)[number]
 
 export function photoExtension(mimeType: string): string | null {

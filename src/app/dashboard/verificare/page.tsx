@@ -44,6 +44,7 @@ export default async function KycVerificationPage() {
                 {' '}
                 Furnizor: <span className="font-medium">{record.provider}</span> · referință{' '}
                 <span className="font-mono text-xs">{record.reference}</span>
+                {record.matchScore !== null ? <> · scor potrivire {record.matchScore.toFixed(3)}</> : null}
               </>
             ) : null}
           </p>
@@ -62,10 +63,10 @@ export default async function KycVerificationPage() {
             </p>
           ) : null}
 
-          <h2 className="text-xl font-semibold">Încarcă documentele</h2>
+          <h2 className="text-xl font-semibold">Verificare prin cameră</h2>
           <p className="mt-2 text-sm text-[var(--muted)]">
-            Avem nevoie de actul tău de identitate (față și verso) și de un selfie. Acceptăm JPEG, PNG sau WebP, până la 8 MB
-            fiecare.
+            Capturează live actul tău de identitate și un selfie. Comparăm fața de pe act cu selfie-ul pentru a confirma că
+            ești tu. Ai nevoie de acces la cameră și de lumină bună.
           </p>
 
           <div className="mt-6">

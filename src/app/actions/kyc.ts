@@ -17,20 +17,24 @@ import type { SessionUser } from '@/lib/session'
 
 // Etichete pentru documentele cerute (folosite în mesaje de eroare).
 const KIND_LABELS: Record<KycDocumentKind, string> = {
-  id_front: 'actul de identitate (față)',
-  id_back: 'actul de identitate (verso)',
+  id: 'actul de identitate',
   selfie: 'selfie-ul',
 }
 
-// Nucleul verificabil: trimite amprentele la furnizorul de identitate, salvează dosarul KYC
-// și aliniază starea de citire rapidă de pe utilizator. Separat de citirea fișierelor ca să
-// poată fi testat fără a încărca imagini reale.
-export async function recordKycVerification(user: SessionUser, documentHashes: string[]) {
+// Rezultatul potrivirii faciale calculate în browser, trimis de client.
+type FaceMatch = { facesDetected: boolean; matchDistance: number | null }
+
+// Nucleul verificabil: trimite documentele + rezultatul potrivirii la furnizorul de identitate
+// (sau motorul local), salvează dosarul KYC și aliniază starea de citire rapidă de pe utilizator.
+// Separat de citirea fișierelor ca să poată fi testat fără a încărca imagini reale.
+export async function recordKycVerification(user: SessionUser, documentHashes: string[], match: FaceMatch) {
   const decision = await submitKycVerification({
     userId: user.id,
     fullName: `${user.firstName} ${user.lastName}`,
     email: user.email,
     documentHashes,
+    facesDetected: match.facesDetected,
+    matchDistance: match.matchDistance,
   })
   if (!decision.ok) return { ok: false as const, error: 'Verificarea identității a eșuat.' }
 
@@ -45,6 +49,8 @@ export async function recordKycVerification(user: SessionUser, documentHashes: s
       reference: decision.reference,
       documentHashes: JSON.stringify(documentHashes),
       documentCount: documentHashes.length,
+      matchScore: decision.matchScore,
+      rejectionReason: decision.reason,
       verifiedAt,
     },
     update: {
@@ -53,7 +59,8 @@ export async function recordKycVerification(user: SessionUser, documentHashes: s
       reference: decision.reference,
       documentHashes: JSON.stringify(documentHashes),
       documentCount: documentHashes.length,
-      rejectionReason: null,
+      matchScore: decision.matchScore,
+      rejectionReason: decision.reason,
       submittedAt: new Date(),
       verifiedAt,
     },
@@ -71,11 +78,11 @@ export async function recordKycVerification(user: SessionUser, documentHashes: s
   }
 
   revalidatePath('/dashboard', 'layout')
-  return { ok: true as const, status: decision.status }
+  return { ok: true as const, status: decision.status, reason: decision.reason }
 }
 
-// Primește documentele din formular (act față/verso + selfie), le validează și le salvează
-// în zona privată, apoi trimite verificarea spre furnizorul de identitate.
+// Primește din formular actul de identitate + selfie-ul (capturate live) și rezultatul
+// potrivirii faciale, le validează și le salvează privat, apoi trimite verificarea.
 export async function submitKycAction(formData: FormData) {
   try {
     const user = await requireActionUser()
@@ -84,18 +91,18 @@ export async function submitKycAction(formData: FormData) {
       return { ok: false as const, error: 'Identitatea ta este deja verificată.' }
     }
 
-    // Toate documentele sunt obligatorii; validare rapidă (tip + dimensiune) înainte de re-encodare.
+    // Ambele documente sunt obligatorii; validare rapidă (tip + dimensiune) înainte de re-encodare.
     const files: { kind: KycDocumentKind; file: File }[] = []
     for (const kind of KYC_DOCUMENT_KINDS) {
       const entry = formData.get(kind)
       if (!(entry instanceof File) || entry.size === 0) {
-        return { ok: false as const, error: `Încarcă ${KIND_LABELS[kind]}.` }
+        return { ok: false as const, error: `Capturează ${KIND_LABELS[kind]}.` }
       }
       if (!photoExtension(entry.type)) {
-        return { ok: false as const, error: `Format neacceptat pentru ${KIND_LABELS[kind]}. Folosește JPEG, PNG sau WebP.` }
+        return { ok: false as const, error: `Format neacceptat pentru ${KIND_LABELS[kind]}.` }
       }
       if (entry.size > MAX_KYC_BYTES) {
-        return { ok: false as const, error: `${KIND_LABELS[kind]} poate avea maxim 8 MB.` }
+        return { ok: false as const, error: `${KIND_LABELS[kind]} depășește 8 MB.` }
       }
       files.push({ kind, file: entry })
     }
@@ -107,7 +114,14 @@ export async function submitKycAction(formData: FormData) {
       documentHashes.push(hash)
     }
 
-    return await recordKycVerification(user, documentHashes)
+    const rawDistance = formData.get('matchDistance')
+    const parsedDistance = typeof rawDistance === 'string' ? Number(rawDistance) : NaN
+    const match: FaceMatch = {
+      facesDetected: formData.get('facesDetected') === 'true',
+      matchDistance: Number.isFinite(parsedDistance) ? parsedDistance : null,
+    }
+
+    return await recordKycVerification(user, documentHashes, match)
   } catch (err) {
     return { ok: false as const, error: errorMessage(err) }
   }

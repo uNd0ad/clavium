@@ -198,9 +198,11 @@ model KycVerification {
   status          String    @default("PENDING") // PENDING | VERIFIED | REJECTED
   provider        String    @default("dev") // dev | onfido | veriff | sumsub
   reference       String // referința dosarului returnată de furnizorul de identitate
-  method          String    @default("id_document") // tipul verificării
+  method          String    @default("face_match") // face_match (local) | id_document (furnizor)
   documentHashes  String    @default("[]") // JSON: array de amprente sha256 ale documentelor încărcate
   documentCount   Int       @default(0)
+  // Distanța euclidiană între fața de pe act și selfie (mod local, fără eIDAS). Mai mic = mai sigur.
+  matchScore      Float?
   rejectionReason String?
   submittedAt     DateTime  @default(now())
   verifiedAt      DateTime?
