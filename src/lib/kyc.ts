@@ -57,10 +57,13 @@ export async function submitKycVerification(params: {
       }
     }
     const matched = distance <= KYC_MATCH_THRESHOLD
-    console.log(
-      `[DEV] Potrivire facială KYC pentru ${params.fullName} (${params.email}): ` +
-        `distanță ${distance.toFixed(3)} (prag ${KYC_MATCH_THRESHOLD}) → ${matched ? 'VERIFIED' : 'REJECTED'}`
-    )
+    // Nu logăm date personale (nume/email) în producție; doar în dezvoltare.
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(
+        `[DEV] Potrivire facială KYC pentru ${params.fullName} (${params.email}): ` +
+          `distanță ${distance.toFixed(3)} (prag ${KYC_MATCH_THRESHOLD}) → ${matched ? 'VERIFIED' : 'REJECTED'}`
+      )
+    }
     return matched
       ? { ok: true, status: 'VERIFIED', reference, provider, reason: null, matchScore: distance }
       : {

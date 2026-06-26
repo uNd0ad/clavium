@@ -31,6 +31,9 @@ export function validateEnv(): void {
   if (!process.env.SMS_API_URL || !process.env.SMS_API_KEY || !process.env.SMS_SENDER_ID) {
     warnings.push('SMS neconfigurat (SMS_API_URL / SMS_API_KEY / SMS_SENDER_ID) — OTP-ul prin SMS va eșua.')
   }
+  if (isPlaceholder(process.env.STRIPE_SECRET_KEY) || isPlaceholder(process.env.STRIPE_WEBHOOK_SECRET)) {
+    warnings.push('Stripe neconfigurat (STRIPE_SECRET_KEY / STRIPE_WEBHOOK_SECRET) — plățile vor fi decontate instant în „mod dev”, fără încasare reală.')
+  }
   if (process.env.CSP_DISABLED === '1' && process.env.VERCEL === '1') {
     warnings.push('CSP_DISABLED=1 e ignorat pe Vercel — CSP rămâne activ (vezi proxy.ts).')
   }

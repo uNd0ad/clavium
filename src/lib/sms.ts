@@ -34,19 +34,27 @@ export async function sendSms(phone: string, message: string): Promise<void> {
   }
 
   const endpoint = `${apiUrl.replace(/\/$/, '')}/send`
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'X-Authorization': apiKey,
-    },
-    body: new URLSearchParams({
-      to: toE164(phone),
-      sender: senderId,
-      body: message,
-      type: 'otp',
-    }),
-  })
+  let response: Response
+  try {
+    response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Authorization': apiKey,
+      },
+      body: new URLSearchParams({
+        to: toE164(phone),
+        sender: senderId,
+        body: message,
+        type: 'otp',
+      }),
+      // Fără timeout, un furnizor blocat ar ține ocupată concurența serverless la nesfârșit.
+      signal: AbortSignal.timeout(5000),
+    })
+  } catch (err) {
+    logger.error('SMSO request failed', { error: (err as Error).message })
+    throw new Error('Trimiterea SMS-ului a eșuat. Încearcă din nou.')
+  }
 
   const result = await response.json().catch(() => null)
   const status = result?.status ?? response.status

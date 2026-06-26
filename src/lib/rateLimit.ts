@@ -9,8 +9,24 @@ import { logger } from './logger'
 
 const buckets = new Map<string, number[]>()
 
+// Curățenie periodică: cheile unei chei (email/IP) care nu mai sunt accesate ar rămâne
+// altfel în hartă pentru totdeauna, crescând memoria nelimitat pe instanțe de lungă durată.
+// La fiecare SWEEP_EVERY apeluri, ștergem cheile ale căror hituri au expirat complet.
+let sweepCounter = 0
+const SWEEP_EVERY = 500
+
+function sweepExpired(now: number, windowMs: number): void {
+  for (const [key, hits] of buckets) {
+    if (hits.every((t) => now - t >= windowMs)) buckets.delete(key)
+  }
+}
+
 function rateLimitMemory(key: string, limit: number, windowMs: number): boolean {
   const now = Date.now()
+  if (++sweepCounter >= SWEEP_EVERY) {
+    sweepCounter = 0
+    sweepExpired(now, windowMs)
+  }
   const hits = (buckets.get(key) ?? []).filter((t) => now - t < windowMs)
   if (hits.length >= limit) {
     buckets.set(key, hits)
@@ -41,6 +57,8 @@ async function rateLimitRedis(key: string, limit: number, windowMs: number): Pro
     method: 'POST',
     headers: { Authorization: `Bearer ${REDIS_TOKEN}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(commands),
+    // Upstash lent nu trebuie să blocheze cererea; timeout → throw → fallback în memorie.
+    signal: AbortSignal.timeout(5000),
   })
   if (!res.ok) throw new Error(`Upstash HTTP ${res.status}`)
   const data = (await res.json()) as Array<{ result?: number; error?: string }>

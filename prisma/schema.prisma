@@ -10,20 +10,20 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(uuid())
-  firstName     String
-  lastName      String
-  email         String   @unique
-  phone         String?
-  passwordHash  String
-  role          String   @default("CLIENT")
-  emailVerified Boolean  @default(false)
-  phoneVerified Boolean  @default(false)
+  id              String   @id @default(uuid())
+  firstName       String
+  lastName        String
+  email           String   @unique
+  phone           String?
+  passwordHash    String
+  role            String   @default("CLIENT")
+  emailVerified   Boolean  @default(false)
+  phoneVerified   Boolean  @default(false)
   // Verificare identitate (KYC): UNVERIFIED | PENDING | VERIFIED | REJECTED.
   // Coloană de citire rapidă (sesiune/gating); detaliile stau în KycVerification.
-  kycStatus     String   @default("UNVERIFIED")
-  isActive      Boolean  @default(true)
-  avatar        String?
+  kycStatus       String   @default("UNVERIFIED")
+  isActive        Boolean  @default(true)
+  avatar          String?
   // Tip cont: PERSON (persoană fizică) sau COMPANY (persoană juridică).
   // Pentru COMPANY, firstName/lastName = reprezentantul legal.
   accountType     String   @default("PERSON")
@@ -32,23 +32,23 @@ model User {
   companyReg      String? // nr. înregistrare ORC (J…)
   companyAddress  String?
   companyVatPayer Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  properties        Property[]      @relation("OwnedProperties")
+  properties        Property[]       @relation("OwnedProperties")
   savedProperties   SavedProperty[]
-  offersSent        Offer[]         @relation("OffersSent")
-  offersReceived    Offer[]         @relation("OffersReceived")
-  contractsAsOwner  Contract[]      @relation("ContractsAsOwner")
-  contractsAsTenant Contract[]      @relation("ContractsAsTenant")
+  offersSent        Offer[]          @relation("OffersSent")
+  offersReceived    Offer[]          @relation("OffersReceived")
+  contractsAsOwner  Contract[]       @relation("ContractsAsOwner")
+  contractsAsTenant Contract[]       @relation("ContractsAsTenant")
   payments          Payment[]
   notifications     Notification[]
   sessions          Session[]
   emailTokens       EmailToken[]
-  ticketsAuthored   Ticket[]        @relation("TicketsAuthored")
-  ticketMessages    TicketMessage[] @relation("TicketMessages")
-  ticketReads       TicketRead[]    @relation("TicketReads")
-  signatures        Signature[]     @relation("UserSignatures")
+  ticketsAuthored   Ticket[]         @relation("TicketsAuthored")
+  ticketMessages    TicketMessage[]  @relation("TicketMessages")
+  ticketReads       TicketRead[]     @relation("TicketReads")
+  signatures        Signature[]      @relation("UserSignatures")
   kyc               KycVerification?
 }
 
@@ -59,6 +59,8 @@ model Session {
   expiresAt DateTime
   revokedAt DateTime?
   createdAt DateTime  @default(now())
+
+  @@index([userId])
 }
 
 model EmailToken {
@@ -90,25 +92,28 @@ model PhoneOtp {
 }
 
 model Property {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
-  location    String
+  id              String          @id @default(uuid())
+  title           String
+  description     String?
+  location        String
   // Tip tranzacție: INCHIRIERE (folosește `rent`) sau VANZARE (folosește `price`).
-  transactionType String @default("INCHIRIERE")
-  rent        Int      @default(0)
-  price       Int      @default(0) // preț de vânzare (RON), pentru transactionType=VANZARE
-  rooms       Int?
-  surface     Int?
-  photos      String   @default("[]") // JSON: array de URL-uri /uploads/...
-  status      String   @default("DISPONIBILA") // DISPONIBILA | INCHIRIATA | REZERVATA | VANDUTA | INACTIVA
-  ownerId     String
-  owner       User     @relation("OwnedProperties", fields: [ownerId], references: [id])
-  savedBy     SavedProperty[]
-  offers      Offer[]
-  contracts   Contract[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  transactionType String          @default("INCHIRIERE")
+  rent            Int             @default(0)
+  price           Int             @default(0) // preț de vânzare (RON), pentru transactionType=VANZARE
+  rooms           Int?
+  surface         Int?
+  photos          String          @default("[]") // JSON: array de URL-uri /uploads/...
+  status          String          @default("DISPONIBILA") // DISPONIBILA | INCHIRIATA | REZERVATA | VANDUTA | INACTIVA
+  ownerId         String
+  owner           User            @relation("OwnedProperties", fields: [ownerId], references: [id])
+  savedBy         SavedProperty[]
+  offers          Offer[]
+  contracts       Contract[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([ownerId])
+  @@index([status, transactionType])
 }
 
 model SavedProperty {
@@ -120,6 +125,7 @@ model SavedProperty {
   createdAt  DateTime @default(now())
 
   @@unique([userId, propertyId])
+  @@index([userId])
 }
 
 model Offer {
@@ -133,34 +139,42 @@ model Offer {
   amount     Int
   status     String   @default("TRIMISA") // TRIMISA | ACCEPTATA | RESPINSA
   createdAt  DateTime @default(now())
+
+  @@index([toUserId])
+  @@index([fromUserId])
+  @@index([propertyId, status])
 }
 
 model Contract {
-  id             String    @id @default(uuid())
+  id             String      @id @default(uuid())
   propertyId     String
-  property       Property  @relation(fields: [propertyId], references: [id])
+  property       Property    @relation(fields: [propertyId], references: [id])
   ownerId        String
-  owner          User      @relation("ContractsAsOwner", fields: [ownerId], references: [id])
+  owner          User        @relation("ContractsAsOwner", fields: [ownerId], references: [id])
   tenantId       String
-  tenant         User      @relation("ContractsAsTenant", fields: [tenantId], references: [id])
+  tenant         User        @relation("ContractsAsTenant", fields: [tenantId], references: [id])
   // Tip contract: INCHIRIERE (locațiune) sau VANZARE (antecontract de vânzare-cumpărare).
-  type           String    @default("INCHIRIERE")
-  rent           Int       @default(0)
-  price          Int       @default(0) // preț de vânzare (RON), pentru type=VANZARE
-  months         Int       @default(12)
-  deposit        Int       @default(0) // garanție (închiriere) sau avans (vânzare)
-  dueDay         Int       @default(5) // ziua scadentă a chiriei
+  type           String      @default("INCHIRIERE")
+  rent           Int         @default(0)
+  price          Int         @default(0) // preț de vânzare (RON), pentru type=VANZARE
+  months         Int         @default(12)
+  deposit        Int         @default(0) // garanție (închiriere) sau avans (vânzare)
+  dueDay         Int         @default(5) // ziua scadentă a chiriei
   startDate      DateTime?
   endDate        DateTime?
   clauses        String? // clauze speciale
-  signedByOwner  Boolean   @default(false)
-  signedByClient Boolean   @default(false)
-  qes            Boolean   @default(false)
-  status         String    @default("IN_ASTEPTARE") // IN_ASTEPTARE | SEMNAT | ACTIV | INCHEIAT
+  signedByOwner  Boolean     @default(false)
+  signedByClient Boolean     @default(false)
+  qes            Boolean     @default(false)
+  status         String      @default("IN_ASTEPTARE") // IN_ASTEPTARE | SEMNAT | ACTIV | INCHEIAT
   payments       Payment[]
   tickets        Ticket[]
   signatures     Signature[]
-  createdAt      DateTime  @default(now())
+  createdAt      DateTime    @default(now())
+
+  @@index([ownerId])
+  @@index([tenantId])
+  @@index([propertyId, status])
 }
 
 // Semnătură electronică calificată (QES) a unei părți pe un contract.
@@ -232,6 +246,9 @@ model Payment {
   dueDate    DateTime?
   paidAt     DateTime?
   createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@index([contractId, type, status])
 }
 
 // Tichet de asistență deschis de chiriaș pe un contract de închiriere activ.
@@ -250,6 +267,9 @@ model Ticket {
   reads      TicketRead[]
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
+
+  @@index([contractId])
+  @@index([authorId])
 }
 
 model TicketMessage {
@@ -260,6 +280,8 @@ model TicketMessage {
   author    User     @relation("TicketMessages", fields: [authorId], references: [id])
   body      String
   createdAt DateTime @default(now())
+
+  @@index([ticketId])
 }
 
 // Ultima dată când un utilizator a deschis un tichet — pentru indicatorul „răspuns nou".
@@ -283,4 +305,6 @@ model Notification {
   variant     String   @default("info") // info | warning | danger | success
   read        Boolean  @default(false)
   createdAt   DateTime @default(now())
+
+  @@index([userId, read])
 }

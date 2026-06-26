@@ -22,7 +22,9 @@ export async function createCheckoutSession(params: {
   const { payment, description, payerEmail, successUrl, cancelUrl } = params
 
   if (!STRIPE_ENABLED || !stripe) {
-    console.log(`[DEV] Plată acceptată: ${payment.amount} RON — ${description} (${payerEmail})`)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[DEV] Plată acceptată: ${payment.amount} RON — ${description} (${payerEmail})`)
+    }
     return { mode: 'dev' }
   }
 

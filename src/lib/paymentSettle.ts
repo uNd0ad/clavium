@@ -4,6 +4,7 @@ import { notify } from '@/lib/notify'
 import { paymentReference } from '@/lib/hash'
 import { formatRon } from '@/lib/dashboardData'
 import { COMMISSION_PERCENT } from '@/lib/constants'
+import { addMonths } from '@/lib/contractDates'
 
 type SettleablePayment = Awaited<ReturnType<typeof loadPayment>>
 
@@ -35,7 +36,7 @@ async function settleRent(payment: NonNullable<SettleablePayment>) {
   const contract = payment.contract!
   const commission = Math.round((payment.amount * COMMISSION_PERCENT) / 100)
   const nextDueDate = payment.dueDate
-    ? new Date(new Date(payment.dueDate).setMonth(payment.dueDate.getMonth() + 1))
+    ? addMonths(payment.dueDate, 1)
     : new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
 
   const settled = await prisma.$transaction(async (tx) => {

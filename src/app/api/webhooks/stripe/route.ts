@@ -34,7 +34,19 @@ export async function POST(request: NextRequest) {
     const paymentId = session.metadata?.paymentId
     // Decontăm doar plățile efectiv achitate (mode: 'payment' → payment_status 'paid').
     if (paymentId && session.payment_status === 'paid') {
-      await settlePayment(paymentId)
+      try {
+        // settlePayment e idempotent (claim atomic IN_CURS → FINALIZATA), deci o reîncercare
+        // a webhook-ului e sigură. La eroare răspundem 503 ca Stripe să reîncerce, în loc să
+        // marcheze evenimentul ca procesat și să lase plata nedecontată în liniște.
+        await settlePayment(paymentId)
+      } catch (err) {
+        logger.error('stripe webhook: settlePayment a eșuat', {
+          paymentId,
+          eventId: event.id,
+          error: (err as Error).message,
+        })
+        return NextResponse.json({ error: 'Decontare eșuată.' }, { status: 503 })
+      }
     }
   }
 

@@ -214,7 +214,12 @@ function offerStatus(status: string) {
 }
 
 export async function getOffers(user: SessionUser): Promise<{ sent: OfferView[]; received: OfferView[] }> {
-  const include = { property: true, fromUser: true, toUser: true }
+  // Doar câmpurile folosite în UI — nu încărca rânduri User întregi (inclusiv passwordHash) doar pentru nume.
+  const include = {
+    property: { select: { title: true } },
+    fromUser: { select: { firstName: true, lastName: true } },
+    toUser: { select: { firstName: true, lastName: true } },
+  }
   const orderBy = { createdAt: 'desc' as const }
 
   const [sent, received] = await Promise.all([
@@ -260,8 +265,9 @@ export async function getContracts(user: SessionUser): Promise<ContractView[]> {
           ? { ownerId: user.id }
           : { tenantId: user.id },
     include: {
-      property: true,
-      tenant: true,
+      // Doar câmpurile folosite în UI — evităm încărcarea rândului User întreg (inclusiv passwordHash).
+      property: { select: { title: true } },
+      tenant: { select: { firstName: true, lastName: true } },
       // Toate plățile contractului — folosim cele IN_CURS pentru scadență și cele FINALIZATA pentru progres.
       payments: {
         where: { type: { in: [...PAYABLE_TYPES] } },
@@ -350,8 +356,18 @@ export async function getTickets(user: SessionUser): Promise<TicketView[]> {
           ? { contract: { ownerId: user.id } }
           : { authorId: user.id },
     include: {
-      contract: { include: { property: true, owner: true, tenant: true } },
-      messages: { include: { author: true }, orderBy: { createdAt: 'asc' } },
+      // Doar câmpurile folosite în UI — fără rânduri User întregi (inclusiv passwordHash).
+      contract: {
+        include: {
+          property: { select: { title: true } },
+          owner: { select: { firstName: true, lastName: true } },
+          tenant: { select: { firstName: true, lastName: true } },
+        },
+      },
+      messages: {
+        include: { author: { select: { firstName: true, lastName: true } } },
+        orderBy: { createdAt: 'asc' },
+      },
       reads: { where: { userId: user.id }, take: 1 },
     },
     orderBy: { updatedAt: 'desc' },
@@ -458,16 +474,25 @@ export async function getPayments(user: SessionUser): Promise<{
   transactions: PaymentView[]
 }> {
   const where = paymentScope(user)
-  const payments = await prisma.payment.findMany({ where, orderBy: { createdAt: 'desc' } })
 
-  const sum = (filter: (p: (typeof payments)[number]) => boolean) =>
-    payments.filter(filter).reduce((total, p) => total + p.amount, 0)
+  // Sumarul se calculează în baza de date (agregat), nu prin încărcarea tuturor plăților în
+  // memorie și sumare în JS — esențial pentru proprietari/admini cu istoric mare. Lista de
+  // tranzacții afișează doar cele mai recente (sumarul rămâne complet, peste tot istoricul).
+  const [income, pending, fees, payments] = await Promise.all([
+    prisma.payment.aggregate({
+      where: { ...where, type: { in: [...PAYABLE_TYPES] }, status: 'FINALIZATA' },
+      _sum: { amount: true },
+    }),
+    prisma.payment.aggregate({ where: { ...where, status: 'IN_CURS' }, _sum: { amount: true } }),
+    prisma.payment.aggregate({ where: { ...where, type: 'COMISION' }, _sum: { amount: true } }),
+    prisma.payment.findMany({ where, orderBy: { createdAt: 'desc' }, take: 100 }),
+  ])
 
   return {
     summary: {
-      totalIncome: formatRon(sum((p) => (PAYABLE_TYPES as readonly string[]).includes(p.type) && p.status === 'FINALIZATA')),
-      pending: formatRon(sum((p) => p.status === 'IN_CURS')),
-      fees: formatRon(sum((p) => p.type === 'COMISION')),
+      totalIncome: formatRon(income._sum.amount ?? 0),
+      pending: formatRon(pending._sum.amount ?? 0),
+      fees: formatRon(fees._sum.amount ?? 0),
     },
     transactions: payments.map((payment) => {
       const { label, variant } = PAYMENT_STATUS[payment.status] ?? { label: payment.status, variant: 'info' as BadgeVariant }

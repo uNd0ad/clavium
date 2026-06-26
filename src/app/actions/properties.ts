@@ -83,12 +83,12 @@ export async function updatePropertyAction(propertyId: string, input: unknown) {
 export async function toggleSaveAction(propertyId: string) {
   try {
     const user = await requireActionUser()
-    const property = await prisma.property.findUnique({ where: { id: propertyId } })
+    // Cele două interogări sunt independente — le rulăm în paralel.
+    const [property, existing] = await Promise.all([
+      prisma.property.findUnique({ where: { id: propertyId } }),
+      prisma.savedProperty.findUnique({ where: { userId_propertyId: { userId: user.id, propertyId } } }),
+    ])
     if (!property) return { ok: false as const, error: 'Proprietatea nu există.' }
-
-    const existing = await prisma.savedProperty.findUnique({
-      where: { userId_propertyId: { userId: user.id, propertyId } },
-    })
     if (existing) {
       await prisma.savedProperty.delete({ where: { id: existing.id } })
       revalidateProperties()
@@ -125,11 +125,10 @@ export async function uploadPhotosAction(propertyId: string, formData: FormData)
       if (file.size > MAX_PHOTO_BYTES) return { ok: false as const, error: 'Fiecare fotografie poate avea maxim 5 MB.' }
     }
 
-    const urls: string[] = []
-    for (const file of files) {
-      const buffer = Buffer.from(await file.arrayBuffer())
-      urls.push(await savePropertyPhoto(propertyId, buffer))
-    }
+    // Procesăm fotografiile în paralel (Promise.all păstrează ordinea); secvențial era de N ori mai lent.
+    const urls = await Promise.all(
+      files.map(async (file) => savePropertyPhoto(propertyId, Buffer.from(await file.arrayBuffer())))
+    )
     await prisma.property.update({
       where: { id: propertyId },
       data: { photos: JSON.stringify([...existing, ...urls]) },
@@ -153,11 +152,13 @@ export async function deletePhotoAction(propertyId: string, url: string) {
     const existing = parsePhotos(property.photos)
     if (!existing.includes(url)) return { ok: false as const, error: 'Fotografia nu există.' }
 
-    await deletePropertyPhoto(propertyId, url)
+    // Actualizăm întâi referința în DB, apoi ștergem fișierul: dacă ștergerea pe disc eșuează
+    // rămâne doar un fișier orfan (inofensiv), nu o referință către un fișier inexistent (imagine ruptă).
     await prisma.property.update({
       where: { id: propertyId },
       data: { photos: JSON.stringify(existing.filter((item) => item !== url)) },
     })
+    await deletePropertyPhoto(propertyId, url)
     revalidateProperties()
     return { ok: true as const }
   } catch (err) {

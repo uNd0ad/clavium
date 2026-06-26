@@ -8,6 +8,7 @@ import { offerSchema, offerActionSchema } from '@/lib/validations'
 import { notify } from '@/lib/notify'
 import { formatRon } from '@/lib/dashboardData'
 import { SALE_DEPOSIT_PERCENT } from '@/lib/constants'
+import { addMonths } from '@/lib/contractDates'
 
 const OPEN_CONTRACT_STATUSES = ['IN_ASTEPTARE', 'SEMNAT', 'ACTIV'] as const
 
@@ -102,8 +103,7 @@ export async function respondToOfferAction(offerId: string, action: 'accept' | '
     // Vânzare: prețul din ofertă, avans implicit (procent din preț).
     const months = isSale ? 0 : 12
     const startDate = new Date()
-    const endDate = new Date(startDate)
-    endDate.setMonth(endDate.getMonth() + (months || 0))
+    const endDate = addMonths(startDate, months)
     const saleDeposit = isSale ? Math.round((offer.amount * SALE_DEPOSIT_PERCENT) / 100) : offer.amount
 
     const contract = await prisma.$transaction(async (tx) => {

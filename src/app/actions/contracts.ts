@@ -12,7 +12,7 @@ import { settlePayment } from '@/lib/paymentSettle'
 import { paymentReference } from '@/lib/hash'
 import { formatRon } from '@/lib/dashboardData'
 import { requestBaseUrl } from '@/lib/appUrl'
-import { firstRentDueDate } from '@/lib/contractDates'
+import { firstRentDueDate, addMonths } from '@/lib/contractDates'
 
 // Proprietarul editează termenii contractului înainte de semnare (cât e IN_ASTEPTARE).
 export async function setContractTermsAction(contractId: string, input: unknown) {
@@ -31,8 +31,7 @@ export async function setContractTermsAction(contractId: string, input: unknown)
     }
 
     const data = contractTermsSchema.parse(input)
-    const endDate = new Date(data.startDate)
-    endDate.setMonth(endDate.getMonth() + data.months)
+    const endDate = addMonths(data.startDate, data.months)
 
     await prisma.contract.update({
       where: { id: contractId },
@@ -126,20 +125,6 @@ export async function signContractAction(contractId: string, signature: Signatur
     })
     if (!qes.ok) return { ok: false as const, error: qes.error }
 
-    const signedByOwner = contract.signedByOwner || isOwner
-    const signedByClient = contract.signedByClient || isTenant
-    const bothSigned = signedByOwner && signedByClient
-
-    await prisma.contract.update({
-      where: { id: contractId },
-      data: {
-        signedByOwner,
-        signedByClient,
-        qes: true,
-        status: bothSigned ? 'ACTIV' : 'SEMNAT',
-      },
-    })
-
     // Referință stabilă a semnăturii: serialul certificatului + amprenta documentului.
     const signatureRef = `qes_${qes.serial.slice(0, 16)}_${documentHash.slice(0, 8)}`
     const certFields = {
@@ -157,56 +142,89 @@ export async function signContractAction(contractId: string, signature: Signatur
       validationStatus: 'QUALIFIED',
     }
 
-    // Pistă de audit a semnăturii (cine, când, ce certificat, ce amprentă de document).
-    await prisma.signature.upsert({
-      where: { contractId_signerId: { contractId: contract.id, signerId: user.id } },
-      create: {
-        contractId: contract.id,
-        signerId: user.id,
-        role: isOwner ? 'OWNER' : 'CLIENT',
-        signerName,
-        signerEmail: user.email,
-        ...certFields,
-      },
-      update: {
-        ...certFields,
-        signedAt: new Date(),
-      },
+    const effectiveStart = contract.startDate ?? new Date()
+    const firstDue = firstRentDueDate(effectiveStart, contract.dueDay)
+
+    // Semnarea, pista de audit și activarea contractului rulează într-o singură tranzacție
+    // cu un claim atomic pe flagul semnatarului curent: doar prima cerere care prinde flagul
+    // pe `false` îl trece pe `true`. Astfel două semnături concurente nu se suprascriu reciproc
+    // (nu mai există fereastra read→write care lăsa contractul blocat în SEMNAT) și efectele
+    // de activare (plata inițială, schimbarea statusului proprietății) se aplică o singură dată.
+    const result = await prisma.$transaction(async (tx) => {
+      const claimed = await tx.contract.updateMany({
+        where: {
+          id: contractId,
+          status: { in: ['IN_ASTEPTARE', 'SEMNAT'] },
+          ...(isOwner ? { signedByOwner: false } : { signedByClient: false }),
+        },
+        data: { ...(isOwner ? { signedByOwner: true } : { signedByClient: true }), qes: true },
+      })
+      if (claimed.count === 0) return { stale: true as const }
+
+      // Citim flagurile persistate în interiorul tranzacției pentru a decide activarea.
+      const fresh = await tx.contract.findUniqueOrThrow({ where: { id: contractId } })
+      const bothSigned = fresh.signedByOwner && fresh.signedByClient
+      await tx.contract.update({
+        where: { id: contractId },
+        data: { status: bothSigned ? 'ACTIV' : 'SEMNAT' },
+      })
+
+      // Pistă de audit a semnăturii (cine, când, ce certificat, ce amprentă de document).
+      await tx.signature.upsert({
+        where: { contractId_signerId: { contractId: contract.id, signerId: user.id } },
+        create: {
+          contractId: contract.id,
+          signerId: user.id,
+          role: isOwner ? 'OWNER' : 'CLIENT',
+          signerName,
+          signerEmail: user.email,
+          ...certFields,
+        },
+        update: { ...certFields, signedAt: new Date() },
+      })
+
+      if (bothSigned && contract.type === 'VANZARE') {
+        // Antecontract semnat de ambele părți: avansul (arvuna) devine scadent.
+        await tx.payment.create({
+          data: {
+            reference: paymentReference(),
+            userId: contract.tenantId,
+            contractId: contract.id,
+            amount: contract.deposit,
+            type: 'AVANS',
+            status: 'IN_CURS',
+          },
+        })
+      } else if (bothSigned) {
+        // Contract activ: proprietatea devine închiriată și prima chirie devine scadentă.
+        await tx.property.update({ where: { id: contract.propertyId }, data: { status: 'INCHIRIATA' } })
+        await tx.payment.create({
+          data: {
+            reference: paymentReference(),
+            userId: contract.tenantId,
+            contractId: contract.id,
+            amount: contract.rent,
+            type: 'CHIRIE',
+            status: 'IN_CURS',
+            dueDate: firstDue,
+          },
+        })
+      }
+
+      return { stale: false as const, bothSigned }
     })
 
-    if (bothSigned && contract.type === 'VANZARE') {
-      // Antecontract semnat de ambele părți: avansul (arvuna) devine scadent.
-      await prisma.payment.create({
-        data: {
-          reference: paymentReference(),
-          userId: contract.tenantId,
-          contractId: contract.id,
-          amount: contract.deposit,
-          type: 'AVANS',
-          status: 'IN_CURS',
-        },
-      })
+    if (result.stale) {
+      return { ok: false as const, error: 'Ai semnat deja acest contract.' }
+    }
+
+    // Notificările sunt non-critice — rulează după ce tranzacția s-a încheiat.
+    if (result.bothSigned && contract.type === 'VANZARE') {
       const message = `Antecontractul pentru „${contract.property.title}” este activ. Avansul de ${formatRon(contract.deposit)} este scadent.`
       await notify(contract.tenantId, 'Antecontract activ', message, 'success')
       await notify(contract.ownerId, 'Antecontract activ', message, 'success')
-    } else if (bothSigned) {
-      const effectiveStart = contract.startDate ?? new Date()
-      const firstDue = firstRentDueDate(effectiveStart, contract.dueDay)
+    } else if (result.bothSigned) {
       const dueLabel = firstDue.toLocaleDateString('ro-RO', { day: 'numeric', month: 'long', year: 'numeric' })
-
-      // Contract activ: proprietatea devine închiriată și prima chirie devine scadentă.
-      await prisma.property.update({ where: { id: contract.propertyId }, data: { status: 'INCHIRIATA' } })
-      await prisma.payment.create({
-        data: {
-          reference: paymentReference(),
-          userId: contract.tenantId,
-          contractId: contract.id,
-          amount: contract.rent,
-          type: 'CHIRIE',
-          status: 'IN_CURS',
-          dueDate: firstDue,
-        },
-      })
       const message = `Contractul pentru „${contract.property.title}” este activ. Prima chirie este scadentă pe ${dueLabel}.`
       await notify(contract.tenantId, 'Contract activ', message, 'success')
       await notify(contract.ownerId, 'Contract activ', message, 'success')

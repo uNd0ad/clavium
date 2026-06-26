@@ -134,6 +134,8 @@ async function checkRevocation(cert: pkijs.Certificate, issuers: pkijs.Certifica
       method: 'POST',
       headers: { 'Content-Type': 'application/ocsp-request' },
       body: Buffer.from(body),
+      // Un responder OCSP lent nu trebuie să blocheze semnarea; timeout → 'unknown' (catch).
+      signal: AbortSignal.timeout(8000),
     })
     if (!res.ok) return 'unknown'
     const respDer = await res.arrayBuffer()

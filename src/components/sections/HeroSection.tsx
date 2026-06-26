@@ -6,7 +6,6 @@ import { Search, MapPin, ChevronDown } from 'lucide-react'
 import { useReveal } from '@/hooks/useReveal'
 
 const TRANSACTION_TYPES = ['Cumpărare', 'Închiriere', 'Leasing']
-const PROPERTY_TYPES = ['Apartament', 'Casă', 'Teren', 'Comercial']
 
 // Tipul de tranzacție din hero mapează pe filtrul listării (`type`). Leasing nu are încă
 // filtru dedicat în /proprietati, deci trimite o căutare generală (fără `type`).
@@ -20,7 +19,6 @@ export default function HeroSection() {
   const router = useRouter()
   const ref = useReveal()
   const [txType, setTxType] = useState('Cumpărare')
-  const [propType, setPropType] = useState('Apartament')
   const [location, setLocation] = useState('')
 
   function handleSearch(e: React.FormEvent) {
@@ -71,41 +69,21 @@ export default function HeroSection() {
               </div>
 
               <form onSubmit={handleSearch} className="mt-10 rounded-4xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-[0_16px_40px_rgba(15,23,42,0.08)]">
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="relative">
+                  <label className="text-2xs uppercase tracking-[0.22em] text-[var(--muted)] mb-2 block">
+                    Tip tranzacție
+                  </label>
                   <div className="relative">
-                    <label className="text-2xs uppercase tracking-[0.22em] text-[var(--muted)] mb-2 block">
-                      Tip tranzacție
-                    </label>
-                    <div className="relative">
-                      <select
-                        value={txType}
-                        onChange={(e) => setTxType(e.target.value)}
-                        className="appearance-none w-full rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm text-[var(--text)] outline-none"
-                      >
-                        {TRANSACTION_TYPES.map((t) => (
-                          <option key={t}>{t}</option>
-                        ))}
-                      </select>
-                      <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)]" />
-                    </div>
-                  </div>
-
-                  <div className="relative">
-                    <label className="text-2xs uppercase tracking-[0.22em] text-[var(--muted)] mb-2 block">
-                      Tip proprietate
-                    </label>
-                    <div className="relative">
-                      <select
-                        value={propType}
-                        onChange={(e) => setPropType(e.target.value)}
-                        className="appearance-none w-full rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm text-[var(--text)] outline-none"
-                      >
-                        {PROPERTY_TYPES.map((t) => (
-                          <option key={t}>{t}</option>
-                        ))}
-                      </select>
-                      <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)]" />
-                    </div>
+                    <select
+                      value={txType}
+                      onChange={(e) => setTxType(e.target.value)}
+                      className="appearance-none w-full rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm text-[var(--text)] outline-none"
+                    >
+                      {TRANSACTION_TYPES.map((t) => (
+                        <option key={t}>{t}</option>
+                      ))}
+                    </select>
+                    <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)]" />
                   </div>
                 </div>
 

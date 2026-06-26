@@ -87,7 +87,7 @@ export default function PropertyGallery({ photos, title }: { photos: string[]; t
               </button>
 
               <div className="relative h-[82vh] w-full max-w-5xl" onClick={(event) => event.stopPropagation()}>
-                <Image src={photos[index]} alt={`${title} — fotografia ${index + 1}`} fill sizes="100vw" className="object-contain" />
+                <Image src={photos[index]} alt={`${title} — fotografia ${index + 1}`} fill sizes="(max-width: 1280px) 100vw, 1280px" className="object-contain" />
               </div>
 
               {photos.length > 1 ? (
