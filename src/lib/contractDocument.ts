@@ -1,5 +1,6 @@
 import { prisma } from './prisma'
 import { formatRon } from './dashboardData'
+import { contractDocumentHash } from './qes'
 import type { SessionUser } from './session'
 
 type Party = {
@@ -92,6 +93,8 @@ export type ContractDetail = {
   canEditSale: boolean
   canSign: boolean
   canPay: boolean
+  // Amprenta documentului de semnat — semnatarul o semnează cu certificatul lui calificat.
+  documentHash: string
   dueAmount: string | null
   dueType: 'CHIRIE' | 'AVANS' | 'REST' | null
   // Valori brute pentru formularul de termeni (închiriere).
@@ -170,6 +173,7 @@ export async function getContractDetail(contractId: string, user: SessionUser): 
     canEdit: (isOwner || user.role === 'ADMIN') && !isSale && contract.status === 'IN_ASTEPTARE',
     canEditSale: (isOwner || user.role === 'ADMIN') && isSale && contract.status === 'IN_ASTEPTARE',
     canSign,
+    documentHash: contractDocumentHash(contract),
     canPay: contract.status === 'ACTIV' && contract.tenantId === user.id && Boolean(due),
     dueAmount: due ? formatRon(due.amount) : null,
     dueType: (due?.type as 'CHIRIE' | 'AVANS' | 'REST' | undefined) ?? null,

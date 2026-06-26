@@ -4,7 +4,8 @@ import { setUser } from '@/test/setup'
 import { resetDb, makeUser, sessionFor } from '@/test/helpers'
 import { createPropertyAction } from '@/app/actions/properties'
 import { createOfferAction, respondToOfferAction } from '@/app/actions/offers'
-import { signContractAction, payRentAction } from '@/app/actions/contracts'
+import { payRentAction } from '@/app/actions/contracts'
+import { signContractAs } from '@/test/qesSign'
 
 type DbUser = Awaited<ReturnType<typeof makeUser>>
 
@@ -43,11 +44,11 @@ describe('flux complet: proprietate → ofertă → contract → semnare → pla
     expect(contract.rent).toBe(1400)
 
     // 4. Ownerul semnează (→ SEMNAT), apoi clientul semnează (→ ACTIV).
-    expect((await signContractAction(contract.id)).ok).toBe(true)
+    expect((await signContractAs(contract.id)).ok).toBe(true)
     expect((await prisma.contract.findUniqueOrThrow({ where: { id: contract.id } })).status).toBe('SEMNAT')
 
     setUser(sessionFor(client))
-    expect((await signContractAction(contract.id)).ok).toBe(true)
+    expect((await signContractAs(contract.id)).ok).toBe(true)
     const active = await prisma.contract.findUniqueOrThrow({ where: { id: contract.id } })
     expect(active.status).toBe('ACTIV')
 

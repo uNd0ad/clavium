@@ -4,7 +4,8 @@ import { setUser } from '@/test/setup'
 import { resetDb, makeUser, sessionFor } from '@/test/helpers'
 import { createPropertyAction } from '@/app/actions/properties'
 import { createOfferAction, respondToOfferAction } from '@/app/actions/offers'
-import { setContractTermsAction, signContractAction } from '@/app/actions/contracts'
+import { setContractTermsAction } from '@/app/actions/contracts'
+import { signContractAs } from '@/test/qesSign'
 
 type DbUser = Awaited<ReturnType<typeof makeUser>>
 
@@ -59,14 +60,14 @@ describe('termenii contractului (generator)', () => {
 
   it('termenii se blochează după ce începe semnarea', async () => {
     setUser(sessionFor(owner))
-    expect((await signContractAction(contractId)).ok).toBe(true) // → SEMNAT
+    expect((await signContractAs(contractId)).ok).toBe(true) // → SEMNAT
     const res = await setContractTermsAction(contractId, { rent: 1, deposit: 0, months: 1, dueDay: 1, startDate: '2026-01-01' })
     expect(res.ok).toBe(false)
   })
 
   it('la activare păstrează startDate din termeni și calculează scadența din dueDay', async () => {
     setUser(sessionFor(client))
-    expect((await signContractAction(contractId)).ok).toBe(true) // → ACTIV
+    expect((await signContractAs(contractId)).ok).toBe(true) // → ACTIV
 
     const c = await prisma.contract.findUniqueOrThrow({ where: { id: contractId } })
     expect(c.status).toBe('ACTIV')

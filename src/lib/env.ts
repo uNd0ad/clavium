@@ -4,6 +4,7 @@
 // Notă: JWT_SECRET e validat separat, la import, în constants.ts — acolo acoperă și runtime-ul
 // edge (proxy.ts), care nu trece prin acest hook de pornire.
 import { logger } from './logger'
+import { qesConfigured } from './qesVerify'
 
 function isPlaceholder(value: string | undefined): boolean {
   return !value || value.includes('your_') || value.includes('changeme')
@@ -32,6 +33,9 @@ export function validateEnv(): void {
   }
   if (process.env.CSP_DISABLED === '1' && process.env.VERCEL === '1') {
     warnings.push('CSP_DISABLED=1 e ignorat pe Vercel — CSP rămâne activ (vezi proxy.ts).')
+  }
+  if (!qesConfigured()) {
+    warnings.push('Magazinul de certificate QES e gol (config/qes-trust) — semnarea contractelor va fi refuzată.')
   }
   for (const w of warnings) logger.warn(`[env] ${w}`)
 }

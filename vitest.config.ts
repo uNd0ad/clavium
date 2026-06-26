@@ -22,6 +22,9 @@ export default defineConfig({
       // încărcate de Vitest și ar ruta plățile spre Checkout, lăsându-le IN_CURS.
       STRIPE_SECRET_KEY: '',
       STRIPE_WEBHOOK_SECRET: '',
+      // Ancore de încredere QES de test (CA self-signed din fixtures) + OCSP dezactivat în teste.
+      QES_TRUST_DIR: path.join(root, 'src/test/fixtures/qes/trust'),
+      QES_OCSP_DISABLED: '1',
     },
     globalSetup: ['./src/test/globalSetup.ts'],
     setupFiles: ['./src/test/setup.ts'],

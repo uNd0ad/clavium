@@ -4,8 +4,8 @@ import { setUser } from '@/test/setup'
 import { resetDb, makeUser, sessionFor } from '@/test/helpers'
 import { createPropertyAction } from '@/app/actions/properties'
 import { createOfferAction, respondToOfferAction } from '@/app/actions/offers'
-import { signContractAction } from '@/app/actions/contracts'
 import { contractDocumentHash } from '@/lib/qes'
+import { signContractAs } from '@/test/qesSign'
 
 type DbUser = Awaited<ReturnType<typeof makeUser>>
 
@@ -37,20 +37,25 @@ describe('semnare QES: pistă de audit + legare de document', () => {
   it('înregistrează o semnătură per parte, cu referință QES și amprenta documentului', async () => {
     // Ownerul semnează.
     setUser(sessionFor(owner))
-    expect((await signContractAction(contractId)).ok).toBe(true)
+    expect((await signContractAs(contractId)).ok).toBe(true)
 
     const ownerSig = await prisma.signature.findUniqueOrThrow({
       where: { contractId_signerId: { contractId, signerId: owner.id } },
     })
     expect(ownerSig.role).toBe('OWNER')
     expect(ownerSig.qes).toBe(true)
-    expect(ownerSig.provider).toBe('dev')
-    expect(ownerSig.signatureRef).toMatch(/^qes_dev_/)
+    expect(ownerSig.validationStatus).toBe('QUALIFIED')
+    expect(ownerSig.signatureRef).toMatch(/^qes_/)
+    // Certificatul de test (leaf) e emis de CA-ul de test din fixtures.
+    expect(ownerSig.certSubject).toContain('Test Signer')
+    expect(ownerSig.certIssuer).toContain('Clavium Test QES CA')
+    expect(ownerSig.certificatePem).toContain('BEGIN CERTIFICATE')
+    expect(ownerSig.signatureValue).toBeTruthy()
     expect(ownerSig.signerEmail).toBe(owner.email)
 
     // Clientul semnează → contract activ.
     setUser(sessionFor(client))
-    expect((await signContractAction(contractId)).ok).toBe(true)
+    expect((await signContractAs(contractId)).ok).toBe(true)
 
     const sigs = await prisma.signature.findMany({ where: { contractId } })
     expect(sigs).toHaveLength(2)
@@ -74,7 +79,7 @@ describe('semnare QES: pistă de audit + legare de document', () => {
 
   it('blochează re-semnarea aceleiași părți', async () => {
     setUser(sessionFor(owner))
-    const res = await signContractAction(contractId)
+    const res = await signContractAs(contractId)
     expect(res.ok).toBe(false)
   })
 })

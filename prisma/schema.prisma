@@ -182,6 +182,17 @@ model Signature {
   documentHash String // sha256 al documentului semnat
   signedAt     DateTime @default(now())
 
+  // Semnătură cu certificat calificat încărcat de semnatar (cheia privată rămâne la el; el semnează
+  // amprenta, noi verificăm). Câmpuri opționale: semnăturile vechi/dev nu le au.
+  certificatePem   String? // certificatul X.509 al semnatarului (PEM), păstrat ca probă
+  certSubject      String? // subiectul certificatului (CN/identitate)
+  certIssuer       String? // emitentul (CA calificat)
+  certSerial       String? // numărul de serie al certificatului
+  certNotAfter     DateTime? // expirarea certificatului la momentul semnării
+  signatureValue   String? // semnătura (base64) peste documentHash
+  signatureAlgo    String? // algoritmul semnăturii (ex. RSASSA-PKCS1-v1_5 / SHA-256)
+  validationStatus String? // rezultatul validării: QUALIFIED | VALID | dev/null pentru cele vechi
+
   // O singură semnătură per parte per contract (re-semnarea actualizează aceeași înregistrare).
   @@unique([contractId, signerId])
 }

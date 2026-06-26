@@ -6,7 +6,8 @@ import { toast } from 'sonner'
 import Button from '@/components/ui/Button'
 import { useUnreadCount, useSetUnreadCount } from './NotificationContext'
 import { respondToOfferAction } from '@/app/actions/offers'
-import { signContractAction, payRentAction, paySaleAction } from '@/app/actions/contracts'
+import { payRentAction, paySaleAction } from '@/app/actions/contracts'
+import { QesSignDialog } from './QesSignDialog'
 import { updatePropertyStatusAction } from '@/app/actions/properties'
 import { markNotificationsReadAction } from '@/app/actions/notifications'
 
@@ -77,12 +78,14 @@ const PAY_LABEL: Record<'CHIRIE' | 'AVANS' | 'REST', string> = {
 export function ContractActions({
   contractId,
   canSign,
+  documentHash,
   canPay,
   dueAmount,
   dueType = 'CHIRIE',
 }: {
   contractId: string
   canSign: boolean
+  documentHash: string
   canPay: boolean
   dueAmount: string | null
   dueType?: DueType
@@ -103,16 +106,7 @@ export function ContractActions({
         </p>
       ) : null}
       <div className="flex flex-wrap gap-3">
-        {canSign ? (
-          <Button
-            type="button"
-            loading={loading}
-            onClick={() => run(() => signContractAction(contractId), { success: 'Contract semnat cu QES.' })}
-            className="px-5 py-2.5 text-xs"
-          >
-            Semnează cu QES
-          </Button>
-        ) : null}
+        {canSign ? <QesSignDialog contractId={contractId} documentHash={documentHash} /> : null}
         {canPay ? (
           <Button
             type="button"

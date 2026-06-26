@@ -20,7 +20,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
     notFound()
   }
 
-  const { doc, canEdit, canEditSale, canSign, canPay, dueAmount, dueType, terms, saleTerms } = detail
+  const { doc, canEdit, canEditSale, canSign, documentHash, canPay, dueAmount, dueType, terms, saleTerms } = detail
   const isSale = doc.type === 'VANZARE'
 
   return (
@@ -135,7 +135,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
       <div className="space-y-4 print:hidden">
         {canEdit ? <ContractTermsForm contractId={doc.id} terms={terms} /> : null}
         {canEditSale ? <SaleTermsForm contractId={doc.id} terms={saleTerms} /> : null}
-        <ContractActions contractId={doc.id} canSign={canSign} canPay={canPay} dueAmount={dueAmount} dueType={dueType} />
+        <ContractActions contractId={doc.id} canSign={canSign} documentHash={documentHash} canPay={canPay} dueAmount={dueAmount} dueType={dueType} />
       </div>
     </section>
   )

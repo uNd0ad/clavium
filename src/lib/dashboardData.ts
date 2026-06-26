@@ -1,5 +1,6 @@
 import { prisma } from './prisma'
 import { parsePhotos } from './storage'
+import { contractDocumentHash } from './qes'
 import type { SessionUser } from './session'
 
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info'
@@ -28,6 +29,7 @@ export type ContractView = {
   status: string
   statusVariant: BadgeVariant
   canSign: boolean
+  documentHash: string
   canPay: boolean
   dueAmount: string | null
   // Tipul plății scadente, pentru a apela acțiunea potrivită (CHIRIE → payRent, AVANS/REST → paySale).
@@ -291,6 +293,7 @@ export async function getContracts(user: SessionUser): Promise<ContractView[]> {
       status: label,
       statusVariant: variant,
       canSign,
+      documentHash: contractDocumentHash(contract),
       canPay: contract.status === 'ACTIV' && contract.tenantId === user.id && Boolean(due),
       dueAmount: due ? formatRon(due.amount) : null,
       dueType: (due?.type as 'CHIRIE' | 'AVANS' | 'REST' | undefined) ?? null,

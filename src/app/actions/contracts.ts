@@ -6,7 +6,7 @@ import { requireActionUser } from '@/lib/actionUser'
 import { errorMessage } from '@/lib/apiError'
 import { contractTermsSchema, saleTermsSchema } from '@/lib/validations'
 import { notify } from '@/lib/notify'
-import { signWithQes, contractDocumentHash } from '@/lib/qes'
+import { verifyQesSignature, contractDocumentHash } from '@/lib/qes'
 import { createCheckoutSession } from '@/lib/payments'
 import { settlePayment } from '@/lib/paymentSettle'
 import { paymentReference } from '@/lib/hash'
@@ -85,7 +85,13 @@ export async function setSaleTermsAction(contractId: string, input: unknown) {
   }
 }
 
-export async function signContractAction(contractId: string) {
+export type SignatureInput = {
+  certificatePem: string
+  signatureValue: string // base64, peste UTF-8(documentHash)
+  chainPem?: string[]
+}
+
+export async function signContractAction(contractId: string, signature: SignatureInput) {
   try {
     const user = await requireActionUser()
     const contract = await prisma.contract.findUnique({
@@ -103,17 +109,22 @@ export async function signContractAction(contractId: string) {
     if ((isOwner && contract.signedByOwner) || (isTenant && contract.signedByClient)) {
       return { ok: false as const, error: 'Ai semnat deja acest contract.' }
     }
+    if (!signature?.certificatePem || !signature?.signatureValue) {
+      return { ok: false as const, error: 'Lipsește certificatul sau semnătura.' }
+    }
 
     // Amprenta documentului în momentul semnării — leagă semnătura de termenii curenți.
     const documentHash = contractDocumentHash(contract)
     const signerName = `${user.firstName} ${user.lastName}`
-    const qes = await signWithQes({
-      contractId: contract.id,
-      signerEmail: user.email,
-      signerName,
+
+    // Verificare QES: certificat calificat + semnătură peste amprenta documentului.
+    const qes = await verifyQesSignature({
       documentHash,
+      certificatePem: signature.certificatePem,
+      signatureValue: signature.signatureValue,
+      chainPem: signature.chainPem,
     })
-    if (!qes.ok) return { ok: false as const, error: 'Semnarea QES a eșuat.' }
+    if (!qes.ok) return { ok: false as const, error: qes.error }
 
     const signedByOwner = contract.signedByOwner || isOwner
     const signedByClient = contract.signedByClient || isTenant
@@ -129,7 +140,24 @@ export async function signContractAction(contractId: string) {
       },
     })
 
-    // Pistă de audit a semnăturii (cine, când, ce referință QES, ce amprentă de document).
+    // Referință stabilă a semnăturii: serialul certificatului + amprenta documentului.
+    const signatureRef = `qes_${qes.serial.slice(0, 16)}_${documentHash.slice(0, 8)}`
+    const certFields = {
+      signatureRef,
+      provider: qes.issuer,
+      qes: true,
+      documentHash,
+      certificatePem: signature.certificatePem,
+      certSubject: qes.subject,
+      certIssuer: qes.issuer,
+      certSerial: qes.serial,
+      certNotAfter: qes.notAfter,
+      signatureValue: signature.signatureValue,
+      signatureAlgo: qes.algorithm,
+      validationStatus: 'QUALIFIED',
+    }
+
+    // Pistă de audit a semnăturii (cine, când, ce certificat, ce amprentă de document).
     await prisma.signature.upsert({
       where: { contractId_signerId: { contractId: contract.id, signerId: user.id } },
       create: {
@@ -138,16 +166,10 @@ export async function signContractAction(contractId: string) {
         role: isOwner ? 'OWNER' : 'CLIENT',
         signerName,
         signerEmail: user.email,
-        signatureRef: qes.signatureRef,
-        provider: qes.provider,
-        qes: qes.qes,
-        documentHash,
+        ...certFields,
       },
       update: {
-        signatureRef: qes.signatureRef,
-        provider: qes.provider,
-        qes: qes.qes,
-        documentHash,
+        ...certFields,
         signedAt: new Date(),
       },
     })

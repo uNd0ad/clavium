@@ -4,7 +4,8 @@ import { setUser } from '@/test/setup'
 import { resetDb, makeUser, sessionFor } from '@/test/helpers'
 import { createPropertyAction } from '@/app/actions/properties'
 import { createOfferAction, respondToOfferAction } from '@/app/actions/offers'
-import { signContractAction, paySaleAction, setSaleTermsAction } from '@/app/actions/contracts'
+import { paySaleAction, setSaleTermsAction } from '@/app/actions/contracts'
+import { signContractAs } from '@/test/qesSign'
 
 type DbUser = Awaited<ReturnType<typeof makeUser>>
 
@@ -51,9 +52,9 @@ describe('flux vânzare: proprietate → ofertă → antecontract → semnare �
     expect((await prisma.property.findUniqueOrThrow({ where: { id: propertyId } })).status).toBe('REZERVATA')
 
     // 4. Ambele părți semnează → ACTIV; avansul devine scadent.
-    expect((await signContractAction(contract.id)).ok).toBe(true)
+    expect((await signContractAs(contract.id)).ok).toBe(true)
     setUser(sessionFor(buyer))
-    expect((await signContractAction(contract.id)).ok).toBe(true)
+    expect((await signContractAs(contract.id)).ok).toBe(true)
     const active = await prisma.contract.findUniqueOrThrow({ where: { id: contract.id } })
     expect(active.status).toBe('ACTIV')
 
@@ -98,9 +99,9 @@ describe('flux vânzare: proprietate → ofertă → antecontract → semnare �
     setUser(sessionFor(o))
     await respondToOfferAction(offer.id, 'accept')
     const contract = await prisma.contract.findFirstOrThrow()
-    await signContractAction(contract.id)
+    await signContractAs(contract.id)
     setUser(sessionFor(b))
-    await signContractAction(contract.id)
+    await signContractAs(contract.id)
 
     // Prima plată scadentă este avansul, nu diferența.
     const first = await prisma.payment.findFirstOrThrow({ where: { contractId: contract.id, status: 'IN_CURS' } })
@@ -153,9 +154,9 @@ describe('flux vânzare: proprietate → ofertă → antecontract → semnare �
       // Reluăm termenii valizi, semnăm și verificăm avansul scadent.
       setUser(sessionFor(o))
       await setSaleTermsAction(contractId, { price: 175000, deposit: 30000 })
-      await signContractAction(contractId)
+      await signContractAs(contractId)
       setUser(sessionFor(b))
-      await signContractAction(contractId)
+      await signContractAs(contractId)
       const avans = await prisma.payment.findFirstOrThrow({ where: { contractId, type: 'AVANS' } })
       expect(avans.amount).toBe(30000)
 

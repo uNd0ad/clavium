@@ -4,7 +4,8 @@ import { setUser } from '@/test/setup'
 import { resetDb, makeUser, sessionFor } from '@/test/helpers'
 import { createPropertyAction, toggleSaveAction } from '@/app/actions/properties'
 import { createOfferAction, respondToOfferAction } from '@/app/actions/offers'
-import { signContractAction, payRentAction } from '@/app/actions/contracts'
+import { payRentAction } from '@/app/actions/contracts'
+import { signContractAs } from '@/test/qesSign'
 import { updateUserAction } from '@/app/actions/admin'
 
 type DbUser = Awaited<ReturnType<typeof makeUser>>
@@ -66,7 +67,7 @@ describe('paznici de autentificare și roluri', () => {
     await respondToOfferAction(offer.id, 'accept')
     const contract = await prisma.contract.findFirstOrThrow()
     setUser(sessionFor(other))
-    const res = await signContractAction(contract.id)
+    const res = await signContractAs(contract.id)
     expect(res.ok).toBe(false)
   })
 

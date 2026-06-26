@@ -1,0 +1,5 @@
+# Ignoră certificatele reale (material operațional), păstrează doar documentația.
+*.pem
+*.crt
+*.cer
+!README.md

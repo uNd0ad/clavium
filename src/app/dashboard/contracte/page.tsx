@@ -82,6 +82,7 @@ export default async function DashboardContractsPage() {
                 <ContractActions
                   contractId={contract.id}
                   canSign={contract.canSign}
+                  documentHash={contract.documentHash}
                   canPay={contract.canPay}
                   dueAmount={contract.dueAmount}
                   dueType={contract.dueType}
