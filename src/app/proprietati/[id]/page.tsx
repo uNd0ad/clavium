@@ -5,12 +5,15 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import StatusBadge from '@/components/dashboard/StatusBadge'
 import PropertyActions from '@/components/properties/PropertyActions'
+import AskOwnerForm from '@/components/properties/AskOwnerForm'
 import PropertyGallery from '@/components/properties/PropertyGallery'
 import CopyLinkButton from '@/components/ui/CopyLinkButton'
+import Stars from '@/components/dashboard/Stars'
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/session'
 import { formatRon } from '@/lib/dashboardData'
 import { parsePhotos } from '@/lib/storage'
+import { getUserReputation } from '@/lib/reviews'
 
 export default async function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -37,6 +40,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const available = property.status === 'DISPONIBILA'
   const isSale = property.transactionType === 'VANZARE'
   const photos = parsePhotos(property.photos)
+  const ownerReputation = await getUserReputation(property.ownerId)
 
   return (
     <>
@@ -105,6 +109,13 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                 {property.owner.firstName} {property.owner.lastName} · membru din{' '}
                 {new Intl.DateTimeFormat('ro-RO', { year: 'numeric', month: 'long' }).format(property.owner.createdAt)}
               </p>
+              {ownerReputation.count > 0 ? (
+                <p className="mt-2 flex items-center gap-2 text-sm text-[var(--muted)]">
+                  <Stars rating={ownerReputation.average} />
+                  <span className="font-semibold text-[var(--text)]">{ownerReputation.average.toFixed(1)}</span>
+                  ({ownerReputation.count} {ownerReputation.count === 1 ? 'recenzie' : 'recenzii'})
+                </p>
+              ) : null}
             </div>
           </div>
 
@@ -116,6 +127,11 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               canOffer={user?.role === 'CLIENT'}
               available={available}
               transactionType={isSale ? 'VANZARE' : 'INCHIRIERE'}
+            />
+            <AskOwnerForm
+              propertyId={property.id}
+              isAuthenticated={Boolean(user)}
+              isOwner={user?.id === property.ownerId}
             />
           </div>
         </div>

@@ -49,7 +49,64 @@ model User {
   ticketMessages    TicketMessage[]  @relation("TicketMessages")
   ticketReads       TicketRead[]     @relation("TicketReads")
   signatures        Signature[]      @relation("UserSignatures")
+  inquiriesSent     Inquiry[]        @relation("InquiriesSent")
+  inquiriesReceived Inquiry[]        @relation("InquiriesReceived")
+  inquiryMessages   InquiryMessage[] @relation("InquiryMessages")
+  termsConsents     TermsConsent[]
+  reviewsAuthored   Review[]         @relation("ReviewsAuthored")
+  reviewsReceived   Review[]         @relation("ReviewsReceived")
+  reportsFiled      Report[]         @relation("ReportsFiled")
   kyc               KycVerification?
+}
+
+// Sesizare de abuz/fraudă pentru o listare sau un utilizator. Reporter null = sistem (detecția
+// automată de fraudă). Adminii rezolvă firul din coada de moderare.
+model Report {
+  id           String    @id @default(uuid())
+  reporterId   String? // null = generat de sistem (fraud auto)
+  reporter     User?     @relation("ReportsFiled", fields: [reporterId], references: [id])
+  targetType   String // PROPERTY | USER
+  targetId     String
+  reason       String // SPAM | FRAUD | INAPPROPRIATE | FRAUD_AUTO | OTHER
+  details      String?
+  status       String    @default("DESCHIS") // DESCHIS | REZOLVAT | RESPINS
+  resolvedById String?
+  resolvedAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([status])
+  @@index([targetType, targetId])
+}
+
+// Recenzie reciprocă după încheierea unui contract: o parte evaluează cealaltă (1–5 + comentariu).
+// O singură recenzie per contract per autor. Stă la baza reputației afișate pe listări/profiluri.
+model Review {
+  id         String   @id @default(uuid())
+  contractId String
+  contract   Contract @relation(fields: [contractId], references: [id])
+  authorId   String
+  author     User     @relation("ReviewsAuthored", fields: [authorId], references: [id])
+  subjectId  String
+  subject    User     @relation("ReviewsReceived", fields: [subjectId], references: [id])
+  rating     Int // 1..5
+  comment    String?
+  createdAt  DateTime @default(now())
+
+  @@unique([contractId, authorId])
+  @@index([subjectId])
+}
+
+// Consimțământul unui utilizator la o anumită versiune a Termenilor și Condițiilor.
+// Când versiunea curentă (TERMS_VERSION) e mai nouă decât ultima acceptată, i se cere re-consimțământ.
+model TermsConsent {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  version    String
+  acceptedAt DateTime @default(now())
+
+  @@unique([userId, version])
+  @@index([userId])
 }
 
 model Session {
@@ -109,11 +166,78 @@ model Property {
   savedBy         SavedProperty[]
   offers          Offer[]
   contracts       Contract[]
+  inquiries       Inquiry[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
   @@index([ownerId])
   @@index([status, transactionType])
+}
+
+// Întrebare pre-contract: un utilizator interesat întreabă proprietarul despre o listare,
+// înainte de orice ofertă/contract. Un singur fir per (listare, utilizator); conversația în
+// InquiryMessage. Distinct de Ticket (care e legat de un contract activ).
+model Inquiry {
+  id         String           @id @default(uuid())
+  propertyId String
+  property   Property         @relation(fields: [propertyId], references: [id])
+  fromUserId String
+  fromUser   User             @relation("InquiriesSent", fields: [fromUserId], references: [id])
+  ownerId    String
+  owner      User             @relation("InquiriesReceived", fields: [ownerId], references: [id])
+  status     String           @default("DESCHIS") // DESCHIS | INCHIS
+  messages   InquiryMessage[]
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@unique([propertyId, fromUserId])
+  @@index([ownerId])
+  @@index([fromUserId])
+}
+
+model InquiryMessage {
+  id        String   @id @default(uuid())
+  inquiryId String
+  inquiry   Inquiry  @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation("InquiryMessages", fields: [authorId], references: [id])
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([inquiryId])
+}
+
+// Amprentă perceptuală (aHash) a unei fotografii de listare. Folosită la detecția fraudei:
+// dacă o fotografie nouă se potrivește (distanță Hamming mică) cu una a altui proprietar,
+// e semnal de fotografie furată / listare duplicat. Vezi src/lib/fraud.ts.
+model PhotoSignature {
+  id         String   @id @default(uuid())
+  propertyId String
+  ownerId    String
+  hash       String // aHash pe 64 de biți (16 hex)
+  createdAt  DateTime @default(now())
+
+  @@index([hash])
+  @@index([propertyId])
+}
+
+// Registru de audit append-only, înlănțuit prin hash (fiecare intrare include hash-ul celei
+// anterioare) → orice ștergere/modificare a unei intrari rupe lanțul și e detectabilă.
+// Scrierile sunt serializate cu un advisory lock Postgres (vezi src/lib/audit.ts) ca `seq` și
+// `prevHash` să fie consistente. Sursă de adevăr pentru dispute (semnături, plăți, modificări).
+model AuditLog {
+  id         String   @id @default(uuid())
+  seq        Int      @unique // poziție în lanț (1, 2, 3, …), atribuită secvențial sub lock
+  actorId    String? // utilizatorul care a declanșat evenimentul (null = sistem)
+  action     String // ex: CONTRACT_SIGNED | PAYMENT_SETTLED | DEPOSIT_RETURNED | SALE_CANCELLED
+  entityType String // CONTRACT | PAYMENT | PROPERTY | INQUIRY | USER
+  entityId   String
+  metadata   String? // JSON cu detalii
+  prevHash   String // hash-ul intrării anterioare (sau genesis pentru prima)
+  hash       String // sha256(payload canonic + prevHash)
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
 }
 
 model SavedProperty {
@@ -166,10 +290,17 @@ model Contract {
   signedByOwner  Boolean     @default(false)
   signedByClient Boolean     @default(false)
   qes            Boolean     @default(false)
-  status         String      @default("IN_ASTEPTARE") // IN_ASTEPTARE | SEMNAT | ACTIV | INCHEIAT
+  status         String      @default("IN_ASTEPTARE") // IN_ASTEPTARE | SEMNAT | ACTIV | INCHEIAT | ANULAT
+  // Garanția (închiriere): HELD (reținută) | RETURNED (restituită integral) | PARTIAL (parțial,
+  // cu rețineri pentru daune) | FORFEITED (pierdută) | NONE (fără garanție / nu se aplică).
+  depositStatus  String      @default("HELD")
+  // Anulare / reziliere: când și de ce a fost încheiat contractul înainte de termen.
+  cancelledAt    DateTime?
+  cancelReason   String?
   payments       Payment[]
   tickets        Ticket[]
   signatures     Signature[]
+  reviews        Review[]
   createdAt      DateTime    @default(now())
 
   @@index([ownerId])
@@ -245,10 +376,14 @@ model Payment {
   status     String    @default("IN_CURS") // FINALIZATA | IN_CURS | ESUATA
   dueDate    DateTime?
   paidAt     DateTime?
+  // Ultima notificare de scadență/restanță trimisă (dunning) — face cron-ul idempotent.
+  lastReminderAt DateTime?
   createdAt  DateTime  @default(now())
 
   @@index([userId])
   @@index([contractId, type, status])
+  // Cron-ul de dunning scanează după tip + status + scadență.
+  @@index([type, status, dueDate])
 }
 
 // Tichet de asistență deschis de chiriaș pe un contract de închiriere activ.

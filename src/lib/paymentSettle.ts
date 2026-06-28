@@ -3,8 +3,9 @@ import { prisma } from '@/lib/prisma'
 import { notify } from '@/lib/notify'
 import { paymentReference } from '@/lib/hash'
 import { formatRon } from '@/lib/dashboardData'
-import { COMMISSION_PERCENT } from '@/lib/constants'
+import { rentCommission, saleCommission } from '@/lib/commission'
 import { addMonths } from '@/lib/contractDates'
+import { recordAuditSafe } from '@/lib/audit'
 
 type SettleablePayment = Awaited<ReturnType<typeof loadPayment>>
 
@@ -34,7 +35,7 @@ export async function settlePayment(paymentId: string): Promise<void> {
 
 async function settleRent(payment: NonNullable<SettleablePayment>) {
   const contract = payment.contract!
-  const commission = Math.round((payment.amount * COMMISSION_PERCENT) / 100)
+  const commission = rentCommission(payment.amount)
   const nextDueDate = payment.dueDate
     ? addMonths(payment.dueDate, 1)
     : new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
@@ -92,6 +93,13 @@ async function settleRent(payment: NonNullable<SettleablePayment>) {
     `${payment.user.firstName} ${payment.user.lastName} a plătit ${formatRon(payment.amount)} pentru „${contract.property.title}”.`,
     'success'
   )
+  await recordAuditSafe({
+    actorId: payment.userId,
+    action: 'PAYMENT_SETTLED',
+    entityType: 'PAYMENT',
+    entityId: payment.id,
+    metadata: { contractId: contract.id, type: 'CHIRIE', amount: payment.amount, commission, reference: payment.reference },
+  })
 
   revalidatePath('/dashboard', 'layout')
   revalidatePath('/proprietati', 'layout')
@@ -101,7 +109,7 @@ async function settleSale(payment: NonNullable<SettleablePayment>) {
   const contract = payment.contract!
   const isAvans = payment.type === 'AVANS'
   const balance = contract.price - contract.deposit
-  const commission = Math.round((contract.price * COMMISSION_PERCENT) / 100)
+  const commission = saleCommission(contract.price)
   // Dacă avansul acoperă tot prețul (avans == preț), nu mai rămâne diferență: vânzarea se finalizează acum,
   // fără să creăm o tranșă REST de 0 lei.
   const finalized = !isAvans || balance <= 0
@@ -172,6 +180,13 @@ async function settleSale(payment: NonNullable<SettleablePayment>) {
       'success'
     )
   }
+  await recordAuditSafe({
+    actorId: payment.userId,
+    action: 'PAYMENT_SETTLED',
+    entityType: 'PAYMENT',
+    entityId: payment.id,
+    metadata: { contractId: contract.id, type: payment.type, amount: payment.amount, finalized, reference: payment.reference },
+  })
 
   revalidatePath('/dashboard', 'layout')
   revalidatePath('/proprietati', 'layout')

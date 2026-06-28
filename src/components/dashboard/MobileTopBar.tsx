@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
-import { Menu, X, Home, ShoppingBag, FileText, LifeBuoy, Layers, CreditCard, User, ShieldCheck, BadgeCheck, Search, Bell, HeartHandshake } from 'lucide-react'
+import { Menu, X, Home, ShoppingBag, FileText, LifeBuoy, Layers, CreditCard, User, ShieldCheck, BadgeCheck, Search, Bell, HeartHandshake, MessageCircle } from 'lucide-react'
 import { dashboardNavItems, UserProfile } from '@/types/dashboard'
 import LogoutButton from './LogoutButton'
 import ThemeToggle from '@/components/ui/ThemeToggle'
@@ -15,6 +15,7 @@ const iconMap = {
   offer: ShoppingBag,
   contracts: FileText,
   tickets: LifeBuoy,
+  messages: MessageCircle,
   properties: Layers,
   payments: CreditCard,
   services: HeartHandshake,

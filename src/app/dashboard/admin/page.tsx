@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import AdminUsersTable, { type AdminUserRow } from '@/components/dashboard/AdminUsersTable'
+import AuditVerifyCard from '@/components/dashboard/AuditVerifyCard'
 import { getCurrentUser } from '@/lib/session'
 import { prisma } from '@/lib/prisma'
 
@@ -53,10 +54,13 @@ export default async function AdminPage() {
         ))}
       </div>
 
+      <AuditVerifyCard />
+
       <div className="rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)]">
         <h2 className="text-xl font-semibold">Utilizatori</h2>
         <p className="mt-2 text-sm text-[var(--muted)]">
-          Schimbă rolurile sau dezactivează conturi. Modificările revocă sesiunile active ale utilizatorului.
+          Schimbă rolurile sau dezactivează conturi. Apasă „Suport” pentru verificare KYC, moderare
+          listări și rambursări. Modificările de rol/activare revocă sesiunile active.
         </p>
         <div className="mt-6">
           <AdminUsersTable users={rows} />

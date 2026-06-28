@@ -13,6 +13,7 @@ import {
   MAX_PHOTO_BYTES,
   MAX_PHOTOS_PER_PROPERTY,
 } from '@/lib/storage'
+import { aHash, recordPhotoSignatures, runFraudChecks } from '@/lib/fraud'
 
 function revalidateProperties() {
   // Acoperă dashboardul (proprietăți/căutare/overview) și paginile publice.
@@ -125,14 +126,28 @@ export async function uploadPhotosAction(propertyId: string, formData: FormData)
       if (file.size > MAX_PHOTO_BYTES) return { ok: false as const, error: 'Fiecare fotografie poate avea maxim 5 MB.' }
     }
 
-    // Procesăm fotografiile în paralel (Promise.all păstrează ordinea); secvențial era de N ori mai lent.
-    const urls = await Promise.all(
-      files.map(async (file) => savePropertyPhoto(propertyId, Buffer.from(await file.arrayBuffer())))
+    // Citim fiecare fișier o singură dată, apoi salvăm + calculăm amprenta perceptuală în paralel
+    // (Promise.all păstrează ordinea); secvențial era de N ori mai lent.
+    const processed = await Promise.all(
+      files.map(async (file) => {
+        const buffer = Buffer.from(await file.arrayBuffer())
+        const [url, hash] = await Promise.all([savePropertyPhoto(propertyId, buffer), aHash(buffer)])
+        return { url, hash }
+      })
     )
+    const urls = processed.map((p) => p.url)
     await prisma.property.update({
       where: { id: propertyId },
       data: { photos: JSON.stringify([...existing, ...urls]) },
     })
+
+    // Detecția fraudei (best-effort): amprente foto + semnale (fotografii furate / listare duplicat).
+    await recordPhotoSignatures(propertyId, property.ownerId, processed.map((p) => p.hash))
+    await runFraudChecks(
+      { id: propertyId, title: property.title, location: property.location, ownerId: property.ownerId },
+      processed.map((p) => p.hash)
+    )
+
     revalidateProperties()
     return { ok: true as const }
   } catch (err) {

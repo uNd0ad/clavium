@@ -93,6 +93,16 @@ export type ContractDetail = {
   canEditSale: boolean
   canSign: boolean
   canPay: boolean
+  // Proprietarul poate restitui garanția (închiriere încheiată, garanție încă reținută).
+  canReturnDeposit: boolean
+  // Oricare parte / admin poate anula antecontractul de vânzare (înainte de finalizare).
+  canCancelSale: boolean
+  // Oricare parte / admin poate rezilia o închiriere activă.
+  canTerminate: boolean
+  // Proprietarul / admin poate reînnoi o închiriere încheiată.
+  canRenew: boolean
+  // Garanția brută (RON) — pentru formularul de restituire.
+  depositAmount: number
   // Amprenta documentului de semnat — semnatarul o semnează cu certificatul lui calificat.
   documentHash: string
   dueAmount: string | null
@@ -173,6 +183,20 @@ export async function getContractDetail(contractId: string, user: SessionUser): 
     canEdit: (isOwner || user.role === 'ADMIN') && !isSale && contract.status === 'IN_ASTEPTARE',
     canEditSale: (isOwner || user.role === 'ADMIN') && isSale && contract.status === 'IN_ASTEPTARE',
     canSign,
+    canReturnDeposit:
+      !isSale &&
+      (isOwner || user.role === 'ADMIN') &&
+      (contract.status === 'INCHEIAT' || contract.status === 'ANULAT') &&
+      contract.depositStatus === 'HELD' &&
+      contract.deposit > 0,
+    canCancelSale:
+      isSale &&
+      (isOwner || isTenant || user.role === 'ADMIN') &&
+      contract.status !== 'INCHEIAT' &&
+      contract.status !== 'ANULAT',
+    canTerminate: !isSale && (isOwner || isTenant || user.role === 'ADMIN') && contract.status === 'ACTIV',
+    canRenew: !isSale && (isOwner || user.role === 'ADMIN') && contract.status === 'INCHEIAT',
+    depositAmount: contract.deposit,
     documentHash: contractDocumentHash(contract),
     canPay: contract.status === 'ACTIV' && contract.tenantId === user.id && Boolean(due),
     dueAmount: due ? formatRon(due.amount) : null,

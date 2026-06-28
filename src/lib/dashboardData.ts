@@ -177,9 +177,10 @@ const TICKET_PRIORITY: Record<string, { label: string; variant: BadgeVariant }> 
 const PAYMENT_TYPE: Record<string, string> = {
   CHIRIE: 'Chirie',
   COMISION: 'Comision',
-  REFUND: 'Refund',
+  REFUND: 'Restituire',
   AVANS: 'Avans',
   REST: 'Diferență preț',
+  DAUNE: 'Rețineri daune',
 }
 
 // Tipuri de plăți datorate de chiriaș/cumpărător (folosite la calculul scadențelor și al venitului).
@@ -495,7 +496,12 @@ export async function getPayments(user: SessionUser): Promise<{
       fees: formatRon(fees._sum.amount ?? 0),
     },
     transactions: payments.map((payment) => {
-      const { label, variant } = PAYMENT_STATUS[payment.status] ?? { label: payment.status, variant: 'info' as BadgeVariant }
+      let { label, variant } = PAYMENT_STATUS[payment.status] ?? { label: payment.status, variant: 'info' as BadgeVariant }
+      // O plată scadentă cu termenul depășit se afișează ca „Restant" (dunning).
+      if (payment.status === 'IN_CURS' && payment.dueDate && payment.dueDate < new Date()) {
+        label = 'Restant'
+        variant = 'danger'
+      }
       return {
         id: payment.id,
         reference: payment.reference,

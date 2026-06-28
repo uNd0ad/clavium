@@ -5,6 +5,7 @@
 // edge (proxy.ts), care nu trece prin acest hook de pornire.
 import { logger } from './logger'
 import { qesConfigured } from './qesVerify'
+import { storageIsPersistent } from './storageBackend'
 
 function isPlaceholder(value: string | undefined): boolean {
   return !value || value.includes('your_') || value.includes('changeme')
@@ -37,8 +38,25 @@ export function validateEnv(): void {
   if (process.env.CSP_DISABLED === '1' && process.env.VERCEL === '1') {
     warnings.push('CSP_DISABLED=1 e ignorat pe Vercel — CSP rămâne activ (vezi proxy.ts).')
   }
+  if (!process.env.CRON_SECRET) {
+    warnings.push('CRON_SECRET nesetat — rutele /api/cron/* resping cererile, deci curățarea/dunning-ul programat nu rulează.')
+  }
   if (!qesConfigured()) {
     warnings.push('Magazinul de certificate QES e gol (config/qes-trust) — semnarea contractelor va fi refuzată.')
+  }
+  if (!storageIsPersistent()) {
+    warnings.push('Stocare neconfigurată (STORAGE_DRIVER≠s3) — fotografiile și documentele KYC se scriu pe disc efemer și se pierd la redeploy.')
+  } else {
+    const storageMissing = [
+      'STORAGE_S3_ACCESS_KEY_ID',
+      'STORAGE_S3_SECRET_ACCESS_KEY',
+      'STORAGE_S3_PUBLIC_BUCKET',
+      'STORAGE_S3_PRIVATE_BUCKET',
+      'STORAGE_S3_PUBLIC_BASE_URL',
+    ].filter((name) => !process.env[name])
+    if (storageMissing.length > 0) {
+      warnings.push(`Stocare S3 incompletă: lipsesc ${storageMissing.join(', ')} — încărcările vor eșua.`)
+    }
   }
   for (const w of warnings) logger.warn(`[env] ${w}`)
 }

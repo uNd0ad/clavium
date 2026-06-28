@@ -4,6 +4,11 @@ import type { UserRole } from '@/lib/types/roles'
 
 // Golește tabelele în ordine sigură pentru cheile externe.
 export async function resetDb() {
+  await prisma.auditLog.deleteMany()
+  await prisma.report.deleteMany()
+  await prisma.termsConsent.deleteMany()
+  await prisma.review.deleteMany()
+  await prisma.photoSignature.deleteMany()
   await prisma.ticketRead.deleteMany()
   await prisma.ticketMessage.deleteMany()
   await prisma.ticket.deleteMany()
@@ -14,6 +19,8 @@ export async function resetDb() {
   await prisma.savedProperty.deleteMany()
   await prisma.notification.deleteMany()
   await prisma.kycVerification.deleteMany()
+  await prisma.inquiryMessage.deleteMany()
+  await prisma.inquiry.deleteMany()
   await prisma.property.deleteMany()
   await prisma.session.deleteMany()
   await prisma.emailToken.deleteMany()

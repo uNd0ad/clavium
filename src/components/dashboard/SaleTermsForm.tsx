@@ -7,8 +7,11 @@ import { Pencil } from 'lucide-react'
 import FormField from '@/components/ui/FormField'
 import Button from '@/components/ui/Button'
 import { setSaleTermsAction } from '@/app/actions/contracts'
+import { saleCommission, saleCommissionRate } from '@/lib/commission'
 
 type SaleTerms = { price: number; deposit: number; clauses: string }
+
+const ronFmt = new Intl.NumberFormat('ro-RO', { style: 'currency', currency: 'RON', maximumFractionDigits: 0 })
 
 // Editarea termenilor antecontractului de vânzare de către vânzător (înainte de semnare).
 export default function SaleTermsForm({ contractId, terms }: { contractId: string; terms: SaleTerms }) {
@@ -18,6 +21,11 @@ export default function SaleTermsForm({ contractId, terms }: { contractId: strin
   const [deposit, setDeposit] = useState(String(terms.deposit))
   const [clauses, setClauses] = useState(terms.clauses)
   const [loading, setLoading] = useState(false)
+
+  // Estimarea comisionului platformei (degresiv), afișată în timp real vânzătorului.
+  const priceNum = Number(price)
+  const commission = Number.isFinite(priceNum) && priceNum > 0 ? saleCommission(priceNum) : 0
+  const commissionPct = priceNum > 0 ? (saleCommissionRate(priceNum) * 100).toFixed(2) : '0'
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -48,6 +56,13 @@ export default function SaleTermsForm({ contractId, terms }: { contractId: strin
         <FormField label="Preț de vânzare (RON)" type="number" min={1} value={price} onChange={(e) => setPrice(e.target.value)} required />
         <FormField label="Avans / arvună (RON)" type="number" min={0} value={deposit} onChange={(e) => setDeposit(e.target.value)} required />
       </div>
+      {commission > 0 ? (
+        <p className="rounded-2xl bg-[var(--muted-bg,rgba(0,0,0,0.03))] px-4 py-3 text-sm text-[var(--muted)]">
+          Comision estimat al platformei la finalizarea vânzării:{' '}
+          <span className="font-semibold text-[var(--text)]">{ronFmt.format(commission)}</span>{' '}
+          (~{commissionPct}% din preț). Se reține din contul tău doar după încasarea integrală a prețului.
+        </p>
+      ) : null}
       <label className="block text-sm">
         <span className="mb-2 block text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Clauze speciale (opțional)</span>
         <textarea

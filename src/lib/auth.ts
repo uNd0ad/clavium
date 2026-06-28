@@ -20,6 +20,7 @@ import { sendEmail } from './email'
 import { sha256, randomToken } from './hash'
 import { JWT_SECRET, APP_URL } from './constants'
 import { captureException } from './logger'
+import { recordTermsConsent } from './terms'
 import type {
   AuthPayload,
   LoginRequest,
@@ -123,6 +124,8 @@ export async function registerUser(data: RegisterRequest) {
   if (data.phone) {
     await consumePhoneOtp(data.phone)
   }
+  // Acceptarea T&C la înregistrare (formularul de signup conține bifa obligatorie).
+  await recordTermsConsent(user.id)
   try {
     await sendVerificationEmail(user)
   } catch (error) {

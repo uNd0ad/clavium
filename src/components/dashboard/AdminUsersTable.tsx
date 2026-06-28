@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { toast } from 'sonner'
+import { LifeBuoy } from 'lucide-react'
 import StatusBadge from '@/components/dashboard/StatusBadge'
 import { updateUserAction } from '@/app/actions/admin'
 
@@ -59,6 +61,9 @@ export default function AdminUsersTable({ users }: { users: AdminUserRow[] }) {
               >
                 {user.isActive ? 'Dezactivează' : 'Reactivează'}
               </button>
+              <Link href={`/dashboard/admin/utilizatori/${user.id}`} className="btn-outline px-5 py-2 text-xs">
+                <LifeBuoy size={14} /> Suport
+              </Link>
             </div>
           </div>
         </div>

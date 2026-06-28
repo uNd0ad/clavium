@@ -1,12 +1,29 @@
 import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
-import { ArrowLeft, Check } from 'lucide-react'
+import { ArrowLeft, Check, Download } from 'lucide-react'
 import { ContractActions } from '@/components/dashboard/actions'
 import ContractTermsForm from '@/components/dashboard/ContractTermsForm'
 import SaleTermsForm from '@/components/dashboard/SaleTermsForm'
 import PrintButton from '@/components/dashboard/PrintButton'
+import { DepositReturnForm, CancelSaleButton, TerminateButton, RenewForm } from '@/components/dashboard/ContractCloseActions'
+import Stars from '@/components/dashboard/Stars'
+import ReviewForm from '@/components/dashboard/ReviewForm'
 import { getCurrentUser } from '@/lib/session'
 import { getContractDetail } from '@/lib/contractDocument'
+import { getAuditTrail } from '@/lib/audit'
+import { canReview, getContractReviews } from '@/lib/reviews'
+import { prisma } from '@/lib/prisma'
+
+const AUDIT_LABEL: Record<string, string> = {
+  CONTRACT_SIGNED: 'Contract semnat',
+  CONTRACT_ACTIVATED: 'Contract activat',
+  CONTRACT_TERMINATED: 'Contract reziliat',
+  CONTRACT_RENEWED: 'Contract reînnoit',
+  SALE_CANCELLED: 'Antecontract anulat',
+  TERMS_CHANGED: 'Termeni modificați',
+  PAYMENT_SETTLED: 'Plată confirmată',
+  DEPOSIT_RETURNED: 'Garanție restituită',
+}
 
 export default async function ContractDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser()
@@ -20,8 +37,20 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
     notFound()
   }
 
-  const { doc, canEdit, canEditSale, canSign, documentHash, canPay, dueAmount, dueType, terms, saleTerms } = detail
+  const { doc, canEdit, canEditSale, canSign, documentHash, canPay, dueAmount, dueType, terms, saleTerms, canReturnDeposit, canCancelSale, canTerminate, canRenew, depositAmount } = detail
   const isSale = doc.type === 'VANZARE'
+  const [auditTrail, reviewEligibility, reviews] = await Promise.all([
+    getAuditTrail('CONTRACT', doc.id),
+    canReview(doc.id, user.id),
+    getContractReviews(doc.id),
+  ])
+  const auditFmt = new Intl.DateTimeFormat('ro-RO', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+  // Numele părții de evaluat (cealaltă parte) pentru formularul de recenzie.
+  let reviewSubjectName = ''
+  if (reviewEligibility.ok && reviewEligibility.subjectId) {
+    const subject = await prisma.user.findUnique({ where: { id: reviewEligibility.subjectId }, select: { firstName: true, lastName: true } })
+    reviewSubjectName = subject ? `${subject.firstName} ${subject.lastName}` : 'cealaltă parte'
+  }
 
   return (
     <section className="space-y-6">
@@ -29,7 +58,17 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
         <Link href="/dashboard/contracte" className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--brand)]">
           <ArrowLeft size={15} /> Toate contractele
         </Link>
-        <PrintButton />
+        <div className="flex items-center gap-2">
+          <a
+            href={`/api/contracte/${doc.id}/pdf`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-outline px-5 py-2.5 text-xs"
+          >
+            <Download size={15} /> Descarcă PDF
+          </a>
+          <PrintButton />
+        </div>
       </div>
 
       <article className="print-document rounded-4xl border border-[var(--border)] bg-[var(--card)] p-8 shadow-[var(--shadow)]">
@@ -132,10 +171,48 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
         </p>
       </article>
 
+      {auditTrail.length > 0 ? (
+        <div className="rounded-4xl border border-[var(--border)] bg-[var(--card)] p-6 print:hidden">
+          <h2 className="text-lg font-semibold">Istoric (audit)</h2>
+          <p className="mt-1 text-xs text-[var(--muted)]">Jurnal inviolabil al evenimentelor (semnături, plăți, modificări).</p>
+          <ol className="mt-4 space-y-3">
+            {auditTrail.map((entry, i) => (
+              <li key={i} className="flex items-start gap-3 text-sm">
+                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[var(--brand)]" />
+                <div>
+                  <p className="font-medium">{AUDIT_LABEL[entry.action] ?? entry.action}</p>
+                  <p className="text-xs text-[var(--muted)]">{auditFmt.format(entry.createdAt)}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ) : null}
+
+      {reviews.length > 0 || reviewEligibility.ok ? (
+        <div className="space-y-4 rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6 print:hidden">
+          <h2 className="text-lg font-semibold">Recenzii</h2>
+          {reviews.map((r, i) => (
+            <div key={i} className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-4">
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-medium">{r.authorName}</p>
+                <Stars rating={r.rating} />
+              </div>
+              {r.comment ? <p className="mt-2 text-sm text-[var(--muted)]">{r.comment}</p> : null}
+            </div>
+          ))}
+          {reviewEligibility.ok ? <ReviewForm contractId={doc.id} subjectName={reviewSubjectName} /> : null}
+        </div>
+      ) : null}
+
       <div className="space-y-4 print:hidden">
         {canEdit ? <ContractTermsForm contractId={doc.id} terms={terms} /> : null}
         {canEditSale ? <SaleTermsForm contractId={doc.id} terms={saleTerms} /> : null}
         <ContractActions contractId={doc.id} canSign={canSign} documentHash={documentHash} canPay={canPay} dueAmount={dueAmount} dueType={dueType} />
+        {canTerminate ? <TerminateButton contractId={doc.id} /> : null}
+        {canReturnDeposit ? <DepositReturnForm contractId={doc.id} deposit={depositAmount} /> : null}
+        {canRenew ? <RenewForm contractId={doc.id} defaultMonths={terms.months} defaultRent={terms.rent} /> : null}
+        {canCancelSale ? <CancelSaleButton contractId={doc.id} /> : null}
       </div>
     </section>
   )

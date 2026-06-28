@@ -1,16 +1,12 @@
-import { mkdir, writeFile, unlink } from 'fs/promises'
-import path from 'path'
+import { basename } from 'node:path'
 import { randomBytes } from 'crypto'
 import sharp from 'sharp'
 import { sha256 } from './hash'
+import { getStorageBackend } from './storageBackend'
 
-// Storage local pe disc (public/uploads). În producție se înlocuiește cu S3/R2
-// păstrând aceleași semnături — apelanții lucrează doar cu URL-uri publice.
-
-const UPLOADS_ROOT = path.join(process.cwd(), 'public', 'uploads')
-// Documentele KYC (act de identitate, selfie) sunt sensibile: NU se servesc public.
-// Stocare privată, în afara `public/`. În producție se înlocuiește cu un bucket privat (S3/R2).
-const PRIVATE_ROOT = path.join(process.cwd(), 'private', 'kyc')
+// Validare + normalizare a imaginilor (sharp), peste un backend de stocare swappable
+// (disc în dezvoltare, S3/R2 în producție — vezi storageBackend.ts). Apelanții lucrează doar
+// cu URL-uri publice / referințe interne; mutarea în cloud nu le schimbă semnăturile.
 
 const ALLOWED_TYPES: Record<string, string> = {
   'image/jpeg': '.jpg',
@@ -59,21 +55,20 @@ export async function savePropertyPhoto(propertyId: string, data: Buffer): Promi
   }
 
   const fileName = `${randomBytes(8).toString('hex')}.webp`
-  const dir = path.join(UPLOADS_ROOT, 'properties', propertyId)
-  await mkdir(dir, { recursive: true })
-  await writeFile(path.join(dir, fileName), output)
-  return `/uploads/properties/${propertyId}/${fileName}`
+  const key = `properties/${propertyId}/${fileName}`
+  return getStorageBackend().putPublic(key, output, 'image/webp')
 }
 
 export async function deletePropertyPhoto(propertyId: string, url: string): Promise<void> {
-  const prefix = `/uploads/properties/${propertyId}/`
-  if (!url.startsWith(prefix) || url.includes('..')) {
+  // URL-ul e specific backendului (`/uploads/...` pe disc, URL de bucket în cloud); derivăm cheia
+  // din numele fișierului și reconstruim cheia canonică, validând că URL-ul chiar se termină cu ea.
+  // Astfel un URL falsificat pentru altă proprietate nu poate șterge fișiere străine.
+  const file = basename(url)
+  const key = `properties/${propertyId}/${file}`
+  if (url.includes('..') || file.includes('/') || !url.endsWith(key)) {
     throw new Error('URL de fotografie invalid.')
   }
-  const filePath = path.join(UPLOADS_ROOT, 'properties', propertyId, path.basename(url))
-  await unlink(filePath).catch(() => {
-    // fișierul lipsește de pe disc — eliminăm doar referința
-  })
+  await getStorageBackend().deletePublic(key)
 }
 
 // Salvează un document KYC într-o zonă privată (niciodată servită public). Ca la fotografii,
@@ -102,10 +97,9 @@ export async function saveKycDocument(
   }
 
   const fileName = `${kind}_${randomBytes(8).toString('hex')}.webp`
-  const dir = path.join(PRIVATE_ROOT, userId)
-  await mkdir(dir, { recursive: true })
-  await writeFile(path.join(dir, fileName), output)
-  return { ref: `kyc/${userId}/${fileName}`, hash: sha256(output) }
+  const key = `kyc/${userId}/${fileName}`
+  await getStorageBackend().putPrivate(key, output, 'image/webp')
+  return { ref: key, hash: sha256(output) }
 }
 
 export function parsePhotos(raw: string): string[] {

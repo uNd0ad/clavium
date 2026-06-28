@@ -6,6 +6,7 @@ import { createPropertyAction } from '@/app/actions/properties'
 import { createOfferAction, respondToOfferAction } from '@/app/actions/offers'
 import { paySaleAction, setSaleTermsAction } from '@/app/actions/contracts'
 import { signContractAs } from '@/test/qesSign'
+import { saleCommission } from '@/lib/commission'
 
 type DbUser = Awaited<ReturnType<typeof makeUser>>
 
@@ -73,9 +74,10 @@ describe('flux vânzare: proprietate → ofertă → antecontract → semnare �
     expect((await paySaleAction(contract.id)).ok).toBe(true)
     expect((await prisma.payment.findUniqueOrThrow({ where: { id: rest.id } })).status).toBe('FINALIZATA')
 
-    // Comision 5% din preț pentru owner.
+    // Comision degresiv pentru owner: 250.000 RON se încadrează integral în prima tranșă (3%) = 7.500.
     const comision = await prisma.payment.findFirstOrThrow({ where: { type: 'COMISION', status: 'FINALIZATA' } })
-    expect(comision.amount).toBe(12500)
+    expect(comision.amount).toBe(saleCommission(250_000))
+    expect(comision.amount).toBe(7500)
     expect(comision.userId).toBe(owner.id)
 
     // Contract încheiat; proprietatea vândută și transferată cumpărătorului.

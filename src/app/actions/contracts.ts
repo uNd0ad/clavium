@@ -9,6 +9,8 @@ import { notify } from '@/lib/notify'
 import { verifyQesSignature, contractDocumentHash } from '@/lib/qes'
 import { createCheckoutSession } from '@/lib/payments'
 import { settlePayment } from '@/lib/paymentSettle'
+import { returnRentalDeposit, cancelSaleContract, terminateRentalContract, renewRentalContract } from '@/lib/contractClose'
+import { recordAuditSafe } from '@/lib/audit'
 import { paymentReference } from '@/lib/hash'
 import { formatRon } from '@/lib/dashboardData'
 import { requestBaseUrl } from '@/lib/appUrl'
@@ -45,6 +47,13 @@ export async function setContractTermsAction(contractId: string, input: unknown)
         clauses: data.clauses?.trim() || null,
       },
     })
+    await recordAuditSafe({
+      actorId: user.id,
+      action: 'TERMS_CHANGED',
+      entityType: 'CONTRACT',
+      entityId: contractId,
+      metadata: { type: 'INCHIRIERE', rent: data.rent, deposit: data.deposit, months: data.months, dueDay: data.dueDay },
+    })
     revalidatePath('/dashboard', 'layout')
     return { ok: true as const }
   } catch (err) {
@@ -76,6 +85,13 @@ export async function setSaleTermsAction(contractId: string, input: unknown) {
         deposit: data.deposit,
         clauses: data.clauses?.trim() || null,
       },
+    })
+    await recordAuditSafe({
+      actorId: user.id,
+      action: 'TERMS_CHANGED',
+      entityType: 'CONTRACT',
+      entityId: contractId,
+      metadata: { type: 'VANZARE', price: data.price, deposit: data.deposit },
     })
     revalidatePath('/dashboard', 'layout')
     return { ok: true as const }
@@ -238,6 +254,23 @@ export async function signContractAction(contractId: string, signature: Signatur
       )
     }
 
+    await recordAuditSafe({
+      actorId: user.id,
+      action: 'CONTRACT_SIGNED',
+      entityType: 'CONTRACT',
+      entityId: contractId,
+      metadata: { role: isOwner ? 'OWNER' : 'CLIENT', documentHash, bothSigned: result.bothSigned },
+    })
+    if (result.bothSigned) {
+      await recordAuditSafe({
+        actorId: user.id,
+        action: 'CONTRACT_ACTIVATED',
+        entityType: 'CONTRACT',
+        entityId: contractId,
+        metadata: { type: contract.type },
+      })
+    }
+
     revalidatePath('/dashboard', 'layout')
     revalidatePath('/proprietati', 'layout')
     return { ok: true as const }
@@ -325,6 +358,67 @@ export async function paySaleAction(contractId: string) {
     // Mod dev (fără Stripe configurat): decontăm plata pe loc.
     await settlePayment(due.id)
     return { ok: true as const, reference: due.reference }
+  } catch (err) {
+    return { ok: false as const, error: errorMessage(err) }
+  }
+}
+
+// Restituirea garanției la finalul închirierii (proprietar/admin), cu rețineri pentru daune.
+export async function returnDepositAction(contractId: string, input: { deduction?: number; reason?: string }) {
+  try {
+    const user = await requireActionUser(['OWNER', 'ADMIN'])
+    const result = await returnRentalDeposit(contractId, user, {
+      deduction: Number(input.deduction) || 0,
+      reason: input.reason,
+    })
+    if (!result.ok) return { ok: false as const, error: result.error }
+    revalidatePath('/dashboard', 'layout')
+    return { ok: true as const, message: result.message }
+  } catch (err) {
+    return { ok: false as const, error: errorMessage(err) }
+  }
+}
+
+// Anularea antecontractului de vânzare (oricare parte sau admin); aplică regulile arvunei.
+export async function cancelSaleAction(contractId: string, input: { reason?: string }) {
+  try {
+    const user = await requireActionUser()
+    const result = await cancelSaleContract(contractId, user, { reason: input.reason })
+    if (!result.ok) return { ok: false as const, error: result.error }
+    revalidatePath('/dashboard', 'layout')
+    revalidatePath('/proprietati', 'layout')
+    return { ok: true as const, message: result.message }
+  } catch (err) {
+    return { ok: false as const, error: errorMessage(err) }
+  }
+}
+
+// Rezilierea anticipată a unei închirieri active (oricare parte sau admin).
+export async function terminateContractAction(contractId: string, input: { reason?: string }) {
+  try {
+    const user = await requireActionUser()
+    const result = await terminateRentalContract(contractId, user, { reason: input.reason })
+    if (!result.ok) return { ok: false as const, error: result.error }
+    revalidatePath('/dashboard', 'layout')
+    revalidatePath('/proprietati', 'layout')
+    return { ok: true as const, message: result.message }
+  } catch (err) {
+    return { ok: false as const, error: errorMessage(err) }
+  }
+}
+
+// Reînnoirea / modificarea unei închirieri încheiate (proprietar/admin) — creează un contract nou.
+export async function renewContractAction(
+  contractId: string,
+  input: { months?: number; rent?: number; deposit?: number; dueDay?: number; clauses?: string }
+) {
+  try {
+    const user = await requireActionUser(['OWNER', 'ADMIN'])
+    const result = await renewRentalContract(contractId, user, input)
+    if (!result.ok) return { ok: false as const, error: result.error }
+    revalidatePath('/dashboard', 'layout')
+    revalidatePath('/proprietati', 'layout')
+    return { ok: true as const, message: result.message, contractId: result.contractId }
   } catch (err) {
     return { ok: false as const, error: errorMessage(err) }
   }
