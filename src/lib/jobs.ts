@@ -4,8 +4,11 @@ import { prisma } from './prisma'
 import { notify } from './notify'
 import { sendEmail } from './email'
 import { logger } from './logger'
+import { deleteKycDocument } from './storage'
 
 const DAY_MS = 86_400_000
+// Câte zile păstrăm imaginile biometrice brute după o decizie KYC finală, înainte de purjare.
+const KYC_RETENTION_DAYS = Number(process.env.KYC_RETENTION_DAYS) || 30
 // Cu câte zile înainte de scadență trimitem prima notificare.
 const REMINDER_LEAD_DAYS = 3
 // La cât timp re-notificăm o chirie restantă (ca să nu trimitem zilnic).
@@ -33,6 +36,50 @@ export async function cleanupExpiredTokens(now: Date = new Date()) {
     emailTokens: emailTokens.count,
     sessions: sessions.count,
   }
+}
+
+// Retenția datelor biometrice (minimizarea datelor, GDPR). După o decizie KYC finală
+// (VERIFIED/REJECTED), imaginile brute (act + selfie) se păstrează cel mult `KYC_RETENTION_DAYS`,
+// apoi se purjează din stocarea privată. Rămân doar amprentele (sha256) + decizia — suficient ca
+// audit, fără a mai reține biometria. Idempotent: rândurile deja purjate (documentKeys gol +
+// `biometricPurgedAt` setat) nu se reprocesează.
+export async function purgeKycBiometrics(now: Date = new Date()) {
+  const cutoff = new Date(now.getTime() - KYC_RETENTION_DAYS * DAY_MS)
+  const records = await prisma.kycVerification.findMany({
+    where: {
+      status: { in: ['VERIFIED', 'REJECTED'] },
+      biometricPurgedAt: null,
+      documentKeys: { not: '[]' },
+      submittedAt: { lt: cutoff },
+    },
+    select: { id: true, documentKeys: true },
+  })
+
+  let purged = 0
+  let filesDeleted = 0
+  for (const rec of records) {
+    let keys: string[] = []
+    try {
+      const parsed = JSON.parse(rec.documentKeys)
+      if (Array.isArray(parsed)) keys = parsed.filter((k): k is string => typeof k === 'string')
+    } catch {
+      keys = []
+    }
+    try {
+      for (const key of keys) {
+        await deleteKycDocument(key)
+        filesDeleted += 1
+      }
+      await prisma.kycVerification.update({
+        where: { id: rec.id },
+        data: { documentKeys: '[]', biometricPurgedAt: now },
+      })
+      purged += 1
+    } catch (err) {
+      logger.error('kyc: purjare biometrică eșuată', { recordId: rec.id, error: (err as Error).message })
+    }
+  }
+  return { purged, filesDeleted }
 }
 
 // Dunning: notificări de chirie apropiată de scadență și de chirie restantă. Idempotent prin

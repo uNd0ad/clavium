@@ -19,6 +19,8 @@ export interface StorageBackend {
   deletePublic(key: string): Promise<void>
   // Scrie un obiect privat (KYC) — niciodată servit public.
   putPrivate(key: string, body: Buffer, contentType: string): Promise<void>
+  // Șterge un obiect privat (purjare KYC); absența lui nu e o eroare (ștergere idempotentă).
+  deletePrivate(key: string): Promise<void>
 }
 
 // --- Backend local (disc) — implicit în dezvoltare ----------------------------------------
@@ -42,6 +44,11 @@ const localBackend: StorageBackend = {
     const filePath = path.join(PRIVATE_ROOT, key)
     await mkdir(path.dirname(filePath), { recursive: true })
     await writeFile(filePath, body)
+  },
+  async deletePrivate(key) {
+    await unlink(path.join(PRIVATE_ROOT, key)).catch(() => {
+      // fișierul lipsește de pe disc — ștergerea e oricum un no-op
+    })
   },
 }
 
@@ -95,6 +102,10 @@ const s3Backend: StorageBackend = {
     await client.send(
       new Put({ Bucket: requireEnv('STORAGE_S3_PRIVATE_BUCKET'), Key: key, Body: body, ContentType: contentType })
     )
+  },
+  async deletePrivate(key) {
+    const { client, Delete } = await getS3()
+    await client.send(new Delete({ Bucket: requireEnv('STORAGE_S3_PRIVATE_BUCKET'), Key: key }))
   },
 }
 

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, MapPin, BedDouble, Ruler, ShieldCheck } from 'lucide-react'
@@ -6,6 +7,7 @@ import Footer from '@/components/layout/Footer'
 import StatusBadge from '@/components/dashboard/StatusBadge'
 import PropertyActions from '@/components/properties/PropertyActions'
 import AskOwnerForm from '@/components/properties/AskOwnerForm'
+import ReportButton from '@/components/properties/ReportButton'
 import PropertyGallery from '@/components/properties/PropertyGallery'
 import CopyLinkButton from '@/components/ui/CopyLinkButton'
 import Stars from '@/components/dashboard/Stars'
@@ -14,18 +16,46 @@ import { getCurrentUser } from '@/lib/session'
 import { formatRon } from '@/lib/dashboardData'
 import { parsePhotos } from '@/lib/storage'
 import { getUserReputation } from '@/lib/reviews'
+import { formatRonWithEur } from '@/lib/currency'
+import { staticMapUrl, hasCoordinates } from '@/lib/maps'
+import { getPublicListing, listingJsonLd, absoluteUrl } from '@/lib/seo'
+
+// Datele publice ale listării sunt cache-uite între request-uri și revalidate la cel mult o oră
+// (vezi `getPublicListing` → unstable_cache); personalizarea (utilizator/salvat) rămâne pe request.
+
+// Metadate per-listare: titlu/descriere + OpenGraph/Twitter cu prima fotografie ca og:image.
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const property = await getPublicListing(id)
+  if (!property) return { title: 'Proprietate negăsită — Clavium.ro' }
+
+  const isSale = property.transactionType === 'VANZARE'
+  const priceLabel = isSale ? formatRon(property.price) : `${formatRon(property.rent)}/lună`
+  const title = `${property.title} · ${property.location} — ${priceLabel} | Clavium.ro`
+  const description = property.description?.slice(0, 160) || `${isSale ? 'De vânzare' : 'De închiriat'} în ${property.location}, direct de la proprietar pe Clavium.ro.`
+  const photos = parsePhotos(property.photos).map((p) => (p.startsWith('http') ? p : absoluteUrl(p)))
+  const canonical = `/proprietati/${property.id}`
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      type: 'website',
+      ...(photos.length ? { images: [{ url: photos[0] }] } : {}),
+    },
+    twitter: { card: photos.length ? 'summary_large_image' : 'summary', title, description, ...(photos.length ? { images: [photos[0]] } : {}) },
+  }
+}
 
 export default async function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const [property, user] = await Promise.all([
-    prisma.property.findUnique({
-      where: { id },
-      include: { owner: { select: { firstName: true, lastName: true, createdAt: true } } },
-    }),
-    getCurrentUser(),
-  ])
+  const [property, user] = await Promise.all([getPublicListing(id), getCurrentUser()])
 
-  if (!property || property.status === 'INACTIVA') {
+  if (!property) {
     notFound()
   }
 
@@ -41,9 +71,17 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const isSale = property.transactionType === 'VANZARE'
   const photos = parsePhotos(property.photos)
   const ownerReputation = await getUserReputation(property.ownerId)
+  const mapUrl = hasCoordinates(property)
+    ? staticMapUrl({ lat: property.lat, lng: property.lng, isExclusive: property.isExclusive })
+    : null
 
   return (
     <>
+      {/* Date structurate schema.org pentru rezultate îmbogățite în motoarele de căutare. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(listingJsonLd(property)) }}
+      />
       <Navbar />
       <main className="mx-auto min-h-screen max-w-7xl px-6 pb-24 pt-36 lg:px-12">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -71,7 +109,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               <h1 className="mt-4 text-4xl font-semibold">{property.title}</h1>
               <p className="mt-4 text-2xl font-semibold text-[var(--brand)]">
                 {isSale ? (
-                  formatRon(property.price)
+                  formatRonWithEur(property.price)
                 ) : (
                   <>
                     {formatRon(property.rent)} <span className="text-sm font-normal text-[var(--muted)]">/ lună</span>
@@ -100,6 +138,19 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               <div className="rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6">
                 <h2 className="text-xl font-semibold">Descriere</h2>
                 <p className="mt-4 whitespace-pre-line text-base leading-7 text-[var(--muted)]">{property.description}</p>
+              </div>
+            ) : null}
+
+            {/* Hartă (doar când există coordonate ȘI o cheie Maps configurată). Pin exact pentru
+                listările exclusive; zonă aproximativă altfel. */}
+            {mapUrl ? (
+              <div className="rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6">
+                <h2 className="text-xl font-semibold">Locație</h2>
+                <p className="mt-2 text-sm text-[var(--muted)]">
+                  {property.isExclusive ? 'Amplasare exactă (listare exclusivă).' : 'Zonă aproximativă — adresa exactă se comunică la contact.'}
+                </p>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={mapUrl} alt={`Hartă pentru ${property.title}, ${property.location}`} className="mt-4 w-full rounded-2xl border border-[var(--border)]" />
               </div>
             ) : null}
 
@@ -133,6 +184,11 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               isAuthenticated={Boolean(user)}
               isOwner={user?.id === property.ownerId}
             />
+            {user && user.id !== property.ownerId ? (
+              <div className="mt-4 px-1">
+                <ReportButton targetType="PROPERTY" targetId={property.id} isAuthenticated />
+              </div>
+            ) : null}
           </div>
         </div>
       </main>

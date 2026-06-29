@@ -37,3 +37,8 @@ package-lock.json
 public/uploads/
 # Documente KYC stocate privat (act de identitate, selfie) — niciodată în git.
 private/
+
+# Playwright (E2E)
+/test-results/
+/playwright-report/
+/playwright/.cache/

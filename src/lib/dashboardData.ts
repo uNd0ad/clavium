@@ -73,6 +73,8 @@ export type PaymentView = {
   type: string
   status: string
   statusVariant: BadgeVariant
+  // Plata finalizată are chitanță/factură descărcabilă (PDF).
+  canDownloadReceipt: boolean
 }
 
 export type NotificationView = {
@@ -510,6 +512,7 @@ export async function getPayments(user: SessionUser): Promise<{
         type: PAYMENT_TYPE[payment.type] ?? payment.type,
         status: label,
         statusVariant: variant,
+        canDownloadReceipt: payment.status === 'FINALIZATA',
       }
     }),
   }

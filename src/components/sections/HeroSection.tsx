@@ -4,22 +4,25 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, MapPin, ChevronDown } from 'lucide-react'
 import { useReveal } from '@/hooks/useReveal'
+import { useDict } from '@/lib/i18n/client'
 
-const TRANSACTION_TYPES = ['Cumpărare', 'Închiriere', 'Leasing']
-
-// Tipul de tranzacție din hero mapează pe filtrul listării (`type`). Leasing nu are încă
-// filtru dedicat în /proprietati, deci trimite o căutare generală (fără `type`).
-const TX_TO_FILTER: Record<string, string | undefined> = {
-  Cumpărare: 'VANZARE',
-  Închiriere: 'INCHIRIERE',
-  Leasing: undefined,
+// Valori stabile pentru tipul de tranzacție (independente de limbă) → filtrul listării (`type`).
+// Leasing nu are încă filtru dedicat în /proprietati, deci trimite o căutare generală (fără `type`).
+type TxType = 'buy' | 'rent' | 'lease'
+const TX_TO_FILTER: Record<TxType, string | undefined> = {
+  buy: 'VANZARE',
+  rent: 'INCHIRIERE',
+  lease: undefined,
 }
 
 export default function HeroSection() {
   const router = useRouter()
   const ref = useReveal()
-  const [txType, setTxType] = useState('Cumpărare')
+  const dict = useDict()
+  const [txType, setTxType] = useState<TxType>('buy')
   const [location, setLocation] = useState('')
+
+  const txLabels: Record<TxType, string> = { buy: dict.hero.txBuy, rent: dict.hero.txRent, lease: dict.hero.txLease }
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -39,23 +42,23 @@ export default function HeroSection() {
         <div className="grid lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7">
             <div className="section-label mb-6 reveal">
-              Prima platformă imobiliară cu design modern
+              {dict.hero.eyebrow}
             </div>
 
             <h1 className="reveal reveal-delay-1 font-sans text-[clamp(42px,6vw,88px)] leading-[0.96] font-semibold tracking-[-0.04em] text-[var(--text)] max-w-none sm:max-w-[20ch] md:max-w-[16ch] lg:max-w-[12ch]">
-              Real estate, construită ca un produs.
+              {dict.hero.title}
             </h1>
 
             <p className="reveal reveal-delay-2 mt-8 max-w-xl text-base lg:text-base text-[var(--muted)] leading-8">
-              Găsești și semnezi contractul imobiliar într-o interfață curată, rapidă și sigură. Fără comision, fără agitație, complet digital.
+              {dict.hero.subtitle}
             </p>
 
             <div className="reveal reveal-delay-3 mt-10 grid gap-5 sm:grid-cols-[minmax(0,1fr)_auto]">
               <a href="/auth/register" className="btn-primary w-full justify-center">
-                Începe gratuit
+                {dict.hero.ctaStart}
               </a>
               <a href="#cum-functioneaza" className="btn-outline w-full justify-center">
-                Vezi cum funcționează
+                {dict.hero.ctaHow}
               </a>
             </div>
           </div>
@@ -64,23 +67,23 @@ export default function HeroSection() {
             <div className="glass-panel p-8 lg:p-10 rounded-4xl border border-[var(--border)] backdrop-blur-xl">
               <div className="mb-8">
                 <span className="inline-flex items-center rounded-full bg-[var(--brand-soft)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
-                  100% digital · semnătură QES
+                  {dict.hero.badge}
                 </span>
               </div>
 
               <form onSubmit={handleSearch} className="mt-10 rounded-4xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-[0_16px_40px_rgba(15,23,42,0.08)]">
                 <div className="relative">
                   <label className="text-2xs uppercase tracking-[0.22em] text-[var(--muted)] mb-2 block">
-                    Tip tranzacție
+                    {dict.hero.txTypeLabel}
                   </label>
                   <div className="relative">
                     <select
                       value={txType}
-                      onChange={(e) => setTxType(e.target.value)}
+                      onChange={(e) => setTxType(e.target.value as TxType)}
                       className="appearance-none w-full rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm text-[var(--text)] outline-none"
                     >
-                      {TRANSACTION_TYPES.map((t) => (
-                        <option key={t}>{t}</option>
+                      {(['buy', 'rent', 'lease'] as TxType[]).map((t) => (
+                        <option key={t} value={t}>{txLabels[t]}</option>
                       ))}
                     </select>
                     <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted)]" />
@@ -89,7 +92,7 @@ export default function HeroSection() {
 
                 <div className="mt-4 relative">
                   <label htmlFor="hero-location" className="text-2xs uppercase tracking-[0.22em] text-[var(--muted)] mb-2 block">
-                    Locație
+                    {dict.hero.locationLabel}
                   </label>
                   <div className="relative">
                     <MapPin size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted)]" />
@@ -98,7 +101,7 @@ export default function HeroSection() {
                       type="text"
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
-                      placeholder="Oraș sau cartier..."
+                      placeholder={dict.hero.locationPlaceholder}
                       className="w-full rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 pl-11 text-sm text-[var(--text)] outline-none"
                     />
                   </div>
@@ -106,12 +109,12 @@ export default function HeroSection() {
 
                 <button type="submit" className="btn-primary mt-5 w-full justify-center">
                   <Search size={16} />
-                  Caută
+                  {dict.hero.search}
                 </button>
               </form>
 
               <p className="mt-5 text-xs text-[var(--muted)] tracking-[0.16em] uppercase">
-                Timișoara · Cluj-Napoca · București · Iași · Brașov · Oradea
+                {dict.hero.cities}
               </p>
             </div>
           </div>

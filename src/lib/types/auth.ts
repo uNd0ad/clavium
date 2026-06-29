@@ -28,6 +28,10 @@ export type User = {
   companyReg?: string | null
   companyAddress?: string | null
   companyVatPayer: boolean
+  // Autentificare în doi pași (TOTP).
+  totpEnabled: boolean
+  totpSecret: string | null
+  totpBackupCodes: string
   createdAt: string
   updatedAt: string
 }
@@ -56,6 +60,7 @@ export type RegisterRequest = {
   companyReg?: string
   companyAddress?: string
   companyVatPayer?: boolean
+  referralCode?: string
 }
 
 export type OtpSendRequest = {

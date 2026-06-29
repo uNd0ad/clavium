@@ -24,6 +24,17 @@ model User {
   kycStatus       String   @default("UNVERIFIED")
   isActive        Boolean  @default(true)
   avatar          String?
+  // Autentificare în doi pași (TOTP). `totpSecret` e setat și cât timp configurarea e în curs
+  // (neconfirmată); `totpEnabled` devine true abia după confirmarea unui cod valid. `totpBackupCodes`
+  // = JSON cu amprente sha256 ale codurilor de rezervă (consumate o singură dată).
+  totpSecret      String?
+  totpEnabled     Boolean  @default(false)
+  totpBackupCodes String   @default("[]")
+  // Program de recomandare: cod propriu (partajabil) + cine l-a recomandat pe acest utilizator.
+  referralCode    String?  @unique
+  referredById    String?
+  referredBy      User?    @relation("Referrals", fields: [referredById], references: [id])
+  referrals       User[]   @relation("Referrals")
   // Tip cont: PERSON (persoană fizică) sau COMPANY (persoană juridică).
   // Pentru COMPANY, firstName/lastName = reprezentantul legal.
   accountType     String   @default("PERSON")
@@ -56,7 +67,22 @@ model User {
   reviewsAuthored   Review[]         @relation("ReviewsAuthored")
   reviewsReceived   Review[]         @relation("ReviewsReceived")
   reportsFiled      Report[]         @relation("ReportsFiled")
+  savedSearches     SavedSearch[]
   kyc               KycVerification?
+}
+
+// Căutare salvată de un utilizator: filtrele (JSON) + momentul ultimei alerte trimise. Un job
+// periodic notifică listările noi care se potrivesc (vezi processSavedSearchAlerts).
+model SavedSearch {
+  id             String    @id @default(uuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String?
+  filters        String    @default("{}") // JSON: PropertyFilters (q, type, minRent, maxRent, rooms, minSurface)
+  lastNotifiedAt DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@index([userId])
 }
 
 // Sesizare de abuz/fraudă pentru o listare sau un utilizator. Reporter null = sistem (detecția
@@ -110,12 +136,16 @@ model TermsConsent {
 }
 
 model Session {
-  id        String    @id @default(uuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
-  revokedAt DateTime?
-  createdAt DateTime  @default(now())
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  // Metadate de dispozitiv pentru managementul sesiunilor (listare / revocare / alertă dispozitiv nou).
+  userAgent  String?
+  ip         String?
+  lastSeenAt DateTime?
+  createdAt  DateTime  @default(now())
 
   @@index([userId])
 }
@@ -160,6 +190,11 @@ model Property {
   rooms           Int?
   surface         Int?
   photos          String          @default("[]") // JSON: array de URL-uri /uploads/...
+  // Coordonate pentru hartă. Pin exact afișat doar pentru listările exclusive (acord de exclusivitate);
+  // pentru restul se arată zona aproximativă (vezi lib/maps.ts).
+  lat             Float?
+  lng             Float?
+  isExclusive     Boolean         @default(false)
   status          String          @default("DISPONIBILA") // DISPONIBILA | INCHIRIATA | REZERVATA | VANDUTA | INACTIVA
   ownerId         String
   owner           User            @relation("OwnedProperties", fields: [ownerId], references: [id])
@@ -297,6 +332,9 @@ model Contract {
   // Anulare / reziliere: când și de ce a fost încheiat contractul înainte de termen.
   cancelledAt    DateTime?
   cancelReason   String?
+  // Plata automată a chiriei (opt-in al chiriașului): la scadență, chiria se încasează automat
+  // (off-session prin cardul salvat, când Stripe e activ; în mod dev se decontează direct).
+  autopayEnabled Boolean     @default(false)
   payments       Payment[]
   tickets        Ticket[]
   signatures     Signature[]
@@ -356,10 +394,16 @@ model KycVerification {
   reference       String // referința dosarului returnată de furnizorul de identitate
   method          String    @default("face_match") // face_match (local) | id_document (furnizor)
   documentHashes  String    @default("[]") // JSON: array de amprente sha256 ale documentelor încărcate
+  // JSON: array de chei de stocare ale documentelor brute (act + selfie). Se golește la purjare.
+  documentKeys    String    @default("[]")
   documentCount   Int       @default(0)
   // Distanța euclidiană între fața de pe act și selfie (mod local, fără eIDAS). Mai mic = mai sigur.
   matchScore      Float?
   rejectionReason String?
+  // Consimțământ explicit pentru prelucrarea datelor biometrice (față) — categorie specială GDPR.
+  biometricConsentAt DateTime?
+  // Momentul purjării imaginilor biometrice brute (retenție): rămân doar amprentele + decizia.
+  biometricPurgedAt  DateTime?
   submittedAt     DateTime  @default(now())
   verifiedAt      DateTime?
 }

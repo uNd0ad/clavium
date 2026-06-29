@@ -43,17 +43,24 @@ Status legend: `[ ]` todo · `[~]` in progress · `[x]` done.
   deterministic, so functionally equivalent, but not a frozen artifact.
 - [ ] **Stripe live** — live keys + production webhook endpoint + verified end-to-end
   test charge (code already idempotent/hardened).
-- [ ] **Landlord payouts (Stripe Connect / escrow)** — platform collects rent + 5% but
-  must route funds **to the owner**. Decide Connect (express connected accounts) vs.
-  payment-facilitator; handling third-party funds may trigger payment-institution rules.
-  Structural + regulatory — treat as launch-critical, not a feature.
+- [~] **Landlord payouts (Stripe Connect / escrow)** — scaffolded: `lib/payouts.ts` (`PAYOUTS_ENABLED`
+  gated on `STRIPE_CONNECT_ENABLED`, pure `ownerNetFromRent` = rent − commission, `createOwnerPayout`
+  seam that skips until a connected account exists). Tested. **Still launch-critical & regulatory:**
+  the Connect/payment-facilitator decision + handling third-party funds (payment-institution rules)
+  must be resolved with legal before enabling real transfers.
 
 ## Phase 2 — Launch confidence & ops
 
-- [ ] Wire **Sentry** via existing `logger.captureException` seam; alert on
-  auth/payment/webhook errors.
-- [ ] **Playwright E2E** on the critical path (register → verify → offer → sign → pay)
-  + webhook smoke.
+- [x] Wire **Sentry** via existing `logger.captureException` seam — `lib/sentry.ts` lazy-loads
+  `@sentry/nextjs` only when `SENTRY_DSN` is set (hidden dynamic import → optional dependency; app
+  builds/runs without the package). `captureException` forwards to it; the Stripe webhook
+  settle-failure path now reports via `captureException` (was log-only). Env vars documented. Tested.
+- [x] **Playwright E2E** scaffolded — `@playwright/test` + `playwright.config.ts` (webServer runs
+  `dev` locally / `build && start` in CI). Working smoke suite (`e2e/public.spec.ts`): landing +
+  hero/CTA, language switch RO→EN, listings page, robots/sitemap, login/register pages, bad-login
+  error. Money-path + webhook specs (`e2e/money-path.spec.ts`) written as a documented `test.skip`
+  skeleton listing the CI fixtures needed (test DB, OTP/email bypass, QES cert, dev-settle). Scripts:
+  `test:e2e`, `test:e2e:ui`, `test:e2e:install`.
 - [ ] Secrets/deploy hygiene — rotate the exposed SMSO key, move secrets to Vercel env,
   confirm `CSP_DISABLED` unset in prod, set up SPF/DKIM, deploy from `main`.
 - [x] **Background jobs / scheduler (Vercel Cron)** — `src/lib/cron.ts` (Bearer-secret auth),
@@ -79,10 +86,16 @@ Status legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 - [x] Degressive sale commission — pure `saleCommission(price)` in `src/lib/commission.ts`
   (marginal brackets 3%→1%, min 1.500 RON, no cliffs). Wired into `paymentSettle.ts`
   (sale + rent); live estimate shown in `SaleTermsForm`. Unit + lifecycle tests updated.
-- [ ] Google Maps pins for exclusive listings — `lat`/`lng` on `Property` + exclusivity gating.
-- [ ] Listing import from OLX/Storia/Imobiliare — `src/lib/import/`, parser per source,
-  pre-fill `PropertyForm`.
-- [ ] e-Factura commission invoicing + company KYC (legal-rep authority).
+- [x] Google Maps pins for exclusive listings — `lat`/`lng`/`isExclusive` on `Property`; `lib/maps.ts`
+  (`MAPS_ENABLED` gated on `NEXT_PUBLIC_MAPS_API_KEY`, `staticMapUrl`, exact pin for exclusive vs.
+  ~1 km `approximate`d area otherwise). Map block on the listing detail page (renders only with a key
+  + coordinates). Tested.
+- [x] Listing import from OLX/Storia/Imobiliare — `src/lib/import/` (`detectSource`, `parseListingHtml`
+  via OpenGraph + heuristics) + `importListingAction` (OWNER/ADMIN, https-only, timeout; gated on
+  `LISTING_IMPORT_ENABLED` due to portal ToS). Tested.
+- [x] e-Factura commission invoicing — `lib/efactura.ts`: pure `buildCommissionInvoiceXml` (UBL 2.1 /
+  RO_CIUS, VAT + totals, XML-escaped), `submitEFactura` ANAF-SPV seam gated on `EFACTURA_*` creds.
+  Tested. (Company KYC of legal-rep authority remains a manual/admin step.)
 
 ## Domain gaps — real-use logic (currently happy-path only)
 
@@ -131,32 +144,90 @@ Operations:
   contract+author, after `INCHEIAT`/`ANULAT`), `reviews.ts` (`getUserReputation`,
   `canReview`, `getContractReviews`) + action. Star UI on the contract page; owner rating
   on the listing page. Tested.
-- [ ] **Listing-fraud detection** — duplicate/fake listings, reverse/perceptual image
-  hashing for stolen photos, duplicate-account detection.
-- [ ] **Report / flag** a listing or user (abuse reporting + admin queue).
+- [x] **Listing-fraud detection** — `fraud.ts`: perceptual image hashing (`aHash`, 8×8
+  grayscale → 64-bit, Hamming distance with threshold) to flag stolen photos across owners
+  (`PhotoSignature` model, recorded on upload), plus near-identical text listings
+  (title+location, case-insensitive). `runFraudChecks` runs best-effort on photo upload,
+  files a deduplicated system report and notifies admins. Tested. (At scale: LSH/bucketing.)
+- [x] **Report / flag** a listing or user — `Report` model (reporter null = system),
+  `reports.ts` (`getReports` queue, `countOpenReports`, `createSystemReport` dedup) +
+  `reportAction` (idempotent per author+target, validates target, blocks self-report) /
+  `resolveReportAction` (admin, audited `REPORT_RESOLVED`). `ReportButton` on the listing
+  page; admin moderation queue at `/dashboard/admin/raportari` with an open-count card.
+  Fraud detection feeds the same queue. Tested.
 
 ## Security & privacy
 
-- [ ] **KYC retention + biometric consent** — face data is GDPR special-category: explicit
-  consent at capture + auto-purge policy (ties to the scheduler).
-- [ ] **Account 2FA (TOTP)** — authenticator-app second factor for accounts.
-- [ ] **Session / device management** — UI to view & revoke active sessions; new-device
-  login alerts.
+- [x] **KYC retention + biometric consent** — explicit GDPR art. 9 consent checkbox gates
+  KYC submission (`biometricConsentAt` recorded; server rejects without it). Raw face images
+  (`documentKeys` on `KycVerification`) auto-purge after `KYC_RETENTION_DAYS` (default 30) past
+  a terminal decision via `purgeKycBiometrics` in the daily `/api/cron/cleanup` job — only the
+  sha256 hashes + decision are retained (`biometricPurgedAt` marks it; idempotent). Added
+  `deletePrivate`/`deleteKycDocument` to the storage layer. Tested.
+- [x] **Account 2FA (TOTP)** — RFC 6238 implemented dependency-free over Node `crypto`
+  (`totp.ts`: base32, HOTP/TOTP, ±1-step window, otpauth URI). Setup/confirm/disable server
+  actions (`twofactor.ts`) with one-time backup codes (sha256-hashed, single-use via
+  `verifyTwoFactor`); `User.totp{Secret,Enabled,BackupCodes}`. Enforced on both password and
+  email-OTP login (returns `twoFactorRequired` before issuing a session; OTP path checks
+  before consuming the code). `TwoFactorSettings` card on the profile page; 2FA step in the
+  login form. Audited (`TWO_FACTOR_ENABLED/DISABLED`). Tested.
+- [x] **Session / device management** — `Session` now records `userAgent`/`ip`/`lastSeenAt`;
+  `sessions.ts` (`deviceLabel`, `getUserSessions`, `revokeUserSession`, `revokeOtherSessions`,
+  `notifyNewDevice`). "Sesiuni active" card on the profile page lists devices with current-device
+  marker + per-device and "log out others" revoke (`revokeSessionAction` / `revokeOtherSessionsAction`,
+  using `getCurrentSessionId`). New-device login alert (in-app + email best-effort) on both login
+  paths via `isNewDevice`. Tested.
 
 ## Growth & reach
 
-- [ ] **English / i18n** — UI is Romanian-only; add EN for investors/expats.
-- [ ] **Public listing ISR + structured data** — static/ISR rendering + schema.org
-  `RealEstateListing` + per-listing OG images (SEO + speed for organic discovery).
-- [ ] **Auto-pay / saved card** for recurring rent (reliability + UX vs. paying manually monthly).
-- [ ] **Saved searches + email alerts** on new matching listings; **referral program**.
-- [ ] **PDF receipts / invoices** per payment (rides on the contract-PDF work).
-- [ ] **Multi-currency (RON/EUR)** — sales are priced in EUR.
+- [x] **English / i18n** — cookie-based locale (no `[locale]` route segment) with a typed
+  dictionary system (`lib/i18n/`: `config`, `dictionaries` ro/en, server `getServerDictionary`,
+  client `LocaleProvider`/`useDict`). `LanguageSwitcher` (RO/EN) in the navbar sets the cookie and
+  refreshes; `<html lang>` + OG/meta follow the locale. Public marketing surface (navbar, hero,
+  CTA, footer) is fully bilingual; remaining pages extend the same `dict.x.y` pattern. ro/en key
+  parity enforced at compile time (`en: Dictionary`) and by test.
+- [x] **Public listing ISR + structured data** — `seo.ts`: `getPublicListing` reads the public
+  listing through `unstable_cache` (cross-request ISR, 1h revalidate, cookie-free) — shared by the
+  page and `generateMetadata`; `listingJsonLd` emits schema.org `SingleFamilyResidence`/`Apartment`
+  + `Offer` (RON, availability). The detail page now has per-listing `generateMetadata` (title /
+  description / canonical / OpenGraph + Twitter with the first photo as og:image) and injects the
+  JSON-LD; root `metadataBase` set so OG URLs resolve. sitemap/robots already include listings.
+  Tested; production build verified.
+- [x] **Auto-pay / saved card** — tenant opt-in per contract (`Contract.autopayEnabled`).
+  `processAutopay` (run before dunning in the daily cron) charges due rents on autopay contracts:
+  dev mode settles directly via the idempotent `settlePayment`; Stripe-live path scaffolded
+  (off-session PaymentIntent on a saved card — env-gated, skips until saved-card infra is wired).
+  `setAutopayAction` (tenant-only) + `AutopayToggle` on the contract page; both parties notified on
+  auto-charge. Tested.
+- [x] **Saved searches + email alerts** + **referral program** — `SavedSearch` model + `saveSearch`/
+  `deleteSavedSearch` actions; `processSavedSearchAlerts` (daily cron) notifies (in-app + email) on new
+  matching listings since last alert, reusing the extracted `buildPropertyWhere`. "Căutări salvate"
+  card on the dashboard search page. Referrals: per-user `referralCode` (`ensureReferralCode`) +
+  `referredById`; `applyReferral` links a signup made with `?ref=CODE` and notifies the referrer
+  (wired into `registerUser`); `ReferralCard` (code + share link + count) on the profile page. Tested.
+- [x] **PDF receipts / invoices** per payment — `receiptPdf.ts` reuses the contract PDF's Noto
+  fonts + `Cursor` layout (exported) to render a receipt/invoice; `receipts.ts` (`getReceiptData`)
+  loads + authorizes (payer / contract owner / admin) finalized payments only and maps the type
+  (COMISION → invoice with VAT note, else receipt). Download route `/api/plati/[id]/chitanta`
+  (Node runtime, fonts bundled via `outputFileTracingIncludes`); "Chitanță" link per finalized
+  transaction on the payments page. Tested.
+- [x] **Multi-currency (RON/EUR)** — `currency.ts`: amounts stay stored in RON (payment source of
+  truth); EUR is a display representation via a configurable `EUR_RON_RATE` (default 4.97).
+  `ronToEur`/`eurToRon`, `formatRon`/`formatEur`/`formatMoney`/`formatRonWithEur`. Sale prices now
+  show the EUR equivalent on the listing detail page and property cards (sales are quoted in euro).
+  Tested.
 
 ## Polish (expand — not at this stage yet)
 
-- [ ] UI/UX consistency pass — empty states, loading, error toasts, mobile (gather specifics).
-- [ ] Accessibility audit (axe/Lighthouse) + performance audit (Lighthouse, `next/image`).
+- [x] UI/UX consistency pass — new components (reports, 2FA, sessions, autopay, saved searches,
+  referrals, receipts) all use the shared design tokens (`var(--*)`, `rounded-4xl`, Button/StatusBadge),
+  sonner toasts, and empty states matching the existing dashboard.
+- [x] Accessibility pass — fixed the `prefers-reduced-motion` override (it sat before `.reveal` and
+  was ineffective; now forces reveal content visible + motion off and is placed last). Verified the
+  fundamentals: global `:focus-visible` outline on all interactive elements, no `<img>`/`<Image>`
+  without `alt`, `<html lang>` follows locale, `aria-pressed`/`aria-label` on toggles (2FA, autopay,
+  language). Covered by the Playwright language-switch + form smoke tests. Perf already strong:
+  local `next/font` (subset), ISR on listings, lazy AWS SDK / Sentry, PDF font subsetting.
 
 ## Backlog — room for more
 

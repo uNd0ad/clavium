@@ -12,18 +12,19 @@ import fontkit from '@pdf-lib/fontkit'
 import type { ContractDocument } from './contractDocument'
 
 const FONT_DIR = path.join(process.cwd(), 'src', 'assets', 'fonts')
-// Citite o singură dată; embedFont le subsetează per-document.
-const REGULAR_BYTES = readFileSync(path.join(FONT_DIR, 'NotoSans-Regular.ttf'))
-const BOLD_BYTES = readFileSync(path.join(FONT_DIR, 'NotoSans-Bold.ttf'))
+// Citite o singură dată; embedFont le subsetează per-document. Exportate ca să le reutilizeze
+// și alte documente (ex. chitanțe — receiptPdf.ts) fără a re-implementa încărcarea fonturilor.
+export const REGULAR_BYTES = readFileSync(path.join(FONT_DIR, 'NotoSans-Regular.ttf'))
+export const BOLD_BYTES = readFileSync(path.join(FONT_DIR, 'NotoSans-Bold.ttf'))
 
-const A4 = { width: 595.28, height: 841.89 }
-const MARGIN = 56
-const INK = rgb(0.09, 0.09, 0.11)
-const MUTED = rgb(0.42, 0.42, 0.46)
-const RULE = rgb(0.82, 0.82, 0.85)
+export const A4 = { width: 595.28, height: 841.89 }
+export const MARGIN = 56
+export const INK = rgb(0.09, 0.09, 0.11)
+export const MUTED = rgb(0.42, 0.42, 0.46)
+export const RULE = rgb(0.82, 0.82, 0.85)
 
 // Mic motor de layout: scrie de sus în jos, trece pe pagină nouă la depășire.
-class Cursor {
+export class Cursor {
   page: PDFPage
   y: number
   constructor(

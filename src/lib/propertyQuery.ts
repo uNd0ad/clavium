@@ -18,7 +18,9 @@ const num = (value?: string) => {
   return value && Number.isFinite(parsed) && parsed > 0 ? parsed : undefined
 }
 
-export async function searchAvailableProperties(filters: PropertyFilters): Promise<PropertyCardData[]> {
+// Construiește clauza `where` (fără statusul DISPONIBILA, adăugat de apelant) din filtre. Reutilizat
+// de căutarea publică și de potrivirea căutărilor salvate (alerte).
+export function buildPropertyWhere(filters: PropertyFilters): Prisma.PropertyWhereInput {
   const minAmount = num(filters.minRent)
   const maxAmount = num(filters.maxRent)
   const rooms = num(filters.rooms)
@@ -51,6 +53,11 @@ export async function searchAvailableProperties(filters: PropertyFilters): Promi
       ],
     })
   }
+  return and.length ? { AND: and } : {}
+}
+
+export async function searchAvailableProperties(filters: PropertyFilters): Promise<PropertyCardData[]> {
+  const type = filters.type === 'VANZARE' ? 'VANZARE' : filters.type === 'INCHIRIERE' ? 'INCHIRIERE' : undefined
 
   // Sortarea după preț folosește coloana tipului selectat; fără tip, revine la cele mai noi.
   const dir = filters.sort === 'pret-asc' ? ('asc' as const) : filters.sort === 'pret-desc' ? ('desc' as const) : null
@@ -61,7 +68,7 @@ export async function searchAvailableProperties(filters: PropertyFilters): Promi
     : { createdAt: 'desc' }
 
   const properties = await prisma.property.findMany({
-    where: { status: 'DISPONIBILA', ...(and.length ? { AND: and } : {}) },
+    where: { status: 'DISPONIBILA', ...buildPropertyWhere(filters) },
     orderBy,
     take: 60,
   })

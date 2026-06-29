@@ -1,4 +1,9 @@
+'use client'
+
+import { useDict } from '@/lib/i18n/client'
+
 export default function Footer() {
+  const dict = useDict()
   const year = new Date().getFullYear()
 
   return (
@@ -10,34 +15,34 @@ export default function Footer() {
               Clavium<span className="italic text-[var(--brand)]">.ro</span>
             </div>
             <p className="text-sm leading-relaxed text-[var(--muted)]/85">
-              Prima platformă din România pentru tranzacții imobiliare curate, rapide și complet digitale.
+              {dict.footer.tagline}
             </p>
           </div>
 
           {[
             {
-              title: 'Platformă',
+              title: dict.footer.colPlatform,
               links: [
-                { label: 'Proprietăți', href: '/proprietati' },
-                { label: 'Cum funcționează', href: '/#cum-functioneaza' },
-                { label: 'Creează cont', href: '/auth/register' },
+                { label: dict.footer.properties, href: '/proprietati' },
+                { label: dict.footer.howItWorks, href: '/#cum-functioneaza' },
+                { label: dict.footer.createAccount, href: '/auth/register' },
               ],
             },
             {
-              title: 'Legal',
+              title: dict.footer.colLegal,
               links: [
-                { label: 'Termeni și condiții', href: '/termeni' },
-                { label: 'Politică de confidențialitate', href: '/confidentialitate' },
+                { label: dict.footer.terms, href: '/termeni' },
+                { label: dict.footer.privacy, href: '/confidentialitate' },
                 { label: 'ANPC', href: 'https://anpc.ro' },
                 { label: 'SOL (litigii online)', href: 'https://ec.europa.eu/consumers/odr' },
               ],
             },
             {
-              title: 'Contact',
+              title: dict.footer.colContact,
               links: [
                 { label: 'contact@clavium.ro', href: 'mailto:contact@clavium.ro' },
                 { label: 'Timișoara, România', href: '#' },
-                { label: 'L-V 9-18', href: '#' },
+                { label: dict.footer.hours, href: '#' },
               ],
             },
           ].map((col) => (
@@ -60,10 +65,10 @@ export default function Footer() {
 
         <div className="border-t border-[var(--border)] pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-[var(--muted)]/70">
-            © {year} Clavium.ro · Toate drepturile rezervate
+            © {year} Clavium.ro · {dict.footer.rights}
           </p>
           <span className="text-xs tracking-[0.18em] uppercase text-[var(--muted)]/70">
-            Semnătură electronică conformă eIDAS · Legea 214/2024
+            {dict.footer.compliance}
           </span>
         </div>
       </div>

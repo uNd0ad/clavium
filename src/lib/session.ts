@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers'
-import { getUserFromToken } from './auth'
+import { getUserFromToken, verifyToken } from './auth'
 import { COOKIE_NAME } from './constants'
 import type { UserRole } from './types/roles'
 import type { AccountType } from './types/auth'
@@ -47,4 +47,14 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
     companyAddress: user.companyAddress ?? undefined,
     companyVatPayer: user.companyVatPayer,
   }
+}
+
+// Id-ul sesiunii curente (din JWT-ul de pe cookie). Folosit pentru a marca „acest dispozitiv"
+// în lista de sesiuni și pentru a-l exclude la revocarea celorlalte.
+export async function getCurrentSessionId(): Promise<string | null> {
+  const cookieStore = await cookies()
+  const token = cookieStore.get(COOKIE_NAME)?.value
+  if (!token) return null
+  const payload = await verifyToken(token)
+  return payload?.sessionId ?? null
 }

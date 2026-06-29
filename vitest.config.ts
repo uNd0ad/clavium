@@ -10,6 +10,9 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
+    // Doar testele unitare/integrare din `src`. Specurile Playwright din `e2e/` rulează separat
+    // (npm run test:e2e) — altfel Vitest le-ar prelua și ar eșua la importul `@playwright/test`.
+    include: ['src/**/*.test.ts'],
     // Fișierele de test partajează aceeași bază de date — rulează-le serial ca să nu se suprascrie.
     fileParallelism: false,
     env: {

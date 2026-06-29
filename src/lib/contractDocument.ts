@@ -93,6 +93,9 @@ export type ContractDetail = {
   canEditSale: boolean
   canSign: boolean
   canPay: boolean
+  // Chiriașul poate gestiona plata automată a chiriei (închiriere semnată/activă).
+  canAutopay: boolean
+  autopayEnabled: boolean
   // Proprietarul poate restitui garanția (închiriere încheiată, garanție încă reținută).
   canReturnDeposit: boolean
   // Oricare parte / admin poate anula antecontractul de vânzare (înainte de finalizare).
@@ -199,6 +202,9 @@ export async function getContractDetail(contractId: string, user: SessionUser): 
     depositAmount: contract.deposit,
     documentHash: contractDocumentHash(contract),
     canPay: contract.status === 'ACTIV' && contract.tenantId === user.id && Boolean(due),
+    // Plata automată a chiriei: gestionată de chiriaș pe un contract de închiriere semnat/activ.
+    canAutopay: !isSale && contract.tenantId === user.id && (contract.status === 'ACTIV' || contract.status === 'SEMNAT'),
+    autopayEnabled: contract.autopayEnabled,
     dueAmount: due ? formatRon(due.amount) : null,
     dueType: (due?.type as 'CHIRIE' | 'AVANS' | 'REST' | undefined) ?? null,
     terms: {

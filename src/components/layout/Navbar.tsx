@@ -6,16 +6,18 @@ import { useRouter } from 'next/navigation'
 import { Menu, X, ArrowRight } from 'lucide-react'
 import clsx from 'clsx'
 import ThemeToggle from '@/components/ui/ThemeToggle'
-
-const links = [
-  { label: 'Proprietăți', href: '/proprietati' },
-  { label: 'Cum funcționează', href: '/#cum-functioneaza' },
-  { label: 'Contracte', href: '/#contracte' },
-  { label: 'Prețuri', href: '/#preturi' },
-]
+import LanguageSwitcher from '@/components/layout/LanguageSwitcher'
+import { useDict } from '@/lib/i18n/client'
 
 export default function Navbar() {
   const router = useRouter()
+  const dict = useDict()
+  const links = [
+    { label: dict.nav.properties, href: '/proprietati' },
+    { label: dict.nav.howItWorks, href: '/#cum-functioneaza' },
+    { label: dict.nav.contracts, href: '/#contracte' },
+    { label: dict.nav.pricing, href: '/#preturi' },
+  ]
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [currentUser, setCurrentUser] = useState<{ firstName: string; lastName: string; email: string } | null>(null)
@@ -76,29 +78,30 @@ export default function Navbar() {
                 href="/dashboard"
                 className="text-xs tracking-[0.08em] uppercase text-[var(--muted)] hover:text-[var(--text)] transition-colors duration-200 no-underline"
               >
-                Dashboard
+                {dict.nav.dashboard}
               </a>
             )}
           </div>
 
           <div className="hidden lg:flex items-center gap-4">
+            <LanguageSwitcher />
             <ThemeToggle />
             {currentUser ? (
               <>
                 <span className="text-xs tracking-[0.08em] uppercase text-[var(--text)]">
-                  {`Bun venit, ${currentUser.firstName}`}
+                  {`${dict.nav.welcome}, ${currentUser.firstName}`}
                 </span>
                 <button onClick={handleLogout} className="btn-outline text-xs px-6 py-3">
-                  Deconectare
+                  {dict.nav.logout}
                 </button>
               </>
             ) : (
               <>
                 <a href="/auth/login" className="text-xs tracking-[0.08em] uppercase text-[var(--muted)] hover:text-[var(--text)] transition-colors no-underline">
-                  Autentificare
+                  {dict.nav.login}
                 </a>
                 <a href="/auth/register" className="btn-primary text-xs px-6 py-3">
-                  Cont nou
+                  {dict.nav.register}
                   <ArrowRight size={14} />
                 </a>
               </>
@@ -106,11 +109,12 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-2 lg:hidden">
+            <LanguageSwitcher />
             <ThemeToggle />
             <button
               className="p-2 text-[var(--text)]"
               onClick={() => setMenuOpen(!menuOpen)}
-              aria-label="Meniu"
+              aria-label={dict.nav.menu}
             >
               {menuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
@@ -139,15 +143,15 @@ export default function Navbar() {
           <div className="pt-8 border-t border-[var(--border)] flex flex-col gap-4">
             {currentUser ? (
               <button onClick={handleLogout} className="btn-outline w-full justify-center">
-                Deconectare
+                {dict.nav.logout}
               </button>
             ) : (
               <>
                 <a href="/auth/login" className="btn-outline w-full justify-center">
-                  Autentificare
+                  {dict.nav.login}
                 </a>
                 <a href="/auth/register" className="btn-primary w-full justify-center">
-                  Creează cont
+                  {dict.nav.createAccount}
                   <ArrowRight size={16} />
                 </a>
               </>

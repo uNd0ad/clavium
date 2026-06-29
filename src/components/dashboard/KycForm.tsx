@@ -67,6 +67,7 @@ export default function KycForm() {
   const [target, setTarget] = useState<Target>('id')
   const [captures, setCaptures] = useState<Partial<Record<Target, Capture>>>({})
   const [analyzing, setAnalyzing] = useState(false)
+  const [consent, setConsent] = useState(false)
   const [pending, startTransition] = useTransition()
   // Camera activă în mod live: spate (potrivit pentru act) sau față (selfie). Ignorat pe desktop.
   const [facing, setFacing] = useState<'environment' | 'user'>('environment')
@@ -197,13 +198,14 @@ export default function KycForm() {
   const willMatch = distance !== null && distance <= KYC_MATCH_THRESHOLD
 
   const submit = () => {
-    if (!captures.id || !captures.selfie || distance === null) return
+    if (!captures.id || !captures.selfie || distance === null || !consent) return
     startTransition(async () => {
       const form = new FormData()
       form.append('id', new File([captures.id!.blob], 'id.jpg', { type: 'image/jpeg' }))
       form.append('selfie', new File([captures.selfie!.blob], 'selfie.jpg', { type: 'image/jpeg' }))
       form.append('facesDetected', 'true')
       form.append('matchDistance', String(distance))
+      form.append('consent', 'true')
 
       const res = await submitKycAction(form)
       if (res.ok && res.status === 'VERIFIED') {
@@ -331,7 +333,21 @@ export default function KycForm() {
         sunt afișate public.
       </p>
 
-      <Button type="button" loading={pending} disabled={!both || !modelsReady} onClick={submit} className="px-6 py-2.5 text-sm">
+      <label className="flex cursor-pointer items-start gap-3 rounded-3xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-xs text-[var(--muted)]">
+        <input
+          type="checkbox"
+          checked={consent}
+          onChange={(e) => setConsent(e.target.checked)}
+          className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--brand)]"
+        />
+        <span>
+          Îmi dau consimțământul explicit pentru prelucrarea datelor mele biometrice (imaginea feței) în scopul verificării
+          identității, conform art. 9 GDPR. Imaginile brute sunt păstrate cel mult 30 de zile după verificare, apoi sunt
+          șterse automat; rămâne doar dovada verificării.
+        </span>
+      </label>
+
+      <Button type="button" loading={pending} disabled={!both || !modelsReady || !consent} onClick={submit} className="px-6 py-2.5 text-sm">
         Trimite spre verificare
       </Button>
     </div>

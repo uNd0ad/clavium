@@ -2,9 +2,27 @@ import { redirect } from 'next/navigation'
 import { Check } from 'lucide-react'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import ProfileForms from '@/components/dashboard/ProfileForms'
+import TwoFactorSettings from '@/components/dashboard/TwoFactorSettings'
+import SessionManager, { type SessionView } from '@/components/dashboard/SessionManager'
+import ReferralCard from '@/components/dashboard/ReferralCard'
 import { MarkNotificationsRead } from '@/components/dashboard/actions'
-import { getCurrentUser } from '@/lib/session'
+import { getCurrentUser, getCurrentSessionId } from '@/lib/session'
+import { prisma } from '@/lib/prisma'
+import { getUserSessions } from '@/lib/sessions'
+import { getReferralStats } from '@/lib/referrals'
 import { getNotifications } from '@/lib/dashboardData'
+
+// Timp relativ scurt în română pentru „activ acum / acum X minute/ore/zile".
+function relativeTime(date: Date): string {
+  const diffMs = Date.now() - date.getTime()
+  const min = Math.floor(diffMs / 60000)
+  if (min < 1) return 'acum'
+  if (min < 60) return `acum ${min} ${min === 1 ? 'minut' : 'minute'}`
+  const hours = Math.floor(min / 60)
+  if (hours < 24) return `acum ${hours} ${hours === 1 ? 'oră' : 'ore'}`
+  const days = Math.floor(hours / 24)
+  return `acum ${days} ${days === 1 ? 'zi' : 'zile'}`
+}
 
 export default async function DashboardProfilePage({ searchParams }: { searchParams: Promise<{ email?: string }> }) {
   const user = await getCurrentUser()
@@ -12,8 +30,22 @@ export default async function DashboardProfilePage({ searchParams }: { searchPar
     redirect('/auth/login')
   }
 
-  const [notifications, { email: emailStatus }] = await Promise.all([getNotifications(user), searchParams])
+  const [notifications, { email: emailStatus }, account, currentSessionId, referral] = await Promise.all([
+    getNotifications(user),
+    searchParams,
+    prisma.user.findUnique({ where: { id: user.id }, select: { totpEnabled: true } }),
+    getCurrentSessionId(),
+    getReferralStats(user.id),
+  ])
   const hasUnread = notifications.some((notification) => !notification.read)
+
+  const sessions: SessionView[] = (await getUserSessions(user.id, currentSessionId)).map((s) => ({
+    id: s.id,
+    label: s.label,
+    ip: s.ip,
+    lastSeen: relativeTime(s.lastSeenAt),
+    isCurrent: s.isCurrent,
+  }))
 
   return (
     <section className="space-y-8">
@@ -105,6 +137,12 @@ export default async function DashboardProfilePage({ searchParams }: { searchPar
             phone={user.phone ?? ''}
             emailVerified={user.emailVerified}
           />
+
+          <TwoFactorSettings enabled={account?.totpEnabled ?? false} />
+
+          <ReferralCard code={referral.code} count={referral.count} />
+
+          <SessionManager sessions={sessions} />
         </div>
 
         <div className="rounded-4xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow)] self-start">

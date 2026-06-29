@@ -151,6 +151,10 @@ export default function RegisterPage() {
           role,
           phone,
           accountType,
+          // Cod de recomandare din linkul /auth/register?ref=COD, dacă există.
+          ...(typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('ref')
+            ? { referralCode: new URLSearchParams(window.location.search).get('ref') as string }
+            : {}),
           ...(accountType === 'COMPANY'
             ? { companyName, companyCui, companyReg, companyAddress: companyAddress || undefined, companyVatPayer }
             : {}),

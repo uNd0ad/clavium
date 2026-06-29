@@ -102,6 +102,11 @@ export async function saveKycDocument(
   return { ref: key, hash: sha256(output) }
 }
 
+// Șterge un document KYC privat (purjarea biometrică la retenție). Idempotentă: absența e ok.
+export async function deleteKycDocument(key: string): Promise<void> {
+  await getStorageBackend().deletePrivate(key)
+}
+
 export function parsePhotos(raw: string): string[] {
   try {
     const parsed = JSON.parse(raw)

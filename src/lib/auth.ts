@@ -21,6 +21,7 @@ import { sha256, randomToken } from './hash'
 import { JWT_SECRET, APP_URL } from './constants'
 import { captureException } from './logger'
 import { recordTermsConsent } from './terms'
+import { ensureReferralCode, applyReferral } from './referrals'
 import type {
   AuthPayload,
   LoginRequest,
@@ -35,11 +36,17 @@ const jwtKey = encoder.encode(JWT_SECRET)
 
 const SESSION_HOURS = 2
 
-export async function createToken(user: User) {
+// Metadate de dispozitiv capturate la autentificare (din antetele cererii).
+export type DeviceMeta = { userAgent?: string | null; ip?: string | null }
+
+export async function createToken(user: User, meta: DeviceMeta = {}) {
   const session = await prisma.session.create({
     data: {
       userId: user.id,
       expiresAt: new Date(Date.now() + 1000 * 60 * 60 * SESSION_HOURS),
+      userAgent: meta.userAgent ?? null,
+      ip: meta.ip ?? null,
+      lastSeenAt: new Date(),
     },
   })
 
@@ -48,6 +55,17 @@ export async function createToken(user: User) {
     .setIssuedAt()
     .setExpirationTime(`${SESSION_HOURS}h`)
     .sign(jwtKey)
+}
+
+// True dacă userul are sesiuni anterioare, dar niciuna de pe acest user-agent — adică un dispozitiv
+// nou. Pe prima autentificare (fără istoric) întoarce false, ca să nu alertăm degeaba.
+export async function isNewDevice(userId: string, userAgent: string | null): Promise<boolean> {
+  if (!userAgent) return false
+  const [total, sameDevice] = await Promise.all([
+    prisma.session.count({ where: { userId } }),
+    prisma.session.count({ where: { userId, userAgent } }),
+  ])
+  return total > 0 && sameDevice === 0
 }
 
 export async function verifyToken(token: string): Promise<AuthPayload | null> {
@@ -124,6 +142,9 @@ export async function registerUser(data: RegisterRequest) {
   if (data.phone) {
     await consumePhoneOtp(data.phone)
   }
+  // Cod propriu de recomandare + legarea de recomandator (dacă s-a folosit un cod la înregistrare).
+  await ensureReferralCode(user.id)
+  await applyReferral(user.id, data.referralCode)
   // Acceptarea T&C la înregistrare (formularul de signup conține bifa obligatorie).
   await recordTermsConsent(user.id)
   try {

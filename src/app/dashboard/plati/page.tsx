@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { FileText } from 'lucide-react'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import StatusBadge from '@/components/dashboard/StatusBadge'
 import { getCurrentUser } from '@/lib/session'
@@ -77,6 +78,16 @@ export default async function DashboardPaymentsPage() {
                   <div className="flex items-center gap-3">
                     <p className="text-lg font-semibold">{item.amount}</p>
                     <StatusBadge label={item.status} variant={item.statusVariant} />
+                    {item.canDownloadReceipt ? (
+                      <a
+                        href={`/api/plati/${item.id}/chitanta`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--brand)] transition hover:border-[var(--brand)]"
+                      >
+                        <FileText size={13} /> Chitanță
+                      </a>
+                    ) : null}
                   </div>
                 </div>
               </div>

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe, STRIPE_WEBHOOK_SECRET } from '@/lib/stripe'
 import { settlePayment } from '@/lib/paymentSettle'
-import { logger } from '@/lib/logger'
+import { logger, captureException } from '@/lib/logger'
 
 // Webhook Stripe: confirmă plățile finalizate pe pagina de checkout.
 // Necesită corpul brut (raw) pentru verificarea semnăturii — de aceea citim request.text().
@@ -40,11 +40,9 @@ export async function POST(request: NextRequest) {
         // marcheze evenimentul ca procesat și să lase plata nedecontată în liniște.
         await settlePayment(paymentId)
       } catch (err) {
-        logger.error('stripe webhook: settlePayment a eșuat', {
-          paymentId,
-          eventId: event.id,
-          error: (err as Error).message,
-        })
+        // Eroare neașteptată la decontare — clasă de eșec „silențios" critică: o raportăm către
+        // APM (Sentry) prin captureException, nu doar în log.
+        captureException(err, { op: 'stripe-webhook-settle', paymentId, eventId: event.id })
         return NextResponse.json({ error: 'Decontare eșuată.' }, { status: 503 })
       }
     }

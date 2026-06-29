@@ -15,6 +15,8 @@ import {
 } from '@/lib/storage'
 import { aHash, recordPhotoSignatures, runFraudChecks } from '@/lib/fraud'
 
+// Notă ISR: pagina publică a listării (`/proprietati/[id]`) folosește un cache cu revalidare la
+// cel mult o oră (vezi getPublicListing), deci modificările se propagă în acea fereastră.
 function revalidateProperties() {
   // Acoperă dashboardul (proprietăți/căutare/overview) și paginile publice.
   revalidatePath('/dashboard', 'layout')

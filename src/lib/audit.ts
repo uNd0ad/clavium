@@ -25,6 +25,8 @@ export type AuditAction =
   | 'PROPERTY_MODERATED'
   | 'PAYMENT_REFUNDED'
   | 'REPORT_RESOLVED'
+  | 'TWO_FACTOR_ENABLED'
+  | 'TWO_FACTOR_DISABLED'
 
 export type AuditEntity = 'CONTRACT' | 'PAYMENT' | 'PROPERTY' | 'INQUIRY' | 'USER'
 

@@ -6,6 +6,7 @@ import type { UserRole } from '@/lib/types/roles'
 export async function resetDb() {
   await prisma.auditLog.deleteMany()
   await prisma.report.deleteMany()
+  await prisma.savedSearch.deleteMany()
   await prisma.termsConsent.deleteMany()
   await prisma.review.deleteMany()
   await prisma.photoSignature.deleteMany()

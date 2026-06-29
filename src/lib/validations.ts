@@ -20,6 +20,8 @@ export const passwordSchema = z
 export const loginSchema = z.object({
   email: z.string().email('Adresa de email nu este validă'),
   password: z.string().min(8, 'Parola trebuie să aibă cel puțin 8 caractere'),
+  // Cod 2FA (TOTP sau cod de rezervă), cerut doar dacă utilizatorul are 2FA activ.
+  totpCode: z.string().trim().optional(),
 })
 
 export const registerSchema = z
@@ -37,6 +39,8 @@ export const registerSchema = z
     companyReg: z.string().trim().optional(),
     companyAddress: z.string().trim().optional(),
     companyVatPayer: z.boolean().optional().default(false),
+    // Cod de recomandare (opțional) — din linkul /auth/register?ref=COD.
+    referralCode: z.string().trim().max(16).optional(),
   })
   .superRefine((data, ctx) => {
     if (data.accountType !== 'COMPANY') return
@@ -58,6 +62,8 @@ export const otpSendSchema = z.object({
 export const otpVerifySchema = z.object({
   email: z.string().email('Adresa de email nu este validă'),
   code: z.string().length(6, 'Codul OTP trebuie să conțină 6 cifre'),
+  // Cod 2FA (TOTP sau cod de rezervă), cerut doar dacă utilizatorul are 2FA activ.
+  totpCode: z.string().trim().optional(),
 })
 
 export const phoneOtpSendSchema = z.object({

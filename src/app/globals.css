@@ -216,3 +216,16 @@ summary:focus-visible,
 .reveal-delay-2 { transition-delay: 0.2s; }
 .reveal-delay-3 { transition-delay: 0.28s; }
 .reveal-delay-4 { transition-delay: 0.36s; }
+
+/* Accesibilitate: la „mișcare redusă" oprim animațiile ȘI forțăm conținutul `.reveal` vizibil
+   imediat (altfel, dacă observerul nu rulează, ar rămâne invizibil). Plasat după definițiile de
+   mai sus ca să le suprascrie pe acelea cu transition/opacity. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    animation: none;
+  }
+}

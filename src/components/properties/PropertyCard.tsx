@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { MapPin, BedDouble, Ruler, ImageIcon } from 'lucide-react'
 import StatusBadge from '@/components/dashboard/StatusBadge'
 import { formatRon } from '@/lib/dashboardData'
+import { formatEur, ronToEur } from '@/lib/currency'
 
 export type PropertyCardData = {
   id: string
@@ -54,7 +55,9 @@ export default function PropertyCard({ property, children }: { property: Propert
         </div>
         <p className="mt-4 text-xl font-semibold text-[var(--text)]">
           {property.transactionType === 'VANZARE' ? (
-            formatRon(property.price)
+            <>
+              {formatRon(property.price)} <span className="text-sm font-normal text-[var(--muted)]">· ~{formatEur(ronToEur(property.price))}</span>
+            </>
           ) : (
             <>
               {formatRon(property.rent)} <span className="text-sm font-normal text-[var(--muted)]">/ lună</span>

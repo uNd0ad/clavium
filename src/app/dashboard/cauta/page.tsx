@@ -4,9 +4,11 @@ import EmptyState from '@/components/dashboard/EmptyState'
 import PropertyCard from '@/components/properties/PropertyCard'
 import PropertyFiltersForm from '@/components/properties/PropertyFiltersForm'
 import ListingActions from '@/components/properties/ListingActions'
+import SavedSearches, { type SavedSearchView } from '@/components/dashboard/SavedSearches'
 import { getCurrentUser } from '@/lib/session'
 import { prisma } from '@/lib/prisma'
 import { searchAvailableProperties, type PropertyFilters } from '@/lib/propertyQuery'
+import { sanitizeFilters, describeFilters } from '@/lib/savedSearches'
 
 export default async function DashboardSearchPage({ searchParams }: { searchParams: Promise<PropertyFilters> }) {
   const user = await getCurrentUser()
@@ -15,11 +17,26 @@ export default async function DashboardSearchPage({ searchParams }: { searchPara
   }
 
   const filters = await searchParams
-  const [properties, saved] = await Promise.all([
+  const [properties, saved, savedSearchRows] = await Promise.all([
     searchAvailableProperties(filters),
     prisma.savedProperty.findMany({ where: { userId: user.id }, select: { propertyId: true } }),
+    prisma.savedSearch.findMany({ where: { userId: user.id }, orderBy: { createdAt: 'desc' } }),
   ])
   const savedIds = new Set(saved.map((entry) => entry.propertyId))
+
+  const savedSearches: SavedSearchView[] = savedSearchRows.map((row) => {
+    let parsed: PropertyFilters = {}
+    try {
+      parsed = sanitizeFilters(JSON.parse(row.filters))
+    } catch {
+      parsed = {}
+    }
+    return {
+      id: row.id,
+      label: row.name || describeFilters(parsed),
+      query: new URLSearchParams(parsed as Record<string, string>).toString(),
+    }
+  })
   const hasFilters = Boolean(filters.q || filters.type || filters.minRent || filters.maxRent || filters.rooms || filters.sort)
 
   return (
@@ -32,6 +49,8 @@ export default async function DashboardSearchPage({ searchParams }: { searchPara
       />
 
       <PropertyFiltersForm filters={filters} />
+
+      <SavedSearches current={filters} searches={savedSearches} />
 
       {properties.length === 0 ? (
         <EmptyState

@@ -39,6 +39,7 @@ const nextConfig = {
   // funcției serverless care generează PDF-ul — altfel readFileSync eșuează în producție.
   outputFileTracingIncludes: {
     '/api/contracte/[id]/pdf': ['./src/assets/fonts/**'],
+    '/api/plati/[id]/chitanta': ['./src/assets/fonts/**'],
   },
   async headers() {
     return [{ source: '/(.*)', headers: securityHeaders }]

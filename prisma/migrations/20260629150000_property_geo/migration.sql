@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Property" ADD COLUMN     "lat" DOUBLE PRECISION,
+ADD COLUMN     "lng" DOUBLE PRECISION,
+ADD COLUMN     "isExclusive" BOOLEAN NOT NULL DEFAULT false;

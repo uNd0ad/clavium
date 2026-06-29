@@ -3,6 +3,9 @@ import { Inter } from 'next/font/google'
 import { headers } from 'next/headers'
 import { Toaster } from 'sonner'
 import CookieBanner from '@/components/layout/CookieBanner'
+import { LocaleProvider } from '@/lib/i18n/client'
+import { getServerDictionary } from '@/lib/i18n/server'
+import { APP_URL } from '@/lib/constants'
 import './globals.css'
 
 // Font servit local prin next/font — fără request către Google Fonts CDN (și pentru GDPR).
@@ -15,18 +18,24 @@ const inter = Inter({
   display: 'swap',
 })
 
-export const metadata: Metadata = {
-  title: 'Clavium.ro — Imobiliare fără intermediari',
-  description: 'Prima platformă din România unde găsești, negociezi și semnezi contractul imobiliar direct — vânzare, închiriere sau leasing, 100% digital.',
-  keywords: ['imobiliare', 'chirie', 'vânzare apartamente', 'contract electronic', 'semnătură digitală'],
-  openGraph: {
-    title: 'Clavium.ro',
-    description: 'Imobiliare fără intermediari. Contracte semnate direct pe platformă.',
-    url: 'https://clavium.ro',
-    siteName: 'Clavium.ro',
-    locale: 'ro_RO',
-    type: 'website',
-  },
+// Metadatele urmează limba aleasă (cookie) — titlu/descriere + `og:locale`.
+export async function generateMetadata(): Promise<Metadata> {
+  const { locale, dict } = await getServerDictionary()
+  return {
+    // Bază pentru URL-uri absolute (OG/Twitter/canonical) — necesar ca og:image relativ să se rezolve.
+    metadataBase: new URL(APP_URL),
+    title: dict.meta.title,
+    description: dict.meta.description,
+    keywords: ['imobiliare', 'chirie', 'vânzare apartamente', 'contract electronic', 'semnătură digitală'],
+    openGraph: {
+      title: 'Clavium.ro',
+      description: dict.meta.description,
+      url: 'https://clavium.ro',
+      siteName: 'Clavium.ro',
+      locale: locale === 'en' ? 'en_US' : 'ro_RO',
+      type: 'website',
+    },
+  }
 }
 
 // Aplică tema salvată (sau preferința sistemului) înainte de paint, ca să nu apară un flash.
@@ -34,9 +43,12 @@ const themeScript = `(function(){try{var e=localStorage.getItem('theme');var d=e
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Nonce-ul vine din middleware (CSP) — îl punem pe scriptul inline ca să treacă de politică.
-  const nonce = (await headers()).get('x-nonce') ?? undefined
+  const [nonce, { locale, dict }] = await Promise.all([
+    headers().then((h) => h.get('x-nonce') ?? undefined),
+    getServerDictionary(),
+  ])
   return (
-    <html lang="ro" className={inter.variable} suppressHydrationWarning>
+    <html lang={locale} className={inter.variable} suppressHydrationWarning>
       <head>
         {/* Browserul golește atributul `nonce` după încărcare (măsură anti-exfiltrare CSP),
             deci la hidratare clientul vede nonce="" iar serverul nonce-ul real — diferență
@@ -44,14 +56,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script nonce={nonce} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
-        {children}
-        <CookieBanner />
-        <Toaster
-          position="bottom-right"
-          richColors
-          closeButton
-          toastOptions={{ style: { borderRadius: '18px', fontFamily: 'var(--font-inter)' } }}
-        />
+        <LocaleProvider locale={locale} dict={dict}>
+          {children}
+          <CookieBanner />
+          <Toaster
+            position="bottom-right"
+            richColors
+            closeButton
+            toastOptions={{ style: { borderRadius: '18px', fontFamily: 'var(--font-inter)' } }}
+          />
+        </LocaleProvider>
       </body>
     </html>
   )

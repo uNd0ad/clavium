@@ -6,6 +6,7 @@ import ContractTermsForm from '@/components/dashboard/ContractTermsForm'
 import SaleTermsForm from '@/components/dashboard/SaleTermsForm'
 import PrintButton from '@/components/dashboard/PrintButton'
 import { DepositReturnForm, CancelSaleButton, TerminateButton, RenewForm } from '@/components/dashboard/ContractCloseActions'
+import AutopayToggle from '@/components/dashboard/AutopayToggle'
 import Stars from '@/components/dashboard/Stars'
 import ReviewForm from '@/components/dashboard/ReviewForm'
 import { getCurrentUser } from '@/lib/session'
@@ -37,7 +38,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
     notFound()
   }
 
-  const { doc, canEdit, canEditSale, canSign, documentHash, canPay, dueAmount, dueType, terms, saleTerms, canReturnDeposit, canCancelSale, canTerminate, canRenew, depositAmount } = detail
+  const { doc, canEdit, canEditSale, canSign, documentHash, canPay, dueAmount, dueType, terms, saleTerms, canReturnDeposit, canCancelSale, canTerminate, canRenew, depositAmount, canAutopay, autopayEnabled } = detail
   const isSale = doc.type === 'VANZARE'
   const [auditTrail, reviewEligibility, reviews] = await Promise.all([
     getAuditTrail('CONTRACT', doc.id),
@@ -209,6 +210,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
         {canEdit ? <ContractTermsForm contractId={doc.id} terms={terms} /> : null}
         {canEditSale ? <SaleTermsForm contractId={doc.id} terms={saleTerms} /> : null}
         <ContractActions contractId={doc.id} canSign={canSign} documentHash={documentHash} canPay={canPay} dueAmount={dueAmount} dueType={dueType} />
+        {canAutopay ? <AutopayToggle contractId={doc.id} enabled={autopayEnabled} /> : null}
         {canTerminate ? <TerminateButton contractId={doc.id} /> : null}
         {canReturnDeposit ? <DepositReturnForm contractId={doc.id} deposit={depositAmount} /> : null}
         {canRenew ? <RenewForm contractId={doc.id} defaultMonths={terms.months} defaultRent={terms.rent} /> : null}

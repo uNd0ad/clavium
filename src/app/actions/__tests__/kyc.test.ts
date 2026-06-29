@@ -93,9 +93,18 @@ describe('verificare KYC (mod local: potrivire facială)', () => {
     expect(res.ok).toBe(false)
   })
 
-  it('cere documentele când lipsesc din formular', async () => {
+  it('cere consimțământul biometric explicit (GDPR art. 9)', async () => {
     setUser(session(user, 'UNVERIFIED'))
-    const res = await submitKycAction(new FormData())
+    const res = await submitKycAction(new FormData()) // fără consent
+    expect(res.ok).toBe(false)
+    if (!res.ok) expect(res.error).toMatch(/biometric/i)
+  })
+
+  it('cere documentele când lipsesc din formular (cu consimțământ dat)', async () => {
+    setUser(session(user, 'UNVERIFIED'))
+    const form = new FormData()
+    form.append('consent', 'true')
+    const res = await submitKycAction(form)
     expect(res.ok).toBe(false)
   })
 })

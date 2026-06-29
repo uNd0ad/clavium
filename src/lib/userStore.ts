@@ -30,6 +30,9 @@ function toUser(user: User): AppUser {
     companyReg: user.companyReg,
     companyAddress: user.companyAddress,
     companyVatPayer: user.companyVatPayer,
+    totpEnabled: user.totpEnabled,
+    totpSecret: user.totpSecret,
+    totpBackupCodes: user.totpBackupCodes,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
   }

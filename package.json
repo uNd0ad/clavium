@@ -1,6 +1,6 @@
 {
   "name": "clavium",
-  "version": "0.9.10",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -12,6 +12,9 @@
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:install": "playwright install chromium",
     "prisma": "prisma",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
@@ -45,6 +48,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
+    "@playwright/test": "^1.61.1",
     "@types/bcryptjs": "^2.4.2",
     "@types/node": "^20",
     "@types/nodemailer": "^8.0.1",

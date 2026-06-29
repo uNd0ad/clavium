@@ -26,5 +26,7 @@ export const logger = {
 export function captureException(error: unknown, context?: Meta) {
   const err = error instanceof Error ? error : new Error(String(error))
   logger.error(err.message, { ...context, stack: err.stack })
-  // TODO(observability): dacă process.env.SENTRY_DSN e setat, forward către APM aici.
+  // Forward către Sentry dacă SENTRY_DSN e setat (best-effort, non-blocant). Import leneș ca să
+  // evităm un ciclu de module la încărcare (sentry.ts folosește acest logger).
+  void import('./sentry').then((m) => m.reportException(err, context)).catch(() => {})
 }
