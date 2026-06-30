@@ -29,9 +29,6 @@ test.db
 # TypeScript
 *.tsbuildinfo
 
-# npm
-package-lock.json
-
 # VS Code
 .vscode/
 public/uploads/
