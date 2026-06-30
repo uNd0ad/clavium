@@ -17,7 +17,7 @@ export type PropertyCardData = {
   photos: string[]
 }
 
-export default function PropertyCard({ property, children }: { property: PropertyCardData; children?: React.ReactNode }) {
+export default function PropertyCard({ property, children, eurRate }: { property: PropertyCardData; children?: React.ReactNode; eurRate?: number }) {
   return (
     <div className="group flex flex-col overflow-hidden rounded-4xl border border-[var(--border)] bg-[var(--surface)] transition hover:-translate-y-1 hover:shadow-[var(--shadow)]">
       <Link href={`/proprietati/${property.id}`} className="relative block h-44 bg-[var(--brand-soft)] no-underline">
@@ -56,7 +56,7 @@ export default function PropertyCard({ property, children }: { property: Propert
         <p className="mt-4 text-xl font-semibold text-[var(--text)]">
           {property.transactionType === 'VANZARE' ? (
             <>
-              {formatRon(property.price)} <span className="text-sm font-normal text-[var(--muted)]">· ~{formatEur(ronToEur(property.price))}</span>
+              {formatRon(property.price)} <span className="text-sm font-normal text-[var(--muted)]">· ~{formatEur(ronToEur(property.price, eurRate))}</span>
             </>
           ) : (
             <>

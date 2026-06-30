@@ -212,10 +212,11 @@ Operations:
   (Node runtime, fonts bundled via `outputFileTracingIncludes`); "Chitanță" link per finalized
   transaction on the payments page. Tested.
 - [x] **Multi-currency (RON/EUR)** — `currency.ts`: amounts stay stored in RON (payment source of
-  truth); EUR is a display representation via a configurable `EUR_RON_RATE` (default 4.97).
-  `ronToEur`/`eurToRon`, `formatRon`/`formatEur`/`formatMoney`/`formatRonWithEur`. Sale prices now
-  show the EUR equivalent on the listing detail page and property cards (sales are quoted in euro).
-  Tested.
+  truth); EUR is a display representation. The rate comes from the **official BNR reference feed**
+  (`exchangeRate.ts` `getEurRonRate` → `parseBnrEurRon`, cached ~6h via `unstable_cache`), with
+  `EUR_RON_RATE` as an optional manual override and a static fallback if BNR is unreachable. The live
+  rate is threaded into `formatRonWithEur`/`ronToEur` on the listing detail page and into
+  `PropertyCard` (via the listing pages). Tested.
 
 ## Polish (expand — not at this stage yet)
 

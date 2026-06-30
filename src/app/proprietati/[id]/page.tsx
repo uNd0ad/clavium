@@ -17,6 +17,7 @@ import { formatRon } from '@/lib/dashboardData'
 import { parsePhotos } from '@/lib/storage'
 import { getUserReputation } from '@/lib/reviews'
 import { formatRonWithEur } from '@/lib/currency'
+import { getEurRonRate } from '@/lib/exchangeRate'
 import { staticMapUrl, hasCoordinates } from '@/lib/maps'
 import { getPublicListing, listingJsonLd, absoluteUrl } from '@/lib/seo'
 
@@ -70,7 +71,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const available = property.status === 'DISPONIBILA'
   const isSale = property.transactionType === 'VANZARE'
   const photos = parsePhotos(property.photos)
-  const ownerReputation = await getUserReputation(property.ownerId)
+  const [ownerReputation, eurRate] = await Promise.all([getUserReputation(property.ownerId), getEurRonRate()])
   const mapUrl = hasCoordinates(property)
     ? staticMapUrl({ lat: property.lat, lng: property.lng, isExclusive: property.isExclusive })
     : null
@@ -109,7 +110,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               <h1 className="mt-4 text-4xl font-semibold">{property.title}</h1>
               <p className="mt-4 text-2xl font-semibold text-[var(--brand)]">
                 {isSale ? (
-                  formatRonWithEur(property.price)
+                  formatRonWithEur(property.price, eurRate)
                 ) : (
                   <>
                     {formatRon(property.rent)} <span className="text-sm font-normal text-[var(--muted)]">/ lună</span>

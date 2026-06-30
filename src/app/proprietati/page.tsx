@@ -4,6 +4,7 @@ import Footer from '@/components/layout/Footer'
 import PropertyCard from '@/components/properties/PropertyCard'
 import PropertyFiltersForm from '@/components/properties/PropertyFiltersForm'
 import { searchAvailableProperties, type PropertyFilters } from '@/lib/propertyQuery'
+import { getEurRonRate } from '@/lib/exchangeRate'
 
 export const metadata: Metadata = {
   title: 'Proprietăți de închiriat — Clavium.ro',
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 
 export default async function PropertiesPage({ searchParams }: { searchParams: Promise<PropertyFilters> }) {
   const filters = await searchParams
-  const properties = await searchAvailableProperties(filters)
+  const [properties, eurRate] = await Promise.all([searchAvailableProperties(filters), getEurRonRate()])
 
   return (
     <>
@@ -39,7 +40,7 @@ export default async function PropertiesPage({ searchParams }: { searchParams: P
             </p>
             <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {properties.map((property) => (
-                <PropertyCard key={property.id} property={property} />
+                <PropertyCard key={property.id} property={property} eurRate={eurRate} />
               ))}
             </div>
           </>

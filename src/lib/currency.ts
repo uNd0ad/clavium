@@ -8,18 +8,20 @@ export function isCurrency(value: string | undefined | null): value is Currency 
   return value === 'RON' || value === 'EUR'
 }
 
-// Curs EUR→RON. Ex.: 1 EUR = 4.97 RON. Configurabil prin EUR_RON_RATE.
+// Curs EUR→RON de rezervă (sincron): override manual EUR_RON_RATE sau implicit. Sursa principală
+// (live) e BNR — vezi `getEurRonRate()` din exchangeRate.ts, al cărui rezultat se pasează ca `rate`
+// funcțiilor de mai jos. `eurRonRate()` e folosit doar când nu se pasează un curs explicit.
 export function eurRonRate(): number {
   const raw = Number(process.env.EUR_RON_RATE)
   return Number.isFinite(raw) && raw > 0 ? raw : 4.97
 }
 
-export function ronToEur(amountRon: number): number {
-  return amountRon / eurRonRate()
+export function ronToEur(amountRon: number, rate: number = eurRonRate()): number {
+  return amountRon / rate
 }
 
-export function eurToRon(amountEur: number): number {
-  return Math.round(amountEur * eurRonRate())
+export function eurToRon(amountEur: number, rate: number = eurRonRate()): number {
+  return Math.round(amountEur * rate)
 }
 
 const RON_FMT = new Intl.NumberFormat('ro-RO')
@@ -33,12 +35,13 @@ export function formatEur(amountEur: number): string {
   return `${EUR_FMT.format(Math.round(amountEur))} €`
 }
 
-// Formatează o sumă (în RON) în valuta cerută, convertind la nevoie.
-export function formatMoney(amountRon: number, currency: Currency): string {
-  return currency === 'EUR' ? formatEur(ronToEur(amountRon)) : formatRon(amountRon)
+// Formatează o sumă (în RON) în valuta cerută, convertind la nevoie. `rate` = cursul BNR live
+// (pasat din getEurRonRate); fără el, folosește cursul de rezervă.
+export function formatMoney(amountRon: number, currency: Currency, rate: number = eurRonRate()): string {
+  return currency === 'EUR' ? formatEur(ronToEur(amountRon, rate)) : formatRon(amountRon)
 }
 
 // „X RON (~Y €)" — preț principal în RON cu echivalentul în euro între paranteze (pentru vânzări).
-export function formatRonWithEur(amountRon: number): string {
-  return `${formatRon(amountRon)} (~${formatEur(ronToEur(amountRon))})`
+export function formatRonWithEur(amountRon: number, rate: number = eurRonRate()): string {
+  return `${formatRon(amountRon)} (~${formatEur(ronToEur(amountRon, rate))})`
 }

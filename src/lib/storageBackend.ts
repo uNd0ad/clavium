@@ -71,6 +71,14 @@ async function getS3(): Promise<S3Module> {
   const client = new S3Client({
     region: process.env.STORAGE_S3_REGION || 'auto',
     endpoint: process.env.STORAGE_S3_ENDPOINT || undefined,
+    // Cloudflare R2 (și majoritatea S3-compatibile, ex. MinIO) NU suportă checksum-urile „flexibile"
+    // (CRC32 + content-encoding `aws-chunked`) pe care AWS SDK v3 le trimite implicit (WHEN_SUPPORTED)
+    // — la R2 asta corupe încărcările. Le restrângem la WHEN_REQUIRED: sigur și pe AWS S3, necesar pe R2.
+    requestChecksumCalculation: 'WHEN_REQUIRED',
+    responseChecksumValidation: 'WHEN_REQUIRED',
+    // R2 cu endpoint-ul de cont funcționează în stil virtual-hosted (implicit). Pentru provideri care
+    // cer path-style (ex. MinIO), setează STORAGE_S3_FORCE_PATH_STYLE=true.
+    forcePathStyle: process.env.STORAGE_S3_FORCE_PATH_STYLE === 'true',
     credentials: {
       accessKeyId: requireEnv('STORAGE_S3_ACCESS_KEY_ID'),
       secretAccessKey: requireEnv('STORAGE_S3_SECRET_ACCESS_KEY'),

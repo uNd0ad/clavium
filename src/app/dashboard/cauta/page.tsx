@@ -9,6 +9,7 @@ import { getCurrentUser } from '@/lib/session'
 import { prisma } from '@/lib/prisma'
 import { searchAvailableProperties, type PropertyFilters } from '@/lib/propertyQuery'
 import { sanitizeFilters, describeFilters } from '@/lib/savedSearches'
+import { getEurRonRate } from '@/lib/exchangeRate'
 
 export default async function DashboardSearchPage({ searchParams }: { searchParams: Promise<PropertyFilters> }) {
   const user = await getCurrentUser()
@@ -17,10 +18,11 @@ export default async function DashboardSearchPage({ searchParams }: { searchPara
   }
 
   const filters = await searchParams
-  const [properties, saved, savedSearchRows] = await Promise.all([
+  const [properties, saved, savedSearchRows, eurRate] = await Promise.all([
     searchAvailableProperties(filters),
     prisma.savedProperty.findMany({ where: { userId: user.id }, select: { propertyId: true } }),
     prisma.savedSearch.findMany({ where: { userId: user.id }, orderBy: { createdAt: 'desc' } }),
+    getEurRonRate(),
   ])
   const savedIds = new Set(saved.map((entry) => entry.propertyId))
 
@@ -65,7 +67,7 @@ export default async function DashboardSearchPage({ searchParams }: { searchPara
           </p>
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {properties.map((property) => (
-              <PropertyCard key={property.id} property={property}>
+              <PropertyCard key={property.id} property={property} eurRate={eurRate}>
                 <ListingActions
                   propertyId={property.id}
                   initialSaved={savedIds.has(property.id)}
