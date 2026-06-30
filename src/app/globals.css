@@ -229,3 +229,18 @@ summary:focus-visible,
     animation: none;
   }
 }
+
+/* Homepage „slide deck": fiecare slide ocupă tot viewportul. Pe ecrane mari (și fără „mișcare
+   redusă") adăugăm un snap BLÂND (proximity, nu mandatory — nu blochează scroll-ul). Aplicat doar
+   pe homepage prin clasa `snap-home` pusă pe <html> de componenta SlideSnap, ca scroller-ul să
+   rămână documentul (navbar-ul și ancorele funcționează normal). `scroll-padding-top` compensează
+   navbar-ul fix. Pe mobil și la „mișcare redusă": flux normal, fără snap. */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  html.snap-home {
+    scroll-snap-type: y proximity;
+    scroll-padding-top: 5rem;
+  }
+  html.snap-home .slide {
+    scroll-snap-align: start;
+  }
+}

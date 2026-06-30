@@ -8,6 +8,34 @@ Status legend: `[ ]` todo · `[~]` in progress · `[x]` done.
 
 ---
 
+## Design Re-Shaped
+
+Re-architect the homepage from a minimal feature-list into a **4-slide, audience-targeted sales
+deck** — each slide a benefit-led pitch to one audience, in funnel order, with a single CTA. Lead
+with the visitor's desire, name the pain, handle the objection, show proof, ask for one action.
+
+- [ ] **Slide 1 — Rent-seekers & buyers** (top of funnel): "găsește-ți casa, fără comision,
+  direct de la proprietar, semnat online". Keeps the search box + a strip of **live featured
+  listings** (`searchAvailableProperties` + `PropertyCard`). CTA → `/proprietati`.
+- [ ] **Slide 2 — Owners (rent or sell)**: the dual model — **self-service** (listează gratuit,
+  contract + QES online → `/auth/register`) **vs. managed agency** (administrăm totul, de la 8% —
+  reuses the existing Servicii catalog → public `/servicii`).
+- [ ] **Slide 3 — Developers & commercial** (new B2B audience): **bulk residential** (ansambluri),
+  **office space leased to companies** (spații de birouri), **commercial spaces** (spații
+  comerciale). Lead-gen CTA (sales/demo). *Follow-up:* commercial/office property categories +
+  filters in the data model + a developer account/portal.
+- [ ] **Slide 4 — How it works**: end-to-end process + QES/Signature trust + eIDAS / Legea 214
+  badges + **live stat counters** (Prisma counts); closing CTA.
+- [ ] **Wiring & cleanup**: `page.tsx` → async + **ISR**; extract the `SERVICES` catalog into
+  `src/lib/services.ts` (shared by Slide 2, public `/servicii`, dashboard); **fix dead links**
+  (`/vanzare` `/inchiriere` `/leasing` → `/proprietati?type=…`); new copy in i18n (ro + en);
+  full-bleed **scroll-snap** slides (mobile + reduced-motion safe).
+- [ ] **Sales principles** (every slide): benefit-led headline (not "we do X"), name the pain
+  (commission, scams, paperwork, time), handle the objection (QES + verified + encrypted), show
+  proof (real listings + live counts), one unambiguous CTA.
+
+---
+
 ## Done (v0.9.10 — branch `refactor/stability-perf-pass`)
 
 - [x] Stability/perf pass: atomic contract signing, hardened Stripe webhook, external-call
