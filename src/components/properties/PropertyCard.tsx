@@ -17,10 +17,12 @@ export type PropertyCardData = {
   photos: string[]
 }
 
-export default function PropertyCard({ property, children, eurRate }: { property: PropertyCardData; children?: React.ReactNode; eurRate?: number }) {
+// `compact` = variantă ~25% mai mică (imagine + spațiere + tipografie reduse), pentru striful de
+// listări recente de pe homepage.
+export default function PropertyCard({ property, children, eurRate, compact }: { property: PropertyCardData; children?: React.ReactNode; eurRate?: number; compact?: boolean }) {
   return (
     <div className="group flex flex-col overflow-hidden rounded-4xl border border-[var(--border)] bg-[var(--surface)] transition hover:-translate-y-1 hover:shadow-[var(--shadow)]">
-      <Link href={`/proprietati/${property.id}`} className="relative block h-44 bg-[var(--brand-soft)] no-underline">
+      <Link href={`/proprietati/${property.id}`} className={`relative block ${compact ? 'h-32' : 'h-44'} bg-[var(--brand-soft)] no-underline`}>
         {property.photos[0] ? (
           <Image
             src={property.photos[0]}
@@ -31,21 +33,21 @@ export default function PropertyCard({ property, children, eurRate }: { property
           />
         ) : (
           <span className="flex h-full items-center justify-center text-[var(--brand)]/40">
-            <ImageIcon size={36} />
+            <ImageIcon size={compact ? 28 : 36} />
           </span>
         )}
       </Link>
-      <div className="flex flex-1 flex-col p-6">
+      <div className={`flex flex-1 flex-col ${compact ? 'p-4' : 'p-6'}`}>
         <div className="flex items-start justify-between gap-3">
-          <Link href={`/proprietati/${property.id}`} className="text-lg font-semibold text-[var(--text)] no-underline group-hover:text-[var(--brand)]">
+          <Link href={`/proprietati/${property.id}`} className={`${compact ? 'text-base' : 'text-lg'} font-semibold text-[var(--text)] no-underline group-hover:text-[var(--brand)]`}>
             {property.title}
           </Link>
           <StatusBadge label={property.transactionType === 'VANZARE' ? 'De vânzare' : 'De închiriat'} variant="success" />
         </div>
-        <p className="mt-3 flex items-center gap-2 text-sm text-[var(--muted)]">
+        <p className={`${compact ? 'mt-2' : 'mt-3'} flex items-center gap-2 text-sm text-[var(--muted)]`}>
           <MapPin size={15} /> {property.location}
         </p>
-        <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-[var(--muted)]">
+        <div className={`${compact ? 'mt-2' : 'mt-3'} flex flex-wrap items-center gap-4 text-sm text-[var(--muted)]`}>
           {property.rooms ? (
             <span className="flex items-center gap-1.5"><BedDouble size={15} /> {property.rooms} camere</span>
           ) : null}
@@ -53,7 +55,7 @@ export default function PropertyCard({ property, children, eurRate }: { property
             <span className="flex items-center gap-1.5"><Ruler size={15} /> {property.surface} m²</span>
           ) : null}
         </div>
-        <p className="mt-4 text-xl font-semibold text-[var(--text)]">
+        <p className={`${compact ? 'mt-3 text-lg' : 'mt-4 text-xl'} font-semibold text-[var(--text)]`}>
           {property.transactionType === 'VANZARE' ? (
             <>
               {formatRon(property.price)} <span className="text-sm font-normal text-[var(--muted)]">· ~{formatEur(ronToEur(property.price, eurRate))}</span>

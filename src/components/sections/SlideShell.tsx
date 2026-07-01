@@ -21,7 +21,7 @@ export default function SlideShell({
       ref={ref}
       className={`slide relative flex min-h-[100svh] w-full flex-col justify-center overflow-hidden ${className}`}
     >
-      <div className="mx-auto w-full max-w-7xl px-6 pb-24 pt-32 lg:px-12 reveal">{children}</div>
+      <div className="mx-auto w-full max-w-[1600px] px-6 pb-24 pt-32 lg:px-16 reveal">{children}</div>
     </section>
   )
 }

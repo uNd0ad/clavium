@@ -17,7 +17,7 @@ import { SERVICES } from '@/lib/services'
 export default async function HomePage() {
   const [{ listings, stats }, eurRate] = await Promise.all([getHomeData(), getEurRonRate()])
 
-  const featured = listings.map((p) => <PropertyCard key={p.id} property={p} eurRate={eurRate} />)
+  const featured = listings.slice(0, 3).map((p) => <PropertyCard key={p.id} property={p} eurRate={eurRate} compact />)
   const services = SERVICES.slice(0, 3).map((s) => <ServiceCard key={s.title} service={s} />)
 
   return (

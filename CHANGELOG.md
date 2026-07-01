@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.1 — 2026-07-01
+
+- Slide 1 (homepage): container lărgit (`max-w-[1600px]`, aliniat cu navbar) — slide-ul se
+  întinde pe lățimea monitorului în loc de o cutie centrată îngustă.
+- Listările recente sunt acum pe **un singur rând**, cu carduri **compacte** (~25% mai mici).
+- Panoul de valoare (proprietari verificați · contract QES · plăți securizate + CTA) e afișat
+  mereu pe coloana dreaptă a hero-ului, echilibrând partea de sus.
+
 ## 1.2.0 — 2026-07-01
 
 - Enforcarea strictă a `JWT_SECRET` se aplică acum doar deployment-ului de **producție real**

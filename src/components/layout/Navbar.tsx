@@ -58,7 +58,7 @@ export default function Navbar() {
             : 'bg-[var(--card)] lg:bg-transparent lg:backdrop-blur-none lg:py-7 py-4 backdrop-blur-sm'
         )}
       >
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
+        <div className="max-w-[1600px] mx-auto px-6 lg:px-16 flex items-center justify-between">
           <Link href="/" className="font-sans text-xl font-semibold tracking-wide text-[var(--text)] no-underline">
             Clavium<span className="text-[var(--brand)]">.ro</span>
           </Link>
