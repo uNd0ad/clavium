@@ -25,7 +25,7 @@ export default async function HomePage() {
       <SlideSnap />
       <Navbar />
       <main>
-        <SlideRenters featured={featured} />
+        <SlideRenters featured={featured} featuredCount={listings.length} />
         <SlideOwners services={services} />
         <SlideDevelopers />
         <SlideHowItWorks stats={stats} />

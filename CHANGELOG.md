@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.1 — 2026-07-01
+
+- Fix layout pe primul slide al homepage-ului: hero pe **2 coloane** (mesaj + căutare la stânga,
+  listări reale la dreapta), care umple pagina în loc să plutească centrat sus-stânga.
+- Fallback când nu există listări disponibile: coloana din dreapta arată un panou de valoare
+  (proprietari verificați · contract QES · plăți securizate) + CTA, în loc de o secțiune goală.
+
 ## 1.1.0 — 2026-07-01
 
 ### Homepage regândit — „slide deck" în 4 slide-uri
