@@ -1,5 +1,93 @@
 # Changelog
 
+## 1.1.0 — 2026-07-01
+
+### Homepage regândit — „slide deck" în 4 slide-uri
+- Pagina principală restructurată dintr-o listă minimală de funcții într-un deck de 4 slide-uri orientate spre vânzare, fiecare adresat unei audiențe (în ordinea pâlniei):
+  - **Slide 1 — chiriași & cumpărători**: titlu pe beneficiu („direct de la proprietar, fără comision"), căutare + listări reale + CTA.
+  - **Slide 2 — proprietari**: modelul dual — self-service (listare gratuită, semnătură QES online) vs. administrat de Clavium (de la 8%).
+  - **Slide 3 — dezvoltatori & spații comerciale**: ansambluri rezidențiale, spații de birouri pentru companii, spații comerciale; CTA de tip lead (demo).
+  - **Slide 4 — cum funcționează**: proces + încredere (QES/eIDAS/Legea 214) + contoare reale.
+- Pagină publică nouă **`/servicii`** cu oferta de administrare (până acum doar în dashboard); catalog de servicii partajat (`src/lib/services.ts`), reutilizat pe homepage, `/servicii` și în dashboard.
+- Copy bilingv (RO/EN) pentru slide-uri; snap blând între slide-uri (respectă „mișcare redusă"); secțiunile vechi de landing (inclusiv cardurile cu linkuri moarte) retrase. E2E Playwright extins pentru cele 4 slide-uri.
+
+## 1.0.1 — 2026-06-30
+
+- **Curs EUR/RON din feed-ul oficial BNR** (cache ~6h), cu `EUR_RON_RATE` ca override manual și fallback la indisponibilitate.
+- **Stocare S3 compatibilă cu Cloudflare R2** — checksum-uri forțate la `WHEN_REQUIRED` (implicitul AWS SDK v3 corupe încărcările pe R2) + `STORAGE_S3_FORCE_PATH_STYLE` opțional.
+
+## 1.0.0 — 2026-06-30
+
+Prima lansare publică plătită — tot roadmap-ul de lansare, peste pasul de stabilitate + performanță.
+
+### Trust & safety
+- Recenzii/reputație, detecție de fraudă la listări (perceptual image hashing), raportare abuz + coadă de moderare.
+
+### Securitate & confidențialitate
+- Retenție KYC + consimțământ biometric (GDPR art. 9, purjare automată); 2FA TOTP (RFC 6238, coduri de rezervă) aplicat la login prin parolă și prin OTP; management sesiuni/dispozitive + alertă la dispozitiv nou.
+
+### Domeniu
+- Dunning (reamintiri/restanțe), ciclu de viață contract (reziliere/reînnoire), garanție + arvună, mesagerie precontract, registru de audit înlănțuit prin hash, unelte de suport admin, versionare T&C.
+
+### Growth
+- i18n (RO/EN), ISR + schema.org + OpenGraph pentru listări, plată automată a chiriei, căutări salvate + alerte + program de recomandare, chitanțe/facturi PDF, multi-valută (RON/EUR).
+
+### Ops & integrări (env-gated)
+- Sentry (dependență opțională), E2E Playwright, pas de accesibilitate/performanță; scaffold-uri: stocare S3/R2, PDF contract, hărți, import listări, e-Factura (UBL), payouts Stripe Connect. Comision de vânzare degresiv; sarcini programate (Vercel Cron).
+
+## 0.9.10 — 2026-06-27
+
+- Pas de întărire a stabilității și performanței (guard-uri atomice, advisory locks, tuning de interogări).
+- Generare PDF a contractelor cu font Noto Sans încorporat (diacritice corecte pe serverless).
+
+## 0.9.6 — 2026-06-20
+
+- Trimitere email tranzacțional prin SMTP (nodemailer).
+
+## 0.9.5 — 2026-06-20
+
+- Rate limiting partajat, sigur pe serverless, prin Upstash Redis.
+
+## 0.9.4 — 2026-06-20
+
+- Întărire pentru producție: integrări externe care eșuează zgomotos + validarea variabilelor de mediu la pornire.
+
+## 0.9.3 — 2026-06-20
+
+- Tab nou „Servicii" pentru proprietari; infrastructură de test pe telefon în LAN.
+
+## 0.9.2 — 2026-06-19
+
+- KYC cu camera pe telefon fără HTTPS; redirect-uri de plată corecte pe gazda reală.
+
+## 0.9.1 — 2026-06-19
+
+- KYC: potrivire facială reală (captură live act de identitate + selfie), fără aprobare automată.
+
+## 0.9.0 — 2026-06-19
+
+- Verificare identitate (KYC) + infrastructură pentru semnătură QES + confirmarea plății la întoarcere.
+
+## 0.8.4 — 2026-06-17
+
+- Integrare Stripe Checkout (hosted) + decontare prin webhook.
+
+## 0.8.3 — 2026-06-16
+
+- Polish UI: iconuri lucide consistente, dark-mode corect, căutarea din hero funcțională.
+
+## 0.8.2 — 2026-06-16
+
+- Corecții CSP / plăți / securitate + sweep de design tokens.
+
+## 0.8.1 — 2026-06-15
+
+- Secțiune de tichete pentru chiriași; pagini custom 404 / eroare.
+
+## 0.8.0 — 2026-06-15
+
+- Flux complet de vânzare-cumpărare: antecontract, avans (arvună) + diferență de preț, transfer de proprietate.
+
 ## 0.7.0 — 2026-06-14
 
 ### Înregistrare pentru firme (persoane juridice)
