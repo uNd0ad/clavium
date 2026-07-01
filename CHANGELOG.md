@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0 — 2026-07-01
+
+- Enforcarea strictă a `JWT_SECRET` se aplică acum doar deployment-ului de **producție real**
+  (`VERCEL_ENV=production`), nu tuturor deployment-urilor. Astfel, deployment-urile **Preview**
+  (ex. branch-ul `dev`) pornesc cu un secret de fallback fără configurare completă, iar producția
+  rămâne strictă. Notă de securitate: pe Preview sesiunile sunt semnate cu un secret de dev cunoscut
+  — setează `JWT_SECRET` și pe Preview pentru medii cu utilizatori/date reale.
+
 ## 1.1.1 — 2026-07-01
 
 - Fix layout pe primul slide al homepage-ului: hero pe **2 coloane** (mesaj + căutare la stânga,
