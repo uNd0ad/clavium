@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { cookies } from 'next/headers'
 import { getUserFromToken, verifyToken } from './auth'
 import { COOKIE_NAME } from './constants'
@@ -22,7 +23,9 @@ export type SessionUser = {
   companyVatPayer: boolean
 }
 
-export async function getCurrentUser(): Promise<SessionUser | null> {
+// `cache()` (React) memoizează pe durata unui singur request: mai multe apeluri (layout dashboard +
+// pagină + Navbar server) → o singură interogare DB. Cookie-urile sunt stabile în cadrul request-ului.
+export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
   const cookieStore = await cookies()
   const token = cookieStore.get(COOKIE_NAME)?.value
   if (!token) return null
@@ -47,6 +50,16 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
     companyAddress: user.companyAddress ?? undefined,
     companyVatPayer: user.companyVatPayer,
   }
+})
+
+// Forma minimă de care are nevoie Navbar-ul, rezolvată pe server ca să afișeze starea de autentificare
+// din primul render (fără fetch client-side, fără „flash" de utilizator delogat). `undefined` nu apare
+// niciodată aici — Navbar-ul distinge „server a decis: nimeni" (null) de „nu am primit prop" (undefined).
+export type NavUser = { firstName: string; lastName: string; email: string }
+
+export async function getNavUser(): Promise<NavUser | null> {
+  const user = await getCurrentUser()
+  return user ? { firstName: user.firstName, lastName: user.lastName, email: user.email } : null
 }
 
 // Id-ul sesiunii curente (din JWT-ul de pe cookie). Folosit pentru a marca „acest dispozitiv"

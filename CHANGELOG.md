@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.3.1 — 2026-07-02
+
+- Homepage: listările recente arată acum **date proaspete** la fiecare încărcare (eliminat cache-ul
+  de ~10 min din `getHomeData`). Fotografiile actualizate ale proprietăților apar imediat, nu cu
+  întârziere. Ruta e oricum randată dinamic, iar interogările sunt ieftine.
+- Autentificare **fără „flash"** în bara de sus: starea de logat/delogat e rezolvată acum pe server
+  (`getNavUser` din cookie) și trimisă Navbar-ului ca `initialUser`, deci pagina se randează corect
+  din primul render — fără fetch client-side care întârzia afișarea contului. `getCurrentUser` e
+  memoizat pe request (React `cache()`) pentru a evita interogări DB duplicate. Fetch-ul client
+  rămâne doar ca fallback pe paginile de eroare client.
+
 ## 1.3.0 — 2026-07-02
 
 - Slide 1 (homepage): listările recente sunt acum **alături de hero**, nu sub el. Pe desktop

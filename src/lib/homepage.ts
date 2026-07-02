@@ -1,7 +1,9 @@
-// Datele dinamice ale homepage-ului (listări recente + contoare), cache-uite între request-uri
-// (~10 min). Layout-ul citește cookie-uri (limbă), deci ruta e oricum dinamică — cache-ul ține
-// interogările DB ieftine sub trafic. Întoarce DATE serializabile; randarea cardurilor stă în page.
-import { unstable_cache } from 'next/cache'
+// Datele dinamice ale homepage-ului (listări recente + contoare).
+//
+// NU cache-uim aici: ruta e oricum randată dinamic (layout-ul citește headers()/cookie-uri), iar
+// interogările sunt ieftine (un findMany plafonat la 60 + două count-uri). Un cache anterior de ~10
+// min făcea ca fotografiile noi ale proprietăților să apară cu întârziere pe homepage — de aceea
+// preferăm date proaspete la fiecare request. Întoarce DATE serializabile; randarea cardurilor stă în page.
 import { prisma } from './prisma'
 import { searchAvailableProperties } from './propertyQuery'
 import type { PropertyCardData } from '@/components/properties/PropertyCard'
@@ -12,17 +14,11 @@ export type HomeData = {
 }
 
 export async function getHomeData(): Promise<HomeData> {
-  return unstable_cache(
-    async () => {
-      const [listings, properties, contracts] = await Promise.all([
-        searchAvailableProperties({}),
-        prisma.property.count({ where: { status: 'DISPONIBILA' } }),
-        // „Contracte semnate" = ambele părți au semnat.
-        prisma.contract.count({ where: { signedByOwner: true, signedByClient: true } }),
-      ])
-      return { listings: listings.slice(0, 4), stats: { properties, contracts } }
-    },
-    ['home-data'],
-    { revalidate: 600 }
-  )()
+  const [listings, properties, contracts] = await Promise.all([
+    searchAvailableProperties({}),
+    prisma.property.count({ where: { status: 'DISPONIBILA' } }),
+    // „Contracte semnate" = ambele părți au semnat.
+    prisma.contract.count({ where: { signedByOwner: true, signedByClient: true } }),
+  ])
+  return { listings: listings.slice(0, 4), stats: { properties, contracts } }
 }

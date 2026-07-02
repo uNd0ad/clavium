@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import { getNavUser } from '@/lib/session'
 
 export const metadata: Metadata = {
   title: 'Politica de confidențialitate — Clavium.ro',
@@ -37,10 +38,11 @@ const sections = [
   },
 ]
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const navUser = await getNavUser()
   return (
     <>
-      <Navbar />
+      <Navbar initialUser={navUser} />
       <main className="mx-auto min-h-screen max-w-4xl px-6 pb-24 pt-36 lg:px-12">
         <p className="section-label">Legal</p>
         <h1 className="mt-4 text-4xl font-semibold">Politica de confidențialitate</h1>

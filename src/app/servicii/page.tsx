@@ -3,6 +3,7 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import ServiceCard from '@/components/ServiceCard'
 import { SERVICES, SUPPORT_EMAIL } from '@/lib/services'
+import { getNavUser } from '@/lib/session'
 
 export const metadata: Metadata = {
   title: 'Servicii pentru proprietari — Clavium.ro',
@@ -11,10 +12,11 @@ export const metadata: Metadata = {
 }
 
 // Pagină publică de prezentare a serviciilor de „agenție administrată" (aceeași sursă ca dashboard).
-export default function PublicServicesPage() {
+export default async function PublicServicesPage() {
+  const navUser = await getNavUser()
   return (
     <>
-      <Navbar />
+      <Navbar initialUser={navUser} />
       <main className="mx-auto min-h-screen max-w-7xl px-6 pb-24 pt-36 lg:px-12">
         <p className="section-label">Servicii</p>
         <h1 className="mt-4 text-4xl font-semibold tracking-[-0.02em]">Lasă-ne pe noi. Ne ocupăm de tot.</h1>

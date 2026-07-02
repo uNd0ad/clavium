@@ -5,6 +5,7 @@ import PropertyCard from '@/components/properties/PropertyCard'
 import PropertyFiltersForm from '@/components/properties/PropertyFiltersForm'
 import { searchAvailableProperties, type PropertyFilters } from '@/lib/propertyQuery'
 import { getEurRonRate } from '@/lib/exchangeRate'
+import { getNavUser } from '@/lib/session'
 
 export const metadata: Metadata = {
   title: 'Proprietăți de închiriat — Clavium.ro',
@@ -13,11 +14,15 @@ export const metadata: Metadata = {
 
 export default async function PropertiesPage({ searchParams }: { searchParams: Promise<PropertyFilters> }) {
   const filters = await searchParams
-  const [properties, eurRate] = await Promise.all([searchAvailableProperties(filters), getEurRonRate()])
+  const [properties, eurRate, navUser] = await Promise.all([
+    searchAvailableProperties(filters),
+    getEurRonRate(),
+    getNavUser(),
+  ])
 
   return (
     <>
-      <Navbar />
+      <Navbar initialUser={navUser} />
       <main className="mx-auto min-h-screen max-w-7xl px-6 pb-24 pt-36 lg:px-12">
         <p className="section-label">Proprietăți</p>
         <h1 className="mt-4 text-4xl font-semibold">Caută direct de la proprietari</h1>

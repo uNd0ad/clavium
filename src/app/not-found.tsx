@@ -2,11 +2,13 @@ import Link from 'next/link'
 import { Home, Search } from 'lucide-react'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import { getNavUser } from '@/lib/session'
 
-export default function NotFound() {
+export default async function NotFound() {
+  const navUser = await getNavUser()
   return (
     <>
-      <Navbar />
+      <Navbar initialUser={navUser} />
       <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[var(--bg)] px-6 text-center">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(0,113,227,0.18),_transparent_22%),radial-gradient(circle_at_bottom_right,_rgba(0,113,227,0.12),_transparent_30%)] opacity-95" />
 

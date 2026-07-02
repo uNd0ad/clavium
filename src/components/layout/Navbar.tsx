@@ -8,8 +8,12 @@ import clsx from 'clsx'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher'
 import { useDict } from '@/lib/i18n/client'
+import type { NavUser } from '@/lib/session'
 
-export default function Navbar() {
+// `initialUser`: starea de autentificare rezolvata pe server de pagina care randeaza Navbar-ul.
+// Cand e furnizata (chiar si `null`), o folosim direct → starea corecta din primul render, fara
+// „flash". Doar cand lipseste (`undefined` — ex. pagini de eroare client) recurgem la fetch-ul client.
+export default function Navbar({ initialUser }: { initialUser?: NavUser | null } = {}) {
   const router = useRouter()
   const dict = useDict()
   const links = [
@@ -20,7 +24,12 @@ export default function Navbar() {
   ]
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [currentUser, setCurrentUser] = useState<{ firstName: string; lastName: string; email: string } | null>(null)
+  // Cand serverul furnizeaza starea (`initialUser` definit), o afisam direct din prop — reflecta
+  // fiecare render/navigare, fara fetch si fara „flash". `fetchedUser` acopera doar cazul fallback
+  // (prop lipsa), iar `loggedOut` forteaza starea „delogat" imediat dupa logout.
+  const [fetchedUser, setFetchedUser] = useState<NavUser | null>(null)
+  const [loggedOut, setLoggedOut] = useState(false)
+  const currentUser = loggedOut ? null : initialUser !== undefined ? initialUser : fetchedUser
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
@@ -28,24 +37,22 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // Fallback doar cand pagina-server nu a putut furniza starea (ex. error.tsx e client).
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch('/api/auth/me', { cache: 'no-store' })
-        if (!response.ok) return setCurrentUser(null)
-        const data = await response.json()
-        setCurrentUser(data.user || null)
-      } catch {
-        setCurrentUser(null)
-      }
-    }
-    fetchUser()
-  }, [])
+    if (initialUser !== undefined) return
+    let active = true
+    fetch('/api/auth/me', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((d) => { if (active) setFetchedUser(d?.user ?? null) })
+      .catch(() => { if (active) setFetchedUser(null) })
+    return () => { active = false }
+  }, [initialUser])
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
-    setCurrentUser(null)
+    setLoggedOut(true)
     router.push('/')
+    router.refresh()
   }
 
   return (

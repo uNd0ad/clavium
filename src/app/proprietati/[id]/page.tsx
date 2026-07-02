@@ -83,7 +83,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(listingJsonLd(property)) }}
       />
-      <Navbar />
+      <Navbar initialUser={user ? { firstName: user.firstName, lastName: user.lastName, email: user.email } : null} />
       <main className="mx-auto min-h-screen max-w-7xl px-6 pb-24 pt-36 lg:px-12">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <Link
