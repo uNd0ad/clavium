@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.2 — 2026-07-02
+
+- Slide 1 (homepage): eliminat panoul de valoare din dreapta hero-ului (proprietari verificați ·
+  contract QES · plăți securizate + CTA). Hero-ul revine la o singură coloană — mesaj + căutare —
+  urmat de rândul de listări recente.
+
 ## 1.2.1 — 2026-07-01
 
 - Slide 1 (homepage): container lărgit (`max-w-[1600px]`, aliniat cu navbar) — slide-ul se
