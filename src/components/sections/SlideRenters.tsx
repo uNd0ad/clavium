@@ -34,9 +34,9 @@ export default function SlideRenters({ featured, featuredCount }: { featured: Re
     <SlideShell id="caut" className="bg-[var(--bg)]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(0,113,227,0.16),_transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(0,113,227,0.1),_transparent_32%)]" />
 
-      <div className="relative">
-        {/* Hero: mesaj + căutare */}
-        <div className="max-w-3xl">
+      <div className="relative grid items-center gap-10 xl:grid-cols-[1.05fr_0.95fr] xl:gap-14">
+        {/* Stânga: mesaj + căutare */}
+        <div>
           <div className="section-label mb-5">{t.eyebrow}</div>
           <h1 className="font-sans text-[clamp(40px,5vw,68px)] font-semibold leading-[1.0] tracking-[-0.04em] text-[var(--text)]">
             {t.title}
@@ -75,16 +75,17 @@ export default function SlideRenters({ featured, featuredCount }: { featured: Re
           </form>
         </div>
 
-        {/* Listări reale — un singur rând, pe toată lățimea */}
+        {/* Dreapta: listări reale, alături de hero */}
         {featuredCount > 0 ? (
-          <div className="mt-14">
+          <div>
             <div className="mb-5 flex items-center justify-between gap-4">
               <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">{t.featuredTitle}</h2>
               <Link href="/proprietati" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--brand)]">
                 {t.browse} <ArrowRight size={15} />
               </Link>
             </div>
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{featured}</div>
+            {/* Full-width (hero stivuit): 3 pe un rând. Alături de hero (xl): 2 sus + al 3-lea pe toată lățimea coloanei. */}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 [&>*:last-child]:xl:col-span-2">{featured}</div>
           </div>
         ) : null}
       </div>

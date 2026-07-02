@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.0 — 2026-07-02
+
+- Slide 1 (homepage): listările recente sunt acum **alături de hero**, nu sub el. Pe desktop
+  (≥1280px) hero-ul (titlu + căutare) stă în stânga, iar listările în dreapta — două carduri
+  compacte sus + al treilea pe toată lățimea coloanei, încadrându-se pe înălțimea slide-ului.
+  Sub 1280px layout-ul se stivuiește curat: hero pe toată lățimea, apoi cele trei carduri pe un rând.
+
 ## 1.2.3 — 2026-07-02
 
 - CSP: pe deployment-urile **Preview** Vercel (nu în producție reală) permitem bara Vercel Live —
