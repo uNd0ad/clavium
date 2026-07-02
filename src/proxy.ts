@@ -7,15 +7,20 @@ import { COOKIE_NAME } from './lib/constants'
 // îl citește prin headers() în layout. Restul antetelor de securitate stau în next.config.js.
 // CSP de producție (vezi proxy(): nu se aplică în dev). 'strict-dynamic' permite scripturilor
 // noastre cu nonce să încarce restul, iar upgrade-insecure-requests forțează HTTPS.
-function buildCsp(nonce: string) {
+// allowVercelLive: pe deployment-urile Vercel non-producție (Preview), bara de feedback/comentarii
+// Vercel Live injectează un iframe + script de pe vercel.live și un websocket Pusher. Le permitem
+// doar acolo, ca producția reală să rămână strict blocată (fără origini terțe).
+function buildCsp(nonce: string, allowVercelLive: boolean) {
+  const live = allowVercelLive
   return [
     `default-src 'self'`,
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${live ? ' https://vercel.live' : ''}`,
     // Tailwind/Sonner/next-font injectează stiluri inline — nonce pe stiluri e impracticabil.
-    `style-src 'self' 'unsafe-inline'`,
-    `img-src 'self' data: blob:`,
-    `font-src 'self' data:`,
-    `connect-src 'self'`,
+    `style-src 'self' 'unsafe-inline'${live ? ' https://vercel.live' : ''}`,
+    `img-src 'self' data: blob:${live ? ' https://vercel.live https://vercel.com' : ''}`,
+    `font-src 'self' data:${live ? ' https://vercel.live https://assets.vercel.com' : ''}`,
+    `connect-src 'self'${live ? ' https://vercel.live wss://*.pusher.com https://*.pusher.com' : ''}`,
+    ...(live ? [`frame-src https://vercel.live`] : []),
     `frame-ancestors 'none'`,
     `base-uri 'self'`,
     `form-action 'self'`,
@@ -55,7 +60,9 @@ export function proxy(req: NextRequest) {
   // în producție (vezi PRODUCTION-READINESS.md, P1 #4).
   const cspDisabled = process.env.CSP_DISABLED === '1' && process.env.VERCEL !== '1'
   if (process.env.NODE_ENV === 'production' && !cspDisabled) {
-    const csp = buildCsp(nonce)
+    // Bara Vercel Live apare pe deployment-urile Preview; o permitem doar acolo, nu în producția reală.
+    const allowVercelLive = process.env.VERCEL === '1' && process.env.VERCEL_ENV !== 'production'
+    const csp = buildCsp(nonce, allowVercelLive)
     requestHeaders.set('Content-Security-Policy', csp)
     response.headers.set('Content-Security-Policy', csp)
   }

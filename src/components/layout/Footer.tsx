@@ -8,7 +8,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-[var(--bg)] text-[var(--muted)]">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-20">
+      <div className="max-w-[1600px] mx-auto px-6 lg:px-16 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 mb-16">
           <div className="lg:col-span-1">
             <div className="font-sans text-2xl font-semibold text-[var(--text)] mb-4">
@@ -41,8 +41,9 @@ export default function Footer() {
               title: dict.footer.colContact,
               links: [
                 { label: 'contact@clavium.ro', href: 'mailto:contact@clavium.ro' },
-                { label: 'Timișoara, România', href: '#' },
-                { label: dict.footer.hours, href: '#' },
+                // Adresa și programul nu sunt linkuri — se afișează ca text simplu (fără href="#").
+                { label: 'Timișoara, România' },
+                { label: dict.footer.hours },
               ],
             },
           ].map((col) => (
@@ -53,9 +54,13 @@ export default function Footer() {
               <ul className="space-y-3">
                 {col.links.map((l) => (
                   <li key={l.label}>
-                    <a href={l.href} className="text-sm text-[var(--muted)]/80 hover:text-[var(--text)] transition-colors no-underline">
-                      {l.label}
-                    </a>
+                    {l.href ? (
+                      <a href={l.href} className="text-sm text-[var(--muted)]/80 hover:text-[var(--text)] transition-colors no-underline">
+                        {l.label}
+                      </a>
+                    ) : (
+                      <span className="text-sm text-[var(--muted)]/80">{l.label}</span>
+                    )}
                   </li>
                 ))}
               </ul>

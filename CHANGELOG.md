@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.2.3 — 2026-07-02
+
+- CSP: pe deployment-urile **Preview** Vercel (nu în producție reală) permitem bara Vercel Live —
+  `frame-src`/`script-src`/`style-src`/`img-src`/`font-src`/`connect-src` pentru `vercel.live`
+  (+ websocket Pusher). Producția rămâne strict blocată, fără origini terțe. Rezolvă eroarea
+  „Refused to load … vercel.live/…/feedback.html".
+- `/api/auth/me`: vizitatorii neautentificați primesc acum **200 `{ user: null }`** în loc de 401 —
+  „cine sunt?" pentru un vizitator delogat nu e o eroare. Elimină eroarea 401 din consola browserului
+  la fiecare încărcare de pagină. Comportamentul din Navbar rămâne identic.
+- Footer aliniat cu restul paginii: container lărgit la `max-w-[1600px]` + `lg:px-16` (era
+  `max-w-7xl`/`lg:px-12`, mai îngust decât navbar-ul și slide-urile). Adresa și programul sunt acum
+  text simplu, nu linkuri moarte `href="#"`.
+
 ## 1.2.2 — 2026-07-02
 
 - Slide 1 (homepage): eliminat panoul de valoare din dreapta hero-ului (proprietari verificați ·
