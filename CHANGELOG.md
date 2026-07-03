@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.6 — 2026-07-03
+
+- Fix: fundalul (gradientul) primului slide se **întinde pe tot ecranul**, nu mai e „încutiat" la
+  lățimea conținutului (max-w-[1600px]). Cauza: `.reveal.visible` are `transform`, deci containerul
+  de conținut devenea bloc de referință pentru poziționarea absolută, iar fundalul `absolute inset-0`
+  era limitat la 1600px pe monitoare late (vizibil doar cu animații active). Fundalul e acum randat
+  la nivel de `<section>` (slot nou `background` în SlideShell), în afara containerului `.reveal`.
+  Layout-ul conținutului rămâne neschimbat.
+
 ## 1.3.5 — 2026-07-03
 
 - Slide 1 (homepage): revenit la dimensiunile anterioare (v1.3.3) pentru secțiunea „caut o locuință"

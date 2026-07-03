@@ -32,9 +32,13 @@ export default function SlideRenters({ featured, featuredCount }: { featured: Re
   }
 
   return (
-    <SlideShell id="caut" className="bg-[var(--bg)]">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(0,113,227,0.16),_transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(0,113,227,0.1),_transparent_32%)]" />
-
+    <SlideShell
+      id="caut"
+      className="bg-[var(--bg)]"
+      background={
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(0,113,227,0.16),_transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(0,113,227,0.1),_transparent_32%)]" />
+      }
+    >
       <div className="relative grid items-stretch gap-10 xl:grid-cols-[1.05fr_0.95fr] xl:gap-14">
         {/* Stânga: mesaj + căutare */}
         <div>
