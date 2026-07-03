@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.4 — 2026-07-03
+
+- Slide 1 (homepage): conținutul **umple întreg slide-ul** pe desktop (înălțime = viewport minus
+  padding-ul SlideShell), nu mai plutește centrat cu benzi goale sus/jos. Hero-ul distribuie mesajul
+  sus și căutarea jos, aliniat cu sliderul de proprietăți (simetrie sus/jos). Layout-ul stivuit
+  (sub xl) rămâne neschimbat.
+
 ## 1.3.3 — 2026-07-03
 
 - Slide 1 (homepage): sliderul de „proprietăți recente" e acum **simetric** cu blocul hero (aceeași
