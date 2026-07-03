@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.2 — 2026-07-03
+
+- Slide 1 (homepage): „proprietăți recente" e acum un **slider vertical** — o coloană, ~2 rânduri
+  vizibile, cu auto-scroll continuu și lin (buclă fără salt), fade sus/jos, pauză la hover și oprit
+  complet la `prefers-reduced-motion`.
+
 ## 1.3.1 — 2026-07-02
 
 - Homepage: listările recente arată acum **date proaspete** la fiecare încărcare (eliminat cache-ul

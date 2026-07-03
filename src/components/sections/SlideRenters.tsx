@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Search, MapPin, ChevronDown, ArrowRight } from 'lucide-react'
 import SlideShell from './SlideShell'
+import FeaturedSlider from './FeaturedSlider'
 import { useDict } from '@/lib/i18n/client'
 
 // Slide 1 — solicitanți de chirie & cumpărători (vârful pâlniei). Beneficiu + căutare + dovadă
@@ -84,8 +85,8 @@ export default function SlideRenters({ featured, featuredCount }: { featured: Re
                 {t.browse} <ArrowRight size={15} />
               </Link>
             </div>
-            {/* Full-width (hero stivuit): 3 pe un rând. Alături de hero (xl): 2 sus + al 3-lea pe toată lățimea coloanei. */}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 [&>*:last-child]:xl:col-span-2">{featured}</div>
+            {/* O coloană, ~2 rânduri vizibile, cu auto-scroll continuu și lin. */}
+            <FeaturedSlider>{featured}</FeaturedSlider>
           </div>
         ) : null}
       </div>

@@ -244,3 +244,19 @@ summary:focus-visible,
     scroll-snap-align: start;
   }
 }
+
+/* Slider vertical „proprietăți recente" (o coloană, ~2 rânduri vizibile). Track-ul conține două
+   copii identice; -50% = exact înălțimea unei copii → buclă continuă fără salt. Pauză la hover,
+   oprit la „mișcare redusă" (rămân vizibile primele carduri). Vezi FeaturedSlider.tsx. */
+@keyframes featured-marquee {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .featured-slider-track {
+    animation: featured-marquee 18s linear infinite;
+  }
+  .featured-slider:hover .featured-slider-track {
+    animation-play-state: paused;
+  }
+}
