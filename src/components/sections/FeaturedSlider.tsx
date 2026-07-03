@@ -9,7 +9,7 @@ import { Children } from 'react'
 // Pauză la hover (ca să poți citi/da click), oprit complet la `prefers-reduced-motion`.
 const FADE = 'linear-gradient(to bottom, transparent, black 7%, black 93%, transparent)'
 
-export default function FeaturedSlider({ children }: { children: React.ReactNode }) {
+export default function FeaturedSlider({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   const items = Children.toArray(children)
   const copy = (prefix: string, hidden = false) =>
     items.map((child, i) => (
@@ -20,7 +20,7 @@ export default function FeaturedSlider({ children }: { children: React.ReactNode
 
   return (
     <div
-      className="featured-slider relative overflow-hidden h-[34rem]"
+      className={`featured-slider overflow-hidden ${className}`}
       style={{ WebkitMaskImage: FADE, maskImage: FADE }}
     >
       <div className="featured-slider-track flex flex-col">

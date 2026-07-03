@@ -59,10 +59,12 @@ export default function Navbar({ initialUser }: { initialUser?: NavUser | null }
     <>
       <nav
         className={clsx(
-          'fixed top-0 left-0 right-0 z-50 transition-all duration-500 shadow-sm',
+          'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
+          // Umbra doar când bara are fundal solid. Pe desktop, bara nesuluită e transparentă
+          // (`lg:bg-transparent`) — o umbră acolo ar „pluti" ca o dungă sub navbar, peste primul slide.
           scrolled
-            ? 'bg-[var(--card)] backdrop-blur-md border-b border-[var(--border)] py-4'
-            : 'bg-[var(--card)] lg:bg-transparent lg:backdrop-blur-none lg:py-7 py-4 backdrop-blur-sm'
+            ? 'bg-[var(--card)] backdrop-blur-md border-b border-[var(--border)] shadow-sm py-4'
+            : 'bg-[var(--card)] lg:bg-transparent lg:backdrop-blur-none lg:py-7 py-4 backdrop-blur-sm shadow-sm lg:shadow-none'
         )}
       >
         <div className="max-w-[1600px] mx-auto px-6 lg:px-16 flex items-center justify-between">

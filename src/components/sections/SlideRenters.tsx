@@ -35,7 +35,7 @@ export default function SlideRenters({ featured, featuredCount }: { featured: Re
     <SlideShell id="caut" className="bg-[var(--bg)]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(0,113,227,0.16),_transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(0,113,227,0.1),_transparent_32%)]" />
 
-      <div className="relative grid items-center gap-10 xl:grid-cols-[1.05fr_0.95fr] xl:gap-14">
+      <div className="relative grid items-stretch gap-10 xl:grid-cols-[1.05fr_0.95fr] xl:gap-14">
         {/* Stânga: mesaj + căutare */}
         <div>
           <div className="section-label mb-5">{t.eyebrow}</div>
@@ -76,17 +76,20 @@ export default function SlideRenters({ featured, featuredCount }: { featured: Re
           </form>
         </div>
 
-        {/* Dreapta: listări reale, alături de hero */}
+        {/* Dreapta: listări reale, simetrice cu blocul hero (aceeași înălțime) */}
         {featuredCount > 0 ? (
-          <div>
+          <div className="flex min-h-0 flex-col">
             <div className="mb-5 flex items-center justify-between gap-4">
               <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">{t.featuredTitle}</h2>
               <Link href="/proprietati" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--brand)]">
                 {t.browse} <ArrowRight size={15} />
               </Link>
             </div>
-            {/* O coloană, ~2 rânduri vizibile, cu auto-scroll continuu și lin. */}
-            <FeaturedSlider>{featured}</FeaturedSlider>
+            {/* Slider (o coloană, auto-scroll lin) care umple restul coloanei → aceeași înălțime ca
+                hero-ul la xl (simetrie). Înălțime fixă sub xl, unde layout-ul e stivuit. */}
+            <div className="relative min-h-0 h-[26rem] xl:h-auto xl:flex-1">
+              <FeaturedSlider className="absolute inset-0">{featured}</FeaturedSlider>
+            </div>
           </div>
         ) : null}
       </div>

@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.3.3 — 2026-07-03
+
+- Slide 1 (homepage): sliderul de „proprietăți recente" e acum **simetric** cu blocul hero (aceeași
+  înălțime, aliniat sus și jos) pe desktop.
+- Cardurile din slider redesenate: **mai multă fotografie** (badge de status peste imagine) și corp
+  de exact **3 rânduri** — titlu / detalii (locație · camere · suprafață) / preț cu **echivalent în
+  euro** (adăugat și la chirie, nu doar la vânzare).
+- Fix: eliminată **dunga de umbră** de sub navbar. Bara transparentă de pe desktop (nesuluită)
+  proiecta o umbră (`shadow-sm`) peste primul slide — acum umbra apare doar când bara are fundal
+  solid (suluită sau pe mobil).
+
 ## 1.3.2 — 2026-07-03
 
 - Slide 1 (homepage): „proprietăți recente" e acum un **slider vertical** — o coloană, ~2 rânduri
