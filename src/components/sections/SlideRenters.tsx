@@ -35,20 +35,16 @@ export default function SlideRenters({ featured, featuredCount }: { featured: Re
     <SlideShell id="caut" className="bg-[var(--bg)]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(0,113,227,0.16),_transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(0,113,227,0.1),_transparent_32%)]" />
 
-      {/* La xl grila umple slide-ul: înălțime = viewport − padding-ul din SlideShell (pt-32+pb-24=14rem),
-          iar rândul unic e 1fr ca ambele coloane să se întindă pe toată înălțimea. */}
-      <div className="relative grid items-stretch gap-10 xl:grid-cols-[1.05fr_0.95fr] xl:gap-14 xl:min-h-[calc(100svh-14rem)] xl:[grid-template-rows:1fr]">
-        {/* Stânga: mesaj (sus) + căutare (jos), distribuite pe toată înălțimea slide-ului */}
-        <div className="flex flex-col justify-between gap-10">
-          <div>
-            <div className="section-label mb-5">{t.eyebrow}</div>
-            <h1 className="font-sans text-[clamp(40px,5vw,68px)] font-semibold leading-[1.0] tracking-[-0.04em] text-[var(--text)]">
-              {t.title}
-            </h1>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-[var(--muted)]">{t.subtitle}</p>
-          </div>
+      <div className="relative grid items-stretch gap-10 xl:grid-cols-[1.05fr_0.95fr] xl:gap-14">
+        {/* Stânga: mesaj + căutare */}
+        <div>
+          <div className="section-label mb-5">{t.eyebrow}</div>
+          <h1 className="font-sans text-[clamp(40px,5vw,68px)] font-semibold leading-[1.0] tracking-[-0.04em] text-[var(--text)]">
+            {t.title}
+          </h1>
+          <p className="mt-6 max-w-xl text-lg leading-8 text-[var(--muted)]">{t.subtitle}</p>
 
-          <form onSubmit={handleSearch} className="grid gap-3 rounded-4xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-[var(--shadow)] sm:grid-cols-[170px_minmax(0,1fr)_auto]">
+          <form onSubmit={handleSearch} className="mt-8 grid gap-3 rounded-4xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-[var(--shadow)] sm:grid-cols-[170px_minmax(0,1fr)_auto]">
             <div className="relative">
               <select
                 value={txType}

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.5 — 2026-07-03
+
+- Slide 1 (homepage): revenit la dimensiunile anterioare (v1.3.3) pentru secțiunea „caut o locuință"
+  și pentru sliderul de proprietăți — fără întinderea pe toată înălțimea slide-ului. Blocul rămâne
+  la mărimea lui naturală (simetric), chiar dacă lasă spațiu gol sus/jos.
+
 ## 1.3.4 — 2026-07-03
 
 - Slide 1 (homepage): conținutul **umple întreg slide-ul** pe desktop (înălțime = viewport minus
