@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.3.7 — 2026-07-03
+
+- Fix: `notify()` nu mai poate strica un flux de business deja finalizat. În `settleRent()`/
+  `settleSale()` notificarea rula DUPĂ comiterea tranzacției cu bani — un insert eșuat arunca
+  eroare după încasare (webhook-ul Stripe dădea 500 și reîncerca, iar claim-ul idempotent sărea
+  definitiv peste notificare și audit; utilizatorul vedea eroare la o plată reușită). Acum
+  `notify()` urmează modelul `recordAuditSafe`: nu aruncă niciodată, eșecul se loghează prin
+  `captureException`. Se aplică tuturor celor ~44 de apeluri (oferte, contracte, KYC, dunning etc.).
+- Fix securitate: `errorMessage()` nu mai scurge erori interne către utilizator. Orice excepție
+  care nu e o eroare „de business" (aruncată ca `new Error('mesaj în română')`) — erori Prisma cu
+  nume de tabele, `TypeError` din fetch, erori de SDK — nu mai ajunge brută în toast: e trimisă la
+  `captureException`, iar utilizatorul vede mesajul generic. Mesajele curate trec neschimbate.
+
 ## 1.3.6 — 2026-07-03
 
 - Fix: fundalul (gradientul) primului slide se **întinde pe tot ecranul**, nu mai e „încutiat" la
