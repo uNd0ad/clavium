@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import { headers } from 'next/headers'
 import { Toaster } from 'sonner'
 import CookieBanner from '@/components/layout/CookieBanner'
+import DevNoticeBanner from '@/components/layout/DevNoticeBanner'
 import { LocaleProvider } from '@/lib/i18n/client'
 import { getServerDictionary } from '@/lib/i18n/server'
 import { APP_URL } from '@/lib/constants'
@@ -59,6 +60,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <LocaleProvider locale={locale} dict={dict}>
           {children}
           <CookieBanner />
+          <DevNoticeBanner />
           <Toaster
             position="bottom-right"
             richColors

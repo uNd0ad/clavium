@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.8 — 2026-07-03
+
+- Adăugat **anunț „versiune de dezvoltare"** pe toate paginile (inclusiv producție): pastilă
+  discretă în stânga-jos care avertizează că platforma e în lucru și unele funcții pot fi
+  incomplete. Închidere per sesiune (revine la vizita următoare), text în RO/EN, fără flash la
+  SSR (același model ca bannerul de cookie). De scos din layout la lansarea produsului final.
+
 ## 1.3.7 — 2026-07-03
 
 - Fix: `notify()` nu mai poate strica un flux de business deja finalizat. În `settleRent()`/

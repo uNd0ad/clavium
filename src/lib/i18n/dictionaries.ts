@@ -104,6 +104,10 @@ const ro = {
       online: 'online, fără notar',
     },
   },
+  devNotice: {
+    message: 'Versiune de dezvoltare — platforma este în lucru, unele funcții pot fi incomplete.',
+    dismiss: 'Închide anunțul',
+  },
   footer: {
     tagline: 'Prima platformă din România pentru tranzacții imobiliare curate, rapide și complet digitale.',
     colPlatform: 'Platformă',
@@ -221,6 +225,10 @@ const en: Dictionary = {
       contracts: 'contracts signed',
       online: 'online, no notary',
     },
+  },
+  devNotice: {
+    message: 'Development preview — this platform is a work in progress, some features may be incomplete.',
+    dismiss: 'Dismiss notice',
   },
   footer: {
     tagline: 'Romania’s first platform for clean, fast and fully digital real-estate transactions.',
