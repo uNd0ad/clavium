@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.2 — 2026-07-10
+
+- Fix favicon pe Safari: Safari cere `/favicon.ico` la rădăcină (care dădea 404) și ignoră adesea
+  PNG-ul din `<link rel="icon">`. Adăugat `src/app/favicon.ico` (ICO clasic multi-dimensiune:
+  16/32/48 px, 32-bit cu alpha, generat din același logo) — Next îl servește automat la
+  `/favicon.ico`. Adăugat și `src/app/apple-icon.png` (180×180, `apple-touch-icon` pentru
+  Favorites/ecran principal iOS). Notă: Safari ține favicon-urile într-un cache propriu — poate fi
+  nevoie de golirea cache-ului sau de o vizită într-un tab nou ca să apară.
+
 ## 1.4.1 — 2026-07-10
 
 - Fix: linkurile din emailuri (verificare adresă, resetare parolă, alerte căutări salvate) indicau
