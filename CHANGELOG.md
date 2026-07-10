@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.4.1 — 2026-07-10
+
+- Fix: linkurile din emailuri (verificare adresă, resetare parolă, alerte căutări salvate) indicau
+  `localhost:3000` în producție — `APP_URL` nu era setat pe Vercel, iar fallback-ul era localhost.
+  Acum `APP_URL` se deduce automat pe Vercel (domeniul de producție pe deployment-ul de producție,
+  URL-ul deployment-ului pe Preview); localhost rămâne doar pentru dev local. Avertisment la pornire
+  când lipsește complet. Setează `APP_URL` explicit când există domeniu propriu — are prioritate.
+- Favicon nou din logo-ul Clavium: `src/app/icon.png` (servit + legat automat de Next) — fundal alb
+  transparent, decupat pătrat, 512×512; `public/favicon.png` actualizat identic. Până acum niciun
+  favicon nu era legat în pagini (browserele primeau 404).
+
 ## 1.4.0 — 2026-07-10
 
 ### Modele de contract reale, editabile fără cod

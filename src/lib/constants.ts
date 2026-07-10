@@ -16,7 +16,22 @@ if (isProdDeploy && (!secret || secret === 'dev_secret_clavium' || secret.length
 }
 export const JWT_SECRET = secret ?? 'dev_secret_clavium'
 
-export const APP_URL = process.env.APP_URL ?? 'http://localhost:3000'
+// URL-ul public al aplicației — baza tuturor linkurilor absolute (emailuri de verificare /
+// resetare parolă, alerte căutări salvate, sitemap, metadataBase). Prioritate:
+//   1. APP_URL explicit (setează-l în producție pe domeniul real);
+//   2. pe Vercel, fără APP_URL: domeniul de producție al proiectului (doar pe deployment-ul de
+//      producție), altfel URL-ul deployment-ului curent (Preview) — necesită „Automatically
+//      expose System Environment Variables” (activ implicit);
+//   3. localhost (dev local).
+function resolveAppUrl(): string {
+  if (process.env.APP_URL) return process.env.APP_URL
+  if (process.env.VERCEL_ENV === 'production' && process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  }
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
+  return 'http://localhost:3000'
+}
+export const APP_URL = resolveAppUrl()
 export const COMMISSION_PERCENT = 5
 // Avansul (arvuna) plătit la activarea antecontractului de vânzare, ca procent din preț.
 export const SALE_DEPOSIT_PERCENT = 10

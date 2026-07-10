@@ -29,6 +29,9 @@ export function validateEnv(): void {
   if (!process.env.SMTP_HOST || isPlaceholder(process.env.SMTP_PASS)) {
     warnings.push('Email neconfigurat (SMTP_HOST / SMTP_USER / SMTP_PASS) — emailurile vor eșua.')
   }
+  if (!process.env.APP_URL && !process.env.VERCEL_URL) {
+    warnings.push('APP_URL nesetat — linkurile absolute (verificare email, resetare parolă, sitemap) vor indica localhost.')
+  }
   if (!process.env.SMS_API_URL || !process.env.SMS_API_KEY || !process.env.SMS_SENDER_ID) {
     warnings.push('SMS neconfigurat (SMS_API_URL / SMS_API_KEY / SMS_SENDER_ID) — OTP-ul prin SMS va eșua.')
   }
