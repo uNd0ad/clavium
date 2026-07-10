@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.4.3 — 2026-07-10
+
+- Logo-ul Clavium (varianta din `logo.svg` — fundal negru, culori mai bogate) e acum sursa tuturor
+  icon-urilor: favicon (icon.png, favicon.ico 16/32/48, apple-icon.png, public/favicon.png), cu
+  negrul eliminat ca transparență + un-matting pe margini (fără franjuri închise pe fundal deschis).
+- Navbar: textul „Clavium.ro" e înlocuit cu logo-ul (`public/logo.png`, 40px, `next/image` cu
+  `priority`; `aria-label` păstrat pentru accesibilitate). Subsolul rămâne cu text.
+- Notă: `logo.svg` e de fapt un PNG împachetat în SVG (nu vector real) — asset-urile sunt generate
+  din rasterul încorporat.
+
 ## 1.4.2 — 2026-07-10
 
 - Fix favicon pe Safari: Safari cere `/favicon.ico` la rădăcină (care dădea 404) și ignoră adesea

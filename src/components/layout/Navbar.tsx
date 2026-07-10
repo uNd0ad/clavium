@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Menu, X, ArrowRight } from 'lucide-react'
 import clsx from 'clsx'
@@ -68,8 +69,8 @@ export default function Navbar({ initialUser }: { initialUser?: NavUser | null }
         )}
       >
         <div className="max-w-[1600px] mx-auto px-6 lg:px-16 flex items-center justify-between">
-          <Link href="/" className="font-sans text-xl font-semibold tracking-wide text-[var(--text)] no-underline">
-            Clavium<span className="text-[var(--brand)]">.ro</span>
+          <Link href="/" aria-label="Clavium.ro" className="flex items-center no-underline">
+            <Image src="/logo.png" alt="Clavium.ro" width={74} height={80} priority className="h-10 w-auto" />
           </Link>
 
           <div className="hidden lg:flex items-center gap-10">
