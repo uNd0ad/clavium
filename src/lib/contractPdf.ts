@@ -10,6 +10,7 @@ import path from 'node:path'
 import { PDFDocument, rgb, type PDFFont, type PDFPage } from 'pdf-lib'
 import fontkit from '@pdf-lib/fontkit'
 import type { ContractDocument } from './contractDocument'
+import { renderContractSections } from './contractTemplate'
 
 const FONT_DIR = path.join(process.cwd(), 'src', 'assets', 'fonts')
 // Citite o singură dată; embedFont le subsetează per-document. Exportate ca să le reutilizeze
@@ -140,44 +141,21 @@ export async function buildContractPdf(
   }
   cur.rule()
 
-  // Clauze de fond (specifice tipului).
-  if (isSale) {
-    cur.text('1. Obiectul antecontractului', { size: 12, bold: true })
+  // Clauzele de fond vin din șablonul editabil config/contracts/<tip>.md (aceeași sursă ca
+  // pagina contractului) — numerotate automat, în ordinea din fișier.
+  let nextSection = 1
+  for (const section of renderContractSections(doc)) {
+    cur.text(`${nextSection}. ${section.heading}`, { size: 12, bold: true })
     cur.gap(2)
-    cur.text(
-      `Vânzătorul se obligă să vândă, iar cumpărătorul să cumpere imobilul „${doc.property.title}”, situat în ` +
-        `${doc.property.location}, prin încheierea contractului de vânzare-cumpărare în formă autentică la notar.`,
-      { color: MUTED }
-    )
-    cur.gap(10)
-    cur.text('2. Prețul și avansul', { size: 12, bold: true })
-    cur.gap(2)
-    cur.text(
-      `Prețul de vânzare este de ${doc.price}. La semnarea antecontractului, cumpărătorul achită un avans ` +
-        `(arvună) de ${doc.deposit}, urmând ca diferența să fie plătită la finalizarea tranzacției.`,
-      { color: MUTED }
-    )
-  } else {
-    cur.text('1. Obiectul contractului', { size: 12, bold: true })
-    cur.gap(2)
-    cur.text(
-      `Proprietarul închiriază chiriașului imobilul „${doc.property.title}”, situat în ${doc.property.location}, ` +
-        `pentru o durată de ${doc.months} luni, în perioada ${doc.startDate} – ${doc.endDate}.`,
-      { color: MUTED }
-    )
-    cur.gap(10)
-    cur.text('2. Chiria și garanția', { size: 12, bold: true })
-    cur.gap(2)
-    cur.text(
-      `Chiria lunară este de ${doc.rent}, plătibilă până în data de ${doc.dueDay} a fiecărei luni. ` +
-        `Garanția (depozitul) este de ${doc.deposit} și se restituie la încetarea contractului, în condițiile legii.`,
-      { color: MUTED }
-    )
+    for (const paragraph of section.paragraphs) {
+      cur.text(paragraph, { color: MUTED })
+      cur.gap(5)
+    }
+    cur.gap(5)
+    nextSection += 1
   }
-  cur.gap(10)
 
   // Clauze speciale (opțional).
-  let nextSection = 3
   if (doc.clauses) {
     cur.text(`${nextSection}. Clauze speciale`, { size: 12, bold: true })
     cur.gap(2)
@@ -207,11 +185,11 @@ export async function buildContractPdf(
     cur.text(`Amprentă document (SHA-256): ${opts.documentHash}`, { size: 8, color: MUTED, lineGap: 2 })
   }
 
-  // Subsol.
+  // Subsol. Mențiunea despre actul autentic e specifică antecontractului de vânzare.
   cur.rule()
   cur.text(
-    'Document generat de Clavium.ro · semnătură electronică conformă eIDAS / Legea 214/2024. ' +
-      'Antecontractul nu transferă proprietatea; transferul se realizează prin act autentic la notar.',
+    'Document generat de Clavium.ro · semnătură electronică conformă eIDAS / Legea 214/2024.' +
+      (isSale ? ' Antecontractul nu transferă proprietatea; transferul se realizează prin act autentic la notar.' : ''),
     { size: 8, color: MUTED, lineGap: 2 }
   )
 

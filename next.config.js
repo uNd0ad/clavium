@@ -37,9 +37,12 @@ const nextConfig = {
   allowedDevOrigins: ['127.0.0.1', 'localhost', '192.168.1.227'],
   // Fonturile Noto Sans (citite prin fs în contractPdf.ts) trebuie incluse în bundle-ul
   // funcției serverless care generează PDF-ul — altfel readFileSync eșuează în producție.
+  // Idem șabloanele de contract (config/contracts/*.md, citite de contractTemplate.ts) pentru
+  // PDF și pentru pagina contractului.
   outputFileTracingIncludes: {
-    '/api/contracte/[id]/pdf': ['./src/assets/fonts/**'],
+    '/api/contracte/[id]/pdf': ['./src/assets/fonts/**', './config/contracts/**'],
     '/api/plati/[id]/chitanta': ['./src/assets/fonts/**'],
+    '/dashboard/contracte/[id]': ['./config/contracts/**'],
   },
   async headers() {
     return [{ source: '/(.*)', headers: securityHeaders }]

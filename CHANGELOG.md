@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.4.0 — 2026-07-10
+
+### Modele de contract reale, editabile fără cod
+- Textul juridic al contractelor trăiește acum în **fișiere editabile**: `config/contracts/inchiriere.md`
+  (contract de închiriere — 13 secțiuni: părți, obiect, durată cu tacita relocațiune exclusă, chirie și
+  penalități, garanție, obligațiile părților, încetare, forță majoră, GDPR, notificări, litigii,
+  semnătură electronică) și `config/contracts/vanzare.md` (antecontract — arvună confirmatorie
+  art. 1544 Cod civil, termen pentru actul autentic, declarațiile vânzătorului, predare).
+- Sintaxă simplă, documentată în fișier: `## Titlu` = secțiune (numerotare automată), linie goală =
+  paragraf, `- ` = sub-punct, `{{placeholder}}` = datele contractului, `<!-- -->` = comentariu.
+  Placeholder necunoscut rămâne vizibil în document + warning în log.
+- Parser nou (`src/lib/contractTemplate.ts`) — **aceeași sursă** pentru PDF (`contractPdf.ts`) și
+  pagina contractului (`/dashboard/contracte/[id]`): editezi fișierul, ambele randări se actualizează.
+  În dev fișierul e recitit la fiecare cerere (fără restart). Șabloanele sunt incluse explicit în
+  bundle-urile serverless (outputFileTracingIncludes).
+- Fix: subsolul PDF-ului de închiriere purta mențiunea notarială specifică antecontractului de
+  vânzare — acum apare doar la vânzare.
+- Teste noi pentru parser + integrare cu șabloanele reale (rezistente la editarea fișierelor).
+- Notă (în antetul șabloanelor): PDF-ul contractelor deja semnate se regenerează din șablonul
+  curent — persistarea documentului final semnat rămâne pe ROADMAP; avizarea juridică e în
+  continuare necesară înainte de lansarea plătită.
+
 ## 1.3.8 — 2026-07-03
 
 - Adăugat **anunț „versiune de dezvoltare"** pe toate paginile (inclusiv producție): pastilă

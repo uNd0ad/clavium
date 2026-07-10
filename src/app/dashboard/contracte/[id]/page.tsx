@@ -11,6 +11,7 @@ import Stars from '@/components/dashboard/Stars'
 import ReviewForm from '@/components/dashboard/ReviewForm'
 import { getCurrentUser } from '@/lib/session'
 import { getContractDetail } from '@/lib/contractDocument'
+import { renderContractSections } from '@/lib/contractTemplate'
 import { getAuditTrail } from '@/lib/audit'
 import { canReview, getContractReviews } from '@/lib/reviews'
 import { prisma } from '@/lib/prisma'
@@ -40,6 +41,8 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
 
   const { doc, canEdit, canEditSale, canSign, documentHash, canPay, dueAmount, dueType, terms, saleTerms, canReturnDeposit, canCancelSale, canTerminate, canRenew, depositAmount, canAutopay, autopayEnabled } = detail
   const isSale = doc.type === 'VANZARE'
+  // Clauzele contractului, din șablonul editabil (config/contracts) — aceeași sursă ca PDF-ul.
+  const sections = renderContractSections(doc)
   const [auditTrail, reviewEligibility, reviews] = await Promise.all([
     getAuditTrail('CONTRACT', doc.id),
     canReview(doc.id, user.id),
@@ -94,49 +97,23 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
         </div>
 
         <div className="mt-8 space-y-5 text-base leading-7 text-[var(--muted)]">
-          {isSale ? (
-            <>
-              <div>
-                <h2 className="text-lg font-semibold text-[var(--text)]">1. Obiectul antecontractului</h2>
-                <p className="mt-2">
-                  Vânzătorul se obligă să vândă, iar cumpărătorul să cumpere imobilul „{doc.property.title}”,
-                  situat în {doc.property.location}, prin încheierea contractului de vânzare-cumpărare în formă autentică la notar.
-                </p>
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-[var(--text)]">2. Prețul și avansul</h2>
-                <p className="mt-2">
-                  Prețul de vânzare este de {doc.price}. La semnarea antecontractului, cumpărătorul achită un avans (arvună)
-                  de {doc.deposit}, urmând ca diferența să fie plătită la finalizarea tranzacției.
-                </p>
-              </div>
-            </>
-          ) : (
-            <>
-              <div>
-                <h2 className="text-lg font-semibold text-[var(--text)]">1. Obiectul contractului</h2>
-                <p className="mt-2">
-                  Proprietarul închiriază chiriașului imobilul „{doc.property.title}”, situat în {doc.property.location},
-                  pentru o durată de {doc.months} luni, în perioada {doc.startDate} – {doc.endDate}.
-                </p>
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-[var(--text)]">2. Chiria și garanția</h2>
-                <p className="mt-2">
-                  Chiria lunară este de {doc.rent}, plătibilă până în data de {doc.dueDay} a fiecărei luni.
-                  Garanția (depozitul) este de {doc.deposit} și se restituie la încetarea contractului, în condițiile legii.
-                </p>
-              </div>
-            </>
-          )}
+          {/* Clauzele vin din șablonul editabil config/contracts/<tip>.md — aceeași sursă ca PDF-ul. */}
+          {sections.map((section, index) => (
+            <div key={section.heading}>
+              <h2 className="text-lg font-semibold text-[var(--text)]">{index + 1}. {section.heading}</h2>
+              {section.paragraphs.map((paragraph, pIndex) => (
+                <p key={pIndex} className="mt-2">{paragraph}</p>
+              ))}
+            </div>
+          ))}
           {doc.clauses ? (
             <div>
-              <h2 className="text-lg font-semibold text-[var(--text)]">3. Clauze speciale</h2>
+              <h2 className="text-lg font-semibold text-[var(--text)]">{sections.length + 1}. Clauze speciale</h2>
               <p className="mt-2 whitespace-pre-line">{doc.clauses}</p>
             </div>
           ) : null}
           <div>
-            <h2 className="text-lg font-semibold text-[var(--text)]">{doc.clauses ? '4' : '3'}. Semnături electronice (QES)</h2>
+            <h2 className="text-lg font-semibold text-[var(--text)]">{doc.clauses ? sections.length + 2 : sections.length + 1}. Semnături electronice (QES)</h2>
             <div className="mt-2 grid gap-3 sm:grid-cols-2">
               {([
                 { party: doc.owner, signed: doc.signedByOwner, role: 'OWNER' as const },
