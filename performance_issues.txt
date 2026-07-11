@@ -1,0 +1,29 @@
+The Protected Audience API is deprecated and will be removed in a future release
+StorageType.persistent is deprecated. Please use standardized navigator.storage instead.
+The Shared Storage API is deprecated and will be removed in a future release.
+
+1 source
+main.js:1
+
+--- RESOLUTION (iul 2026) ---
+
+1. The three deprecation warnings are NOT from Clavium. No code in src/, public/, or the client
+   dependencies uses Protected Audience, Shared Storage, or StorageType.persistent, and the
+   production page loads only /_next/static/chunks/*.js — there is no script named "main.js".
+   "main.js:1" is a Chrome EXTENSION content script. Verify: open www.clavium.ro in Incognito
+   (extensions disabled) → the Issues panel will be clean. Nothing to fix in the app.
+
+2. Real performance finding (fixed in vercel.json): the Vercel function ran in iad1 (US East)
+   while the Neon database is in eu-central-1 (Frankfurt) — proven by the response header
+   x-vercel-id: fra1::iad1::... Every DB query paid a ~100ms transatlantic round trip.
+   Measured on prod: cold start TTFB 3.4s, warm TTFB 0.8–1.1s on every page (all routes are
+   server-rendered per request; cache-control: no-store, cf-cache-status: DYNAMIC).
+   Fix: "regions": ["fra1"] in vercel.json — takes effect on the NEXT DEPLOY. Expected warm
+   TTFB after: ~150–300ms.
+
+3. Later candidates (only if still slow after the region fix):
+   - every route is dynamic (ƒ), incl. /termeni, /confidentialitate — the layout reads
+     headers()/cookies; static pages could be split out or given revalidate;
+   - homepage queries run per request by design (fresh photos) — cheap once DB is co-located;
+   - cold starts: keep heavy deps (@vladmandic/face-api, pdf-lib) out of common entrypoints
+     (already route-scoped), consider Vercel fluid compute / warmer traffic.

@@ -1,0 +1,66 @@
+CONTRACT TEMPLATE CAVEATS — to revisit (written iul 2026, after merging Contract_inchiriere.docx
+into config/contracts/inchiriere.md)
+
+1. RETROACTIVE PDF REGENERATION
+   Edits to config/contracts/*.md change the regenerated PDF of contracts that are ALREADY
+   SIGNED, because the final signed PDF is not persisted separately yet (only regenerated from
+   the template + contract data on demand). Before any post-launch template edit, ship the
+   ROADMAP item "persist final signed contract PDF" (store the exact signed bytes in R2 at
+   signing time; regeneration only as fallback). Until then, substantive template edits on
+   production data are unsafe.
+
+2. LEGAL SIGN-OFF (blocker before paid launch)
+   The merged text (titlu executoriu, pact comisoriu, ANAF, certificat energetic, PAD, regim
+   hotelier ban, art. 1825 preaviz) has NOT been reviewed by a lawyer. ROADMAP Phase 3 item.
+   Same applies to config/contracts/vanzare.md.
+
+3. ANNEXES NOT GENERATED (dropped from the docx merge by design)
+   Contract_inchiriere.docx contains three annexes the platform does not produce:
+     - Anexa 1: proces-verbal de predare-primire (keys, meter indexes, condition checklist)
+     - Anexa 2: inventar bunuri (furniture/appliance table with condition + serials)
+     - Anexa 3: regulile locuinței (smoking/pets/quiet-hours checkboxes)
+   The template engine (contractTemplate.ts) only supports headings/paragraphs/sub-points —
+   no tables or checkboxes. These need a separate generated-documents feature (own templates,
+   own data model for meter readings + inventory, signed alongside the contract). The contract
+   text already REFERENCES the proces-verbal as "parte integrantă", so generating it is the
+   natural next step; until then owners must do it on paper.
+
+4. DATA THE PLATFORM DOES NOT COLLECT (silently reworded in the merge)
+   The docx expects: C.I. seria/nr., IBAN, Cartea Funciară / nr. cadastral, certificat
+   energetic nr., cohabitant names/CNPs, max occupancy. The template now says these come from
+   the header or "clauzele speciale". If we want them printed properly, add fields to the
+   contract creation flow (owner side: CF/cadastral + energetic cert; tenant side: cohabitants).
+
+5. DELIBERATE DEVIATIONS FROM THE DOCX (platform model — do not "fix" accidentally)
+   - Payment exclusively via Clavium.ro (docx allowed cash + chitanță).
+   - Tacita relocațiune EXCLUDED (docx allowed it per art. 1810); renewal only via platform.
+   - Owner-side denunțare for personal housing needs (art. 1825 alin. 2) NOT included.
+   - Party identification blanks removed — header injects CNP/address/email automatically.
+
+6. HARD-CODED VALUES NOW IN THE TEMPLATE (were fill-in blanks in the docx)
+   Penalties 0.1%/day capped at principal; reziliere after 30 days non-payment + 15-day pact
+   comisoriu notice; garanție restituted in 30 days; access notice 24h; viewings in last 30
+   days; force majeure: 5-day notification, denounceable after 30 days. If owners ask for
+   configurability, these become contract-level fields ("clauze speciale" covers one-offs).
+
+7. TERMENI ȘI CONDIȚII — PLACEHOLDERS [●] TO FILL (iul 2026)
+   The /termeni page (src/app/termeni/content.ts, transcribed from "Termeni și Condiții
+   Clavium.ro.pdf") still contains [●] markers that only the operator can fill:
+     - legal entity: full name, sediu social, nr. Reg. Com., CUI, capital social, cont bancar,
+       legal representative, VAT code (§1, §55, Anexa 1);
+     - dedicated e-mails: reclamații, raportare conținut ilegal, protecția datelor, retragere,
+       vulnerabilități (§1, §26, §31, §36, §46, §55);
+     - phone + correspondence address (§1, §55);
+     - decisions: Clavium [NU DEȚINE / DEȚINE] fondurile utilizatorilor (§22 — depends on the
+       Stripe money flow; legal call), complaint response term [15/30] zile (§46), liability cap
+       [12] luni (§39), DSA appeal term (§32), court venue [LOCALITATEA SEDIULUI] (§49);
+     - illegal-content report form URL (§31).
+   Filled from the codebase: payment processor = Stripe (§22); privacy policy URL (§38);
+   contact@clavium.ro. Legal sign-off applies to this document too (see item 2).
+
+8. HOUSEKEEPING
+   - Contract_inchiriere.docx sits untracked in the repo root — decide: move to docs/ or a
+     legal/ folder, or keep out of git (it is the source reference for this merge).
+   - config/contracts/inchiriere.md is UNCOMMITTED (parked with ROADMAP/README edits).
+   - ANAF registration is stated as the owner's duty in the contract, but the platform could
+     assist/track it (dashboard reminder + upload of the registered contract) — feature idea.

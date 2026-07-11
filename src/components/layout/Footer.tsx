@@ -34,7 +34,8 @@ export default function Footer() {
                 { label: dict.footer.terms, href: '/termeni' },
                 { label: dict.footer.privacy, href: '/confidentialitate' },
                 { label: 'ANPC', href: 'https://anpc.ro' },
-                { label: 'SOL (litigii online)', href: 'https://ec.europa.eu/consumers/odr' },
+                // Platforma europeană SOL/ODR a fost închisă (iul 2025) — linkul corect e SAL (ANPC).
+                { label: 'SAL (litigii)', href: 'https://anpc.ro/ce-este-sal/' },
               ],
             },
             {

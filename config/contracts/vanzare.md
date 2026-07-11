@@ -90,8 +90,8 @@ zi lucrătoare, sau în prima zi lucrătoare următoare.
 
 Prezentul antecontract este guvernat de legea română (Codul civil). Părțile vor încerca
 soluționarea amiabilă a oricărui diferend; în lipsa unei soluții, competența aparține instanțelor
-judecătorești de la locul situării Imobilului. Consumatorii se pot adresa și ANPC (anpc.ro) sau
-platformei europene SOL.
+judecătorești de la locul situării Imobilului. Consumatorii se pot adresa și ANPC (anpc.ro),
+inclusiv structurii SAL pentru soluționarea alternativă a litigiilor.
 
 ## Semnătura electronică
 

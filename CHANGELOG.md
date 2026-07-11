@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.4.5 — 2026-07-12
+
+- Termeni și condiții noi: pagina `/termeni` afișează acum documentul juridic complet (55 de
+  secțiuni + 3 anexe, transcris din „Termeni și Condiții Clavium.ro.pdf"), cu cuprins cu ancore.
+  Textul stă în `src/app/termeni/content.ts` (date, nu logică); marcajele `[●]` din document
+  (datele societății, adrese dedicate etc.) rămân vizibile până sunt completate — lista lor e în
+  `contract_caveats.txt`. Procesatorul de plăți e completat factual (Stripe).
+- Contract de închiriere consolidat (`config/contracts/inchiriere.md`) după modelul juridic
+  „Contract_inchiriere.docx": titlu executoriu (art. 1798, 1809, 1816 Cod civil), pact comisoriu
+  cu notificare de 15 zile (art. 1830), înregistrare ANAF (art. 120 alin. 6¹ Cod fiscal),
+  certificat energetic, interdicție regim hotelier (Airbnb/Booking), secțiuni noi „Utilitățile și
+  cheltuielile" + „Accesul în Imobil", garanție detaliată, indexare anuală. Adaptări: plata doar
+  prin platformă, tacita relocațiune exclusă, datele părților din antet. Anexele (proces-verbal,
+  inventar, regulile locuinței) rămân de implementat — vezi `contract_caveats.txt`.
+- Platforma europeană SOL/ODR a fost închisă (iul 2025): linkul din subsol trimite acum la SAL
+  (ANPC), iar șabloanele de contract (închiriere + vânzare) trimit la ANPC/SAL în loc de SOL.
+- Note de lucru adăugate în repo: `contract_caveats.txt` (decizii amânate pe contracte/termeni) și
+  `performance_issues.txt` (diagnosticul TTFB + regiunea fra1, rezolvat în v1.4.4).
+
 ## 1.4.4 — 2026-07-11
 
 - Performanță: funcțiile Vercel rulau în `iad1` (SUA), iar baza de date Neon e în `eu-central-1`
