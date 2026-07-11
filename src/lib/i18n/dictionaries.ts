@@ -98,11 +98,6 @@ const ro = {
       ctaPrimary: 'Începe gratuit',
       ctaSecondary: 'Vezi proprietățile',
     },
-    stats: {
-      properties: 'proprietăți disponibile',
-      contracts: 'contracte semnate',
-      online: 'online, fără notar',
-    },
   },
   devNotice: {
     message: 'Versiune de dezvoltare — platforma este în lucru, unele funcții pot fi incomplete.',
@@ -219,11 +214,6 @@ const en: Dictionary = {
       ],
       ctaPrimary: 'Start free',
       ctaSecondary: 'Browse properties',
-    },
-    stats: {
-      properties: 'available properties',
-      contracts: 'contracts signed',
-      online: 'online, no notary',
     },
   },
   devNotice: {

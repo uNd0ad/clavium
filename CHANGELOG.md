@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.6 — 2026-07-12
+
+- Homepage, slide 4: eliminat cardul „dovadă socială" (contoare proprietăți/contracte + insigna
+  eIDAS · Legea 214/2024) — la început contoarele reale arată platforma goală, nu credibilă.
+  Curățat întregul lanț rămas nefolosit: prop-ul `stats` din `SlideHowItWorks`, cele două
+  interogări `count` pe fiecare request de homepage (`getHomeData`) și cheile i18n `home.stats`
+  (ro + en).
+
 ## 1.4.5 — 2026-07-12
 
 - Termeni și condiții noi: pagina `/termeni` afișează acum documentul juridic complet (55 de

@@ -1,18 +1,16 @@
 'use client'
 
 import Link from 'next/link'
-import { Search, Handshake, FileText, PenLine, ShieldCheck, ArrowRight } from 'lucide-react'
+import { Search, Handshake, FileText, PenLine, ArrowRight } from 'lucide-react'
 import SlideShell from './SlideShell'
 import { useDict } from '@/lib/i18n/client'
 
 const STEP_ICONS = [Search, Handshake, FileText, PenLine]
 
-// Slide 4 — cum funcționează: proces în 4 pași + dovadă (contoare reale) + încredere (eIDAS/214) +
-// CTA de închidere. `stats` vine din DB (page.tsx).
-export default function SlideHowItWorks({ stats }: { stats: { properties: number; contracts: number } }) {
+// Slide 4 — cum funcționează: proces în 4 pași + CTA de închidere.
+export default function SlideHowItWorks() {
   const dict = useDict()
   const t = dict.home.how
-  const ronFmt = new Intl.NumberFormat('ro-RO')
 
   return (
     <SlideShell id="cum-functioneaza" className="bg-[var(--surface-strong)]">
@@ -38,25 +36,6 @@ export default function SlideHowItWorks({ stats }: { stats: { properties: number
             </div>
           )
         })}
-      </div>
-
-      {/* Dovadă socială + încredere */}
-      <div className="mt-10 grid items-center gap-6 rounded-4xl border border-[var(--border)] bg-[var(--card)] p-8 sm:grid-cols-[1fr_auto]">
-        <div className="grid grid-cols-3 gap-6">
-          {[
-            { value: ronFmt.format(stats.properties), label: dict.home.stats.properties },
-            { value: ronFmt.format(stats.contracts), label: dict.home.stats.contracts },
-            { value: '100%', label: dict.home.stats.online },
-          ].map((s) => (
-            <div key={s.label}>
-              <div className="text-3xl font-semibold tracking-[-0.02em] text-[var(--text)]">{s.value}</div>
-              <div className="mt-1 text-sm text-[var(--muted)]">{s.label}</div>
-            </div>
-          ))}
-        </div>
-        <div className="flex items-center gap-2 text-sm text-[var(--muted)] sm:justify-end">
-          <ShieldCheck size={16} className="text-[var(--brand)]" /> eIDAS · Legea 214/2024
-        </div>
       </div>
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
