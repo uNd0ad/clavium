@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.4 — 2026-07-11
+
+- Performanță: funcțiile Vercel rulau în `iad1` (SUA), iar baza de date Neon e în `eu-central-1`
+  (Frankfurt) — fiecare interogare plătea ~100ms dus-întors transatlantic (TTFB măsurat pe prod:
+  ~0,8–1,1s la cald, ~3,4s la rece). Adăugat `"regions": ["fra1"]` în `vercel.json` ca funcțiile
+  să ruleze lângă baza de date; TTFB așteptat după deploy: ~150–300ms.
+
 ## 1.4.3 — 2026-07-10
 
 - Logo-ul Clavium (varianta din `logo.svg` — fundal negru, culori mai bogate) e acum sursa tuturor
