@@ -1,6 +1,6 @@
-# Clavium.ro — Imobiliare fără intermediari
+# Vatrio.ro — Imobiliare fără intermediari
 
-**Clavium** is a Romanian-language real estate platform that lets property owners and tenants transact **directly, without intermediaries**: discover properties, negotiate through offers, sign rental contracts online (with QES — qualified electronic signature), and handle rent payments — all in one place.
+**Vatrio** is a Romanian-language real estate platform that lets property owners and tenants transact **directly, without intermediaries**: discover properties, negotiate through offers, sign rental contracts online (with QES — qualified electronic signature), and handle rent payments — all in one place.
 
 Version: **0.4.0** · See [CHANGELOG.md](CHANGELOG.md) for release history.
 
@@ -82,7 +82,7 @@ Clients navigating to owner-only pages are redirected back to the overview.
 ### Setup
 
 ```bash
-cd clavium
+cd vatrio
 npm install
 npx prisma migrate dev   # create/update the SQLite database
 npm run db:seed          # optional: demo data (see below)
@@ -105,16 +105,16 @@ SMS_SENDER_ID="<numeric sender id from GET /api/v1/senders>"
 
 | Email | Role | Password |
 |---------------------|--------|------------|
-| `admin@clavium.ro` | ADMIN | `parola123` |
-| `owner@clavium.ro` | OWNER | `parola123` |
-| `client@clavium.ro` | CLIENT | `parola123` |
+| `admin@vatrio.ro` | ADMIN | `parola123` |
+| `owner@vatrio.ro` | OWNER | `parola123` |
+| `client@vatrio.ro` | CLIENT | `parola123` |
 
 The seed links them with demo properties, offers, an active contract, payments, and notifications, so every dashboard page has content.
 
 ## Project structure
 
 ```
-clavium/
+vatrio/
 ├── prisma/
 │   ├── schema.prisma            # User, Otp, PhoneOtp, Property, SavedProperty,
 │   │                            #   Offer, Contract, Payment, Notification

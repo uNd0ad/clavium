@@ -32,7 +32,7 @@ into config/contracts/inchiriere.md)
    contract creation flow (owner side: CF/cadastral + energetic cert; tenant side: cohabitants).
 
 5. DELIBERATE DEVIATIONS FROM THE DOCX (platform model — do not "fix" accidentally)
-   - Payment exclusively via Clavium.ro (docx allowed cash + chitanță).
+   - Payment exclusively via Vatrio.ro (docx allowed cash + chitanță).
    - Tacita relocațiune EXCLUDED (docx allowed it per art. 1810); renewal only via platform.
    - Owner-side denunțare for personal housing needs (art. 1825 alin. 2) NOT included.
    - Party identification blanks removed — header injects CNP/address/email automatically.
@@ -45,18 +45,18 @@ into config/contracts/inchiriere.md)
 
 7. TERMENI ȘI CONDIȚII — PLACEHOLDERS [●] TO FILL (iul 2026)
    The /termeni page (src/app/termeni/content.ts, transcribed from "Termeni și Condiții
-   Clavium.ro.pdf") still contains [●] markers that only the operator can fill:
+   Vatrio.ro.pdf") still contains [●] markers that only the operator can fill:
      - legal entity: full name, sediu social, nr. Reg. Com., CUI, capital social, cont bancar,
        legal representative, VAT code (§1, §55, Anexa 1);
      - dedicated e-mails: reclamații, raportare conținut ilegal, protecția datelor, retragere,
        vulnerabilități (§1, §26, §31, §36, §46, §55);
      - phone + correspondence address (§1, §55);
-     - decisions: Clavium [NU DEȚINE / DEȚINE] fondurile utilizatorilor (§22 — depends on the
+     - decisions: Vatrio [NU DEȚINE / DEȚINE] fondurile utilizatorilor (§22 — depends on the
        Stripe money flow; legal call), complaint response term [15/30] zile (§46), liability cap
        [12] luni (§39), DSA appeal term (§32), court venue [LOCALITATEA SEDIULUI] (§49);
      - illegal-content report form URL (§31).
    Filled from the codebase: payment processor = Stripe (§22); privacy policy URL (§38);
-   contact@clavium.ro. Legal sign-off applies to this document too (see item 2).
+   contact@vatrio.ro. Legal sign-off applies to this document too (see item 2).
 
 8. HOUSEKEEPING
    - Contract_inchiriere.docx sits untracked in the repo root — decide: move to docs/ or a

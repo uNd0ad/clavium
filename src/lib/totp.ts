@@ -4,7 +4,7 @@ import { createHmac, randomBytes, timingSafeEqual } from 'crypto'
 
 const STEP_SECONDS = 30
 const DIGITS = 6
-const ISSUER = 'Clavium'
+const ISSUER = 'Vatrio'
 
 // Alfabetul base32 (RFC 4648), folosit pentru secret (formatul așteptat de aplicațiile TOTP).
 const B32_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'

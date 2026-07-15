@@ -5,7 +5,7 @@ import { getNavUser } from '@/lib/session'
 import { LAST_UPDATED, TERMS_SECTIONS } from './content'
 
 export const metadata: Metadata = {
-  title: 'Termeni și condiții — Clavium.ro',
+  title: 'Termeni și condiții — Vatrio.ro',
 }
 
 // Textul juridic (55 de secțiuni + 3 anexe) stă în ./content.ts — pagina doar îl randează.
@@ -17,7 +17,7 @@ export default async function TermsPage() {
       <Navbar initialUser={navUser} />
       <main className="mx-auto min-h-screen max-w-4xl px-6 pb-24 pt-36 lg:px-12">
         <p className="section-label">Legal</p>
-        <h1 className="mt-4 text-4xl font-semibold">Termeni și condiții de utilizare Clavium.ro</h1>
+        <h1 className="mt-4 text-4xl font-semibold">Termeni și condiții de utilizare Vatrio.ro</h1>
         <p className="mt-3 text-sm text-[var(--muted)]">Ultima actualizare: {LAST_UPDATED}</p>
 
         <nav aria-label="Cuprins" className="mt-10 rounded-xl border border-[var(--border)] p-6">

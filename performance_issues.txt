@@ -7,10 +7,10 @@ main.js:1
 
 --- RESOLUTION (iul 2026) ---
 
-1. The three deprecation warnings are NOT from Clavium. No code in src/, public/, or the client
+1. The three deprecation warnings are NOT from Vatrio. No code in src/, public/, or the client
    dependencies uses Protected Audience, Shared Storage, or StorageType.persistent, and the
    production page loads only /_next/static/chunks/*.js — there is no script named "main.js".
-   "main.js:1" is a Chrome EXTENSION content script. Verify: open www.clavium.ro in Incognito
+   "main.js:1" is a Chrome EXTENSION content script. Verify: open www.vatrio.ro in Incognito
    (extensions disabled) → the Issues panel will be clean. Nothing to fix in the app.
 
 2. Real performance finding (fixed in vercel.json): the Vercel function ran in iad1 (US East)

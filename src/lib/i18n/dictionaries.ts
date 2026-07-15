@@ -6,7 +6,7 @@ import type { Locale } from './config'
 
 const ro = {
   meta: {
-    title: 'Clavium.ro — Imobiliare fără intermediari',
+    title: 'Vatrio.ro — Imobiliare fără intermediari',
     description:
       'Prima platformă din România unde găsești, negociezi și semnezi contractul imobiliar direct — vânzare, închiriere sau leasing, 100% digital.',
   },
@@ -68,7 +68,7 @@ const ro = {
       diyDesc: 'Listezi gratuit, primești oferte și semnezi contractul cu semnătură electronică, fără comision.',
       diyBullets: ['Listare gratuită', 'Contracte + semnătură QES online', 'Plăți și chitanțe automate'],
       diyCta: 'Începe gratuit',
-      managedTitle: 'Administrat de Clavium',
+      managedTitle: 'Administrat de Vatrio',
       managedDesc: 'Preluăm chiriașii, încasările și mentenanța. Tu primești venit pasiv, fără bătăi de cap.',
       managedBullets: ['Administrare de la 8%', 'Verificare chiriași', 'Evaluare, foto, juridic'],
       managedCta: 'Vreau să administrați voi',
@@ -123,7 +123,7 @@ export type Dictionary = typeof ro
 
 const en: Dictionary = {
   meta: {
-    title: 'Clavium.ro — Real estate without middlemen',
+    title: 'Vatrio.ro — Real estate without middlemen',
     description:
       'Romania’s first platform where you find, negotiate and sign your property contract directly — sale, rent or leasing, 100% digital.',
   },
@@ -185,7 +185,7 @@ const en: Dictionary = {
       diyDesc: 'List for free, receive offers and sign the contract with an electronic signature — no commission.',
       diyBullets: ['Free listing', 'Contracts + QES signing online', 'Automatic payments & receipts'],
       diyCta: 'Start free',
-      managedTitle: 'Managed by Clavium',
+      managedTitle: 'Managed by Vatrio',
       managedDesc: 'We handle tenants, collections and maintenance. You get passive income, hassle-free.',
       managedBullets: ['Management from 8%', 'Tenant screening', 'Valuation, photos, legal'],
       managedCta: 'Have us manage it',

@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from 'react'
 
-const STORAGE_KEY = 'clavium_cookie_consent'
+const STORAGE_KEY = 'vatrio_cookie_consent'
 
 const listeners = new Set<() => void>()
 

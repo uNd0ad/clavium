@@ -1,5 +1,5 @@
 // Conținutul paginii „Termeni și condiții" — transcris din documentul juridic
-// „Termeni și Condiții Clavium.ro.pdf" (iul 2026). Textul este DATE, nu logică:
+// „Termeni și Condiții Vatrio.ro.pdf" (iul 2026). Textul este DATE, nu logică:
 // paginile îl randează; modificarea textului nu cere atingerea componentelor.
 //
 // Marcajul „[●]" provine din document și indică informații care trebuie completate
@@ -18,17 +18,17 @@ export const TERMS_SECTIONS: TermsSection[] = [
     id: 'operator',
     title: '1. Informații despre operator',
     blocks: [
-      'Platforma online disponibilă la adresa www.clavium.ro, denumită în continuare „Platforma" sau „Clavium", este operată de:',
-      '[DENUMIREA JURIDICĂ COMPLETĂ A SOCIETĂȚII], societate înregistrată în România, cu sediul social în [●], înregistrată la Oficiul Registrului Comerțului sub nr. [●], având cod unic de înregistrare [●], capital social [●], cont bancar [●], reprezentată legal prin [●], denumită în continuare „Clavium", „Operatorul", „noi" sau „nouă".',
+      'Platforma online disponibilă la adresa www.vatrio.ro, denumită în continuare „Platforma" sau „Vatrio", este operată de:',
+      '[DENUMIREA JURIDICĂ COMPLETĂ A SOCIETĂȚII], societate înregistrată în România, cu sediul social în [●], înregistrată la Oficiul Registrului Comerțului sub nr. [●], având cod unic de înregistrare [●], capital social [●], cont bancar [●], reprezentată legal prin [●], denumită în continuare „Vatrio", „Operatorul", „noi" sau „nouă".',
       'Date de contact:',
       [
-        'e-mail general: contact@clavium.ro;',
+        'e-mail general: contact@vatrio.ro;',
         'e-mail pentru reclamații și sesizări: [●];',
         'e-mail pentru raportarea conținutului ilegal: [●];',
         'telefon: [●];',
         'adresă de corespondență: [●].',
       ],
-      'Dacă este aplicabil, Clavium este înregistrată în scopuri de TVA sub codul [●].',
+      'Dacă este aplicabil, Vatrio este înregistrată în scopuri de TVA sub codul [●].',
     ],
   },
   {
@@ -36,7 +36,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
     title: '2. Obiectul Termenilor',
     blocks: [
       'Acești Termeni și condiții stabilesc regulile în care poți accesa și utiliza Platforma și serviciile puse la dispoziție prin intermediul acesteia.',
-      'Clavium poate facilita, în funcție de funcționalitățile disponibile:',
+      'Vatrio poate facilita, în funcție de funcționalitățile disponibile:',
       [
         'a. publicarea și promovarea anunțurilor imobiliare;',
         'b. căutarea proprietăților;',
@@ -59,7 +59,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
     id: 'acceptarea-termenilor',
     title: '3. Acceptarea Termenilor',
     blocks: [
-      'Prin crearea unui cont, bifarea căsuței de acceptare, utilizarea Platformei sau contractarea unui serviciu Clavium, confirmi că:',
+      'Prin crearea unui cont, bifarea căsuței de acceptare, utilizarea Platformei sau contractarea unui serviciu Vatrio, confirmi că:',
       [
         'a. ai citit și ai înțeles acești Termeni;',
         'b. accepți să fii obligat de aceștia;',
@@ -90,20 +90,20 @@ export const TERMS_SECTIONS: TermsSection[] = [
     ],
   },
   {
-    id: 'rolul-clavium',
-    title: '5. Rolul Clavium',
+    id: 'rolul-vatrio',
+    title: '5. Rolul Vatrio',
     blocks: [
-      'Cu excepția cazurilor în care este indicat expres altfel, Clavium furnizează infrastructura tehnică prin care utilizatorii pot publica anunțuri, comunica, transmite oferte, genera documente și utiliza servicii conexe.',
-      'Clavium nu devine proprietarul, cumpărătorul, vânzătorul, locatorul sau chiriașul proprietăților prezentate pe Platformă și nu este parte în contractele încheiate direct între utilizatori.',
-      'Clavium nu acționează ca agent, mandatar, reprezentant sau administrator al unui utilizator decât dacă acest rol este stabilit printr-un contract separat, acceptat expres de părți.',
-      'Pentru anumite servicii, Clavium poate:',
+      'Cu excepția cazurilor în care este indicat expres altfel, Vatrio furnizează infrastructura tehnică prin care utilizatorii pot publica anunțuri, comunica, transmite oferte, genera documente și utiliza servicii conexe.',
+      'Vatrio nu devine proprietarul, cumpărătorul, vânzătorul, locatorul sau chiriașul proprietăților prezentate pe Platformă și nu este parte în contractele încheiate direct între utilizatori.',
+      'Vatrio nu acționează ca agent, mandatar, reprezentant sau administrator al unui utilizator decât dacă acest rol este stabilit printr-un contract separat, acceptat expres de părți.',
+      'Pentru anumite servicii, Vatrio poate:',
       [
         'a. presta serviciul în nume propriu;',
         'b. contracta serviciul printr-un partener;',
         'c. pune utilizatorul în contact direct cu partenerul.',
       ],
       'Identitatea prestatorului și condițiile aplicabile vor fi comunicate înainte de contractarea serviciului, atunci când acest lucru este necesar.',
-      'Clavium nu oferă consultanță juridică, fiscală, financiară, tehnică sau de investiții prin simpla punere la dispoziție a Platformei. Modelele, explicațiile, estimările și materialele informative nu înlocuiesc analiza unui specialist calificat.',
+      'Vatrio nu oferă consultanță juridică, fiscală, financiară, tehnică sau de investiții prin simpla punere la dispoziție a Platformei. Modelele, explicațiile, estimările și materialele informative nu înlocuiesc analiza unui specialist calificat.',
     ],
   },
   {
@@ -119,7 +119,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'e. să utilizezi Platforma numai în scopuri legale.',
       ],
       'Minorii nu pot încheia tranzacții prin Platformă în nume propriu.',
-      'Clavium poate solicita documente pentru verificarea identității, capacității, dreptului de reprezentare sau statutului profesional.',
+      'Vatrio poate solicita documente pentru verificarea identității, capacității, dreptului de reprezentare sau statutului profesional.',
     ],
   },
   {
@@ -147,23 +147,23 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'd. notificarea imediată a oricărui acces neautorizat.',
       ],
       'Nu poți vinde, transfera, închiria sau pune contul la dispoziția altei persoane.',
-      'Clavium poate introduce autentificarea în doi pași sau alte măsuri de securitate.',
+      'Vatrio poate introduce autentificarea în doi pași sau alte măsuri de securitate.',
     ],
   },
   {
     id: 'verificarea-conturilor',
     title: '8. Verificarea conturilor și utilizatorilor',
     blocks: [
-      'Clavium poate verifica adresa de e-mail, numărul de telefon, identitatea, dreptul de reprezentare, datele fiscale sau alte informații relevante.',
+      'Vatrio poate verifica adresa de e-mail, numărul de telefon, identitatea, dreptul de reprezentare, datele fiscale sau alte informații relevante.',
       'O etichetă precum „verificat" indică exclusiv verificările descrise lângă etichetă sau în pagina relevantă. Aceasta nu reprezintă, în lipsa unei mențiuni explicite:',
       [
         'a. o garanție privind solvabilitatea utilizatorului;',
         'b. o garanție privind comportamentul său viitor;',
         'c. o confirmare absolută a dreptului de proprietate;',
         'd. o verificare completă a situației juridice sau tehnice a imobilului;',
-        'e. o recomandare din partea Clavium.',
+        'e. o recomandare din partea Vatrio.',
       ],
-      'Clavium poate utiliza furnizori specializați pentru verificarea identității sau a documentelor.',
+      'Vatrio poate utiliza furnizori specializați pentru verificarea identității sau a documentelor.',
       'Refuzul de a furniza informațiile necesare poate conduce la limitarea accesului la anumite funcționalități.',
     ],
   },
@@ -230,9 +230,9 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'k. clasa energetică și celelalte informații cerute de lege;',
         'l. orice restricție relevantă.',
       ],
-      'Clavium poate solicita documente care să susțină informațiile publicate.',
-      'Clavium poate modifica formatarea, dimensiunea sau poziționarea unui Anunț fără a-i schimba sensul.',
-      'Publicarea Anunțului nu reprezintă aprobarea sau garantarea lui de către Clavium.',
+      'Vatrio poate solicita documente care să susțină informațiile publicate.',
+      'Vatrio poate modifica formatarea, dimensiunea sau poziționarea unui Anunț fără a-i schimba sensul.',
+      'Publicarea Anunțului nu reprezintă aprobarea sau garantarea lui de către Vatrio.',
     ],
   },
   {
@@ -248,7 +248,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
       ],
       'Utilizatorul este responsabil pentru corectitudinea statutului declarat.',
       'În cazul unei tranzacții între două persoane care nu acționează profesional, este posibil ca normele speciale privind protecția consumatorilor să nu fie aplicabile raportului dintre acestea.',
-      'Drepturile consumatorilor față de Clavium se aplică serviciilor contractate de la Clavium în măsura prevăzută de lege.',
+      'Drepturile consumatorilor față de Vatrio se aplică serviciilor contractate de la Vatrio în măsura prevăzută de lege.',
     ],
   },
   {
@@ -263,7 +263,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'c. siguranța personală în cadrul vizionării;',
         'd. protejarea bunurilor și informațiilor proprii.',
       ],
-      'Clavium nu garantează participarea unei persoane la o vizionare și nu răspunde pentru comportamentul utilizatorilor în afara Platformei, cu excepția situațiilor în care răspunderea nu poate fi exclusă prin lege.',
+      'Vatrio nu garantează participarea unei persoane la o vizionare și nu răspunde pentru comportamentul utilizatorilor în afara Platformei, cu excepția situațiilor în care răspunderea nu poate fi exclusă prin lege.',
       'Comunicările realizate prin Platformă pot fi păstrate conform Politicii de confidențialitate, inclusiv pentru securitate, soluționarea disputelor și prevenirea fraudei.',
     ],
   },
@@ -284,7 +284,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'g. îndeplinirea formalităților notariale sau de publicitate imobiliară, dacă sunt necesare.',
       ],
       'Înainte de acceptarea unei oferte, fiecare utilizator trebuie să verifice dacă aceasta este obligatorie și care sunt consecințele sale.',
-      'Clavium nu stabilește prețul tranzacției și nu garantează că o ofertă va fi acceptată.',
+      'Vatrio nu stabilește prețul tranzacției și nu garantează că o ofertă va fi acceptată.',
     ],
   },
   {
@@ -302,7 +302,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'f. confirmarea că documentul corespunde situației reale și intenției părților.',
       ],
       'Modelele standard nu pot acoperi toate situațiile juridice, fiscale sau tehnice.',
-      'Clavium nu garantează că un model standard este potrivit pentru orice tranzacție particulară.',
+      'Vatrio nu garantează că un model standard este potrivit pentru orice tranzacție particulară.',
       'Modificările negociate direct între utilizatori trebuie incluse în versiunea finală înainte de semnare.',
     ],
   },
@@ -323,15 +323,15 @@ export const TERMS_SECTIONS: TermsSection[] = [
       'Valoarea juridică a semnăturii depinde de tipul acesteia, de documentul semnat și de cerințele legale aplicabile.',
       'Atunci când legea solicită forma autentică, intervenția notarului, înscrierea în cartea funciară sau altă formalitate specială, semnarea electronică prin Platformă nu înlocuiește formalitatea respectivă. În special, Platforma nu trebuie interpretată ca eliminând obligația de autentificare notarială a unui contract atunci când aceasta este prevăzută de lege.',
       'Utilizatorul este responsabil să verifice dacă documentul poate fi încheiat valabil în forma electronică disponibilă.',
-      'Clavium poate păstra dovezi tehnice privind procesul de semnare, conform legislației și Politicii de confidențialitate.',
+      'Vatrio poate păstra dovezi tehnice privind procesul de semnare, conform legislației și Politicii de confidențialitate.',
     ],
   },
   {
     id: 'vanzarea-proprietatilor',
     title: '16. Vânzarea proprietăților',
     blocks: [
-      'Funcționalitățile Clavium pot fi utilizate pentru promovare, comunicare, negociere, transmiterea ofertelor, rezervare și pregătirea documentelor aferente unei vânzări.',
-      'Clavium nu garantează:',
+      'Funcționalitățile Vatrio pot fi utilizate pentru promovare, comunicare, negociere, transmiterea ofertelor, rezervare și pregătirea documentelor aferente unei vânzări.',
+      'Vatrio nu garantează:',
       [
         'a. valabilitatea titlului de proprietate;',
         'b. absența sarcinilor sau litigiilor;',
@@ -367,14 +367,14 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'e. notificarea problemelor relevante;',
         'f. eliberarea proprietății la încetarea contractului.',
       ],
-      'Clavium nu stabilește de la sine drepturile și obligațiile dintre proprietar și chiriaș. Acestea rezultă din contractul încheiat și din lege.',
+      'Vatrio nu stabilește de la sine drepturile și obligațiile dintre proprietar și chiriaș. Acestea rezultă din contractul încheiat și din lege.',
     ],
   },
   {
     id: 'verificarea-chiriasilor',
     title: '18. Verificarea potențialilor chiriași',
     blocks: [
-      'Clavium sau un partener poate pune la dispoziție servicii de verificare a potențialilor chiriași.',
+      'Vatrio sau un partener poate pune la dispoziție servicii de verificare a potențialilor chiriași.',
       'În funcție de serviciul ales, verificarea poate include date privind:',
       [
         'a. identitatea;',
@@ -416,7 +416,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'i. procedura de încetare;',
         'j. răspunderea părților.',
       ],
-      'Simpla creare a unui cont sau publicare a unui Anunț nu conferă Clavium dreptul de a administra proprietatea ori de a reprezenta proprietarul.',
+      'Simpla creare a unui cont sau publicare a unui Anunț nu conferă Vatrio dreptul de a administra proprietatea ori de a reprezenta proprietarul.',
     ],
   },
   {
@@ -446,7 +446,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'g. aplicabilitatea dreptului de retragere.',
       ],
       'Atunci când serviciul este furnizat direct de un Partener, raportul contractual privind executarea serviciului poate exista direct între utilizator și Partener.',
-      'Clavium nu răspunde pentru activitatea unui Partener independent decât în măsura în care legea sau contractul prevede altfel.',
+      'Vatrio nu răspunde pentru activitatea unui Partener independent decât în măsura în care legea sau contractul prevede altfel.',
     ],
   },
   {
@@ -457,7 +457,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
       'Tariful aplicabil va fi afișat înainte de contractare sau prevăzut într-o ofertă ori într-un contract separat.',
       'În funcție de serviciu, costul poate cuprinde:',
       [
-        'a. taxa Clavium;',
+        'a. taxa Vatrio;',
         'b. comisionul calculat procentual;',
         'c. abonamentul;',
         'd. taxa procesatorului de plăți;',
@@ -475,7 +475,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
     title: '22. Plăți',
     blocks: [
       'Plățile disponibile prin Platformă pot fi procesate de Stripe sau de un alt furnizor autorizat.',
-      'Clavium nu stochează în mod direct datele complete ale cardului atunci când acestea sunt transmise direct procesatorului.',
+      'Vatrio nu stochează în mod direct datele complete ale cardului atunci când acestea sunt transmise direct procesatorului.',
       'Înainte de plată, utilizatorului îi vor fi comunicate:',
       [
         'a. suma;',
@@ -486,8 +486,8 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'f. condițiile de rambursare;',
         'g. eventualele plăți recurente.',
       ],
-      'Dacă plata privește chiria, garanția sau altă sumă datorată unui utilizator, Platforma va indica rolul Clavium și traseul sumelor.',
-      'Clavium [NU DEȚINE / DEȚINE ÎN CONDIȚIILE URMĂTOARE] fondurile utilizatorilor. Sumele nu sunt considerate păstrate într-un cont escrow decât dacă această calificare este menționată expres și există un mecanism juridic corespunzător.',
+      'Dacă plata privește chiria, garanția sau altă sumă datorată unui utilizator, Platforma va indica rolul Vatrio și traseul sumelor.',
+      'Vatrio [NU DEȚINE / DEȚINE ÎN CONDIȚIILE URMĂTOARE] fondurile utilizatorilor. Sumele nu sunt considerate păstrate într-un cont escrow decât dacă această calificare este menționată expres și există un mecanism juridic corespunzător.',
       'Utilizatorul trebuie să furnizeze informații de plată corecte și să se asigure că dispune de fondurile și autorizările necesare.',
     ],
   },
@@ -503,7 +503,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'd. contractului aplicabil.',
       ],
       'Utilizatorul poate retrage mandatul pentru plăți viitoare potrivit procedurii indicate în Platformă, fără ca retragerea să stingă sumele deja datorate.',
-      'Clavium nu garantează procesarea cu succes a plății. În cazul unei plăți eșuate, părțile rămân responsabile pentru îndeplinirea obligațiilor contractuale.',
+      'Vatrio nu garantează procesarea cu succes a plății. În cazul unei plăți eșuate, părțile rămân responsabile pentru îndeplinirea obligațiilor contractuale.',
     ],
   },
   {
@@ -520,7 +520,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'f. tratamentul dobânzii, dacă există;',
         'g. mecanismul aplicabil în caz de dispută.',
       ],
-      'Clavium nu poate decide definitiv asupra drepturilor părților privind garanția decât dacă acestea i-au conferit expres această competență printr-un mecanism contractual legal.',
+      'Vatrio nu poate decide definitiv asupra drepturilor părților privind garanția decât dacă acestea i-au conferit expres această competență printr-un mecanism contractual legal.',
       'În lipsa unui serviciu distinct de administrare a garanției, restituirea acesteia rămâne obligația persoanei care a primit suma.',
     ],
   },
@@ -528,35 +528,35 @@ export const TERMS_SECTIONS: TermsSection[] = [
     id: 'rambursari',
     title: '25. Rambursări și plăți contestate',
     blocks: [
-      'Rambursările privind serviciile Clavium se efectuează conform condițiilor serviciului, drepturilor consumatorului și legislației aplicabile.',
+      'Rambursările privind serviciile Vatrio se efectuează conform condițiilor serviciului, drepturilor consumatorului și legislației aplicabile.',
       'O rambursare poate fi refuzată, în măsura permisă de lege, dacă:',
       [
         'a. serviciul a fost executat integral după solicitarea expresă a consumatorului și după confirmarea consecințelor legale;',
         'b. suma privește un serviciu deja prestat;',
         'c. utilizatorul a încălcat în mod relevant contractul;',
-        'd. cererea privește o sumă plătită direct altui utilizator sau unui Partener, iar Clavium nu este beneficiarul plății.',
+        'd. cererea privește o sumă plătită direct altui utilizator sau unui Partener, iar Vatrio nu este beneficiarul plății.',
       ],
       'Inițierea nejustificată a unui chargeback nu stinge obligația de plată.',
-      'Clavium poate solicita informații suplimentare pentru analizarea unei plăți contestate.',
+      'Vatrio poate solicita informații suplimentare pentru analizarea unei plăți contestate.',
     ],
   },
   {
     id: 'dreptul-de-retragere',
     title: '26. Dreptul de retragere al consumatorului',
     blocks: [
-      'În cazul în care un Consumator încheie la distanță un contract de servicii direct cu Clavium, acesta poate beneficia de dreptul legal de retragere în termen de 14 zile, dacă legea nu prevede o excepție. Termenul curge, de regulă, de la data încheierii contractului de servicii.',
+      'În cazul în care un Consumator încheie la distanță un contract de servicii direct cu Vatrio, acesta poate beneficia de dreptul legal de retragere în termen de 14 zile, dacă legea nu prevede o excepție. Termenul curge, de regulă, de la data încheierii contractului de servicii.',
       'Pentru exercitarea dreptului, Consumatorul trebuie să transmită o declarație neechivocă la adresa [●] sau prin funcționalitatea pusă la dispoziție.',
       'Consumatorul poate utiliza modelul de formular din Anexa 1, fără ca utilizarea lui să fie obligatorie.',
       'Dacă Consumatorul solicită începerea prestării înainte de expirarea perioadei de retragere, acesta poate datora o sumă proporțională pentru partea de serviciu prestată până la retragere.',
       'Dacă serviciul a fost executat integral, dreptul de retragere poate înceta numai în condițiile prevăzute de lege, inclusiv după exprimarea acordului prealabil expres și confirmarea luării la cunoștință a consecințelor.',
-      'Dreptul de retragere față de Clavium nu anulează automat un contract imobiliar încheiat între utilizatori.',
+      'Dreptul de retragere față de Vatrio nu anulează automat un contract imobiliar încheiat între utilizatori.',
     ],
   },
   {
     id: 'facturare-fiscal',
     title: '27. Facturare și obligații fiscale',
     blocks: [
-      'Clavium va emite documentele fiscale corespunzătoare pentru propriile servicii.',
+      'Vatrio va emite documentele fiscale corespunzătoare pentru propriile servicii.',
       'Fiecare utilizator este responsabil pentru:',
       [
         'a. declararea veniturilor;',
@@ -565,8 +565,8 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'd. emiterea documentelor fiscale pentru propriile servicii sau tranzacții;',
         'e. furnizarea informațiilor fiscale corecte.',
       ],
-      'Clavium nu oferă consultanță fiscală prin simpla funcționare a Platformei.',
-      'Dacă legislația impune raportarea informațiilor privind utilizatorii sau tranzacțiile, inclusiv în temeiul normelor de cooperare fiscală aplicabile platformelor digitale, Clavium poate colecta, verifica și comunica autorităților datele cerute de lege. Utilizatorul se obligă să furnizeze informațiile și documentele necesare pentru asemenea raportări.',
+      'Vatrio nu oferă consultanță fiscală prin simpla funcționare a Platformei.',
+      'Dacă legislația impune raportarea informațiilor privind utilizatorii sau tranzacțiile, inclusiv în temeiul normelor de cooperare fiscală aplicabile platformelor digitale, Vatrio poate colecta, verifica și comunica autorităților datele cerute de lege. Utilizatorul se obligă să furnizeze informațiile și documentele necesare pentru asemenea raportări.',
     ],
   },
   {
@@ -574,7 +574,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
     title: '28. Conținutul utilizatorilor',
     blocks: [
       'Prin încărcarea de texte, fotografii, videoclipuri, planuri, documente, recenzii sau alte materiale, păstrezi drepturile pe care le deții asupra acestora.',
-      'Acorzi Clavium o licență neexclusivă, valabilă pe durata găzduirii conținutului și, dacă este necesar, pentru o perioadă rezonabilă după aceea, pentru:',
+      'Acorzi Vatrio o licență neexclusivă, valabilă pe durata găzduirii conținutului și, dacă este necesar, pentru o perioadă rezonabilă după aceea, pentru:',
       [
         'a. stocarea conținutului;',
         'b. reproducerea sa tehnică;',
@@ -592,7 +592,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
     id: 'recenzii',
     title: '29. Recenzii și evaluări',
     blocks: [
-      'Clavium poate permite publicarea de recenzii privind utilizatorii, proprietățile sau serviciile.',
+      'Vatrio poate permite publicarea de recenzii privind utilizatorii, proprietățile sau serviciile.',
       'Recenziile trebuie:',
       [
         'a. să se bazeze pe o experiență reală;',
@@ -602,16 +602,16 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'e. să nu fie cumpărate sau manipulate;',
         'f. să respecte drepturile celorlalte persoane.',
       ],
-      'Clavium poate indica dacă și cum verifică faptul că o recenzie provine de la o persoană care a utilizat serviciul.',
-      'Recenziile nu reprezintă opiniile Clavium.',
+      'Vatrio poate indica dacă și cum verifică faptul că o recenzie provine de la o persoană care a utilizat serviciul.',
+      'Recenziile nu reprezintă opiniile Vatrio.',
     ],
   },
   {
     id: 'moderarea-continutului',
     title: '30. Moderarea conținutului',
     blocks: [
-      'Clavium poate modera Anunțurile, mesajele publice, recenziile și celelalte materiale găzduite. Moderarea poate include măsuri automate și verificări umane.',
-      'Clavium poate:',
+      'Vatrio poate modera Anunțurile, mesajele publice, recenziile și celelalte materiale găzduite. Moderarea poate include măsuri automate și verificări umane.',
+      'Vatrio poate:',
       [
         'a. reduce vizibilitatea conținutului;',
         'b. solicita corectarea sau completarea lui;',
@@ -647,7 +647,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'c. numele și adresa de e-mail ale persoanei care raportează, cu excepția situațiilor în care legea permite anonimatul;',
         'd. o declarație că informațiile sunt corecte și complete, formulată cu bună-credință.',
       ],
-      'Clavium va analiza sesizarea în mod diligent, obiectiv și fără întârzieri nejustificate.',
+      'Vatrio va analiza sesizarea în mod diligent, obiectiv și fără întârzieri nejustificate.',
       'Transmiterea cu rea-credință a unor sesizări vădit nefondate poate conduce la restricții, în condițiile legii.',
     ],
   },
@@ -665,7 +665,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
     id: 'proprietatea-intelectuala',
     title: '33. Proprietatea intelectuală a Platformei',
     blocks: [
-      'Platforma, marca, identitatea vizuală, bazele de date, software-ul, structura, designul și materialele create de Clavium sunt protejate de legislația proprietății intelectuale.',
+      'Platforma, marca, identitatea vizuală, bazele de date, software-ul, structura, designul și materialele create de Vatrio sunt protejate de legislația proprietății intelectuale.',
       'Cu excepția utilizării normale a Platformei, este interzis:',
       [
         'a. să copiezi ori să reproduci o parte substanțială a Platformei;',
@@ -682,16 +682,16 @@ export const TERMS_SECTIONS: TermsSection[] = [
     title: '34. Servicii și site-uri terțe',
     blocks: [
       'Platforma poate conține integrări, servicii sau trimiteri către terți. Terții își pot aplica propriile condiții și politici.',
-      'Clavium nu controlează și nu garantează serviciile terților independenți.',
+      'Vatrio nu controlează și nu garantează serviciile terților independenți.',
       'Utilizatorul trebuie să citească termenii terțului înainte de utilizarea serviciului respectiv.',
-      'Clavium poate înlocui un Partener cu altul, cu condiția ca schimbarea să nu reducă nejustificat drepturile aferente unui serviciu deja achiziționat.',
+      'Vatrio poate înlocui un Partener cu altul, cu condiția ca schimbarea să nu reducă nejustificat drepturile aferente unui serviciu deja achiziționat.',
     ],
   },
   {
     id: 'disponibilitatea-platformei',
     title: '35. Disponibilitatea Platformei',
     blocks: [
-      'Clavium urmărește să mențină Platforma disponibilă și sigură, dar nu garantează funcționarea neîntreruptă sau lipsită de erori.',
+      'Vatrio urmărește să mențină Platforma disponibilă și sigură, dar nu garantează funcționarea neîntreruptă sau lipsită de erori.',
       'Platforma poate fi indisponibilă din cauza:',
       [
         'a. mentenanței;',
@@ -702,15 +702,15 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'f. evenimentelor de forță majoră;',
         'g. măsurilor necesare pentru respectarea legii.',
       ],
-      'Clavium poate modifica sau retrage anumite funcționalități.',
-      'Dacă o modificare afectează în mod semnificativ un serviciu plătit în curs, Clavium va lua măsuri rezonabile pentru informarea utilizatorului și, după caz, va oferi soluțiile impuse de contract sau de lege.',
+      'Vatrio poate modifica sau retrage anumite funcționalități.',
+      'Dacă o modificare afectează în mod semnificativ un serviciu plătit în curs, Vatrio va lua măsuri rezonabile pentru informarea utilizatorului și, după caz, va oferi soluțiile impuse de contract sau de lege.',
     ],
   },
   {
     id: 'securitate',
     title: '36. Securitate',
     blocks: [
-      'Clavium aplică măsuri tehnice și organizatorice rezonabile pentru protejarea Platformei.',
+      'Vatrio aplică măsuri tehnice și organizatorice rezonabile pentru protejarea Platformei.',
       'Utilizatorii nu trebuie:',
       [
         'a. să testeze vulnerabilități fără autorizare;',
@@ -727,7 +727,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
     id: 'prevenirea-fraudei',
     title: '37. Prevenirea fraudei și a activităților ilegale',
     blocks: [
-      'Clavium poate aplica măsuri pentru prevenirea fraudei, spălării banilor, furtului de identitate, incidentelor de plată și altor activități ilegale.',
+      'Vatrio poate aplica măsuri pentru prevenirea fraudei, spălării banilor, furtului de identitate, incidentelor de plată și altor activități ilegale.',
       'Aceste măsuri pot include:',
       [
         'a. verificarea identității;',
@@ -737,15 +737,15 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'e. solicitarea de explicații;',
         'f. transmiterea informațiilor către procesatori, instituții financiare sau autorități, dacă există un temei legal.',
       ],
-      'Clavium nu este obligată să dezvăluie mecanismele interne antifraudă atunci când divulgarea ar compromite eficiența sau securitatea lor.',
+      'Vatrio nu este obligată să dezvăluie mecanismele interne antifraudă atunci când divulgarea ar compromite eficiența sau securitatea lor.',
     ],
   },
   {
     id: 'protectia-datelor',
     title: '38. Protecția datelor',
     blocks: [
-      'Prelucrarea datelor cu caracter personal este descrisă în Politica de confidențialitate disponibilă la www.clavium.ro/confidentialitate.',
-      'În funcție de serviciu, Clavium poate prelucra date în calitate de:',
+      'Prelucrarea datelor cu caracter personal este descrisă în Politica de confidențialitate disponibilă la www.vatrio.ro/confidentialitate.',
+      'În funcție de serviciu, Vatrio poate prelucra date în calitate de:',
       [
         'a. operator independent;',
         'b. persoană împuternicită;',
@@ -757,9 +757,9 @@ export const TERMS_SECTIONS: TermsSection[] = [
   },
   {
     id: 'limitarea-raspunderii',
-    title: '39. Limitarea răspunderii Clavium',
+    title: '39. Limitarea răspunderii Vatrio',
     blocks: [
-      'În măsura permisă de lege, Clavium nu răspunde pentru:',
+      'În măsura permisă de lege, Vatrio nu răspunde pentru:',
       [
         'a. exactitatea informațiilor introduse de utilizatori;',
         'b. existența, starea sau disponibilitatea proprietăților;',
@@ -771,11 +771,11 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'h. deteriorarea proprietății;',
         'i. pierderile rezultate din deciziile comerciale ale utilizatorului;',
         'j. serviciile prestate direct de Parteneri independenți;',
-        'k. întreruperile cauzate de terți sau de evenimente aflate în afara controlului rezonabil al Clavium.',
+        'k. întreruperile cauzate de terți sau de evenimente aflate în afara controlului rezonabil al Vatrio.',
       ],
-      'Clavium nu garantează că utilizarea Platformei va conduce la găsirea unei proprietăți, a unui chiriaș, cumpărător sau partener contractual.',
+      'Vatrio nu garantează că utilizarea Platformei va conduce la găsirea unei proprietăți, a unui chiriaș, cumpărător sau partener contractual.',
       'Nicio prevedere nu exclude sau limitează răspunderea care nu poate fi exclusă potrivit legii, inclusiv răspunderea pentru fraudă, intenție, culpă gravă, vătămare corporală sau încălcarea drepturilor obligatorii ale consumatorilor, în măsura aplicabilă.',
-      'Pentru utilizatorii profesioniști, răspunderea totală a Clavium rezultată dintr-un serviciu poate fi limitată la suma plătită pentru serviciul respectiv în ultimele [12] luni, cu excepția situațiilor în care legea interzice o asemenea limitare.',
+      'Pentru utilizatorii profesioniști, răspunderea totală a Vatrio rezultată dintr-un serviciu poate fi limitată la suma plătită pentru serviciul respectiv în ultimele [12] luni, cu excepția situațiilor în care legea interzice o asemenea limitare.',
       'Limitarea de mai sus nu se aplică Consumatorilor în măsura în care le-ar restrânge drepturile obligatorii.',
     ],
   },
@@ -794,7 +794,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'g. încălcarea unui contract încheiat cu alt utilizator;',
         'h. compromiterea intenționată sau culpabilă a securității.',
       ],
-      'Utilizatorii profesioniști vor despăgubi Clavium pentru pretențiile terților rezultate direct din încălcările lor, în măsura permisă de lege.',
+      'Utilizatorii profesioniști vor despăgubi Vatrio pentru pretențiile terților rezultate direct din încălcările lor, în măsura permisă de lege.',
       'Această obligație nu se aplică unui Consumator într-un mod care i-ar restrânge drepturile legale.',
     ],
   },
@@ -802,7 +802,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
     id: 'suspendarea-contului',
     title: '41. Suspendarea contului',
     blocks: [
-      'Clavium poate limita, suspenda sau închide un cont dacă:',
+      'Vatrio poate limita, suspenda sau închide un cont dacă:',
       [
         'a. utilizatorul încalcă acești Termeni;',
         'b. există indicii rezonabile de fraudă;',
@@ -813,8 +813,8 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'g. contul este utilizat pentru activități ilegale;',
         'h. utilizatorul formulează repetat sesizări vădit nefondate sau publică repetat conținut vădit ilegal, în condițiile legii.',
       ],
-      'În funcție de gravitate, Clavium poate transmite în prealabil un avertisment. În situații urgente sau grave, suspendarea poate fi imediată.',
-      'Atunci când legea impune, Clavium va comunica motivele și mecanismul de contestare.',
+      'În funcție de gravitate, Vatrio poate transmite în prealabil un avertisment. În situații urgente sau grave, suspendarea poate fi imediată.',
+      'Atunci când legea impune, Vatrio va comunica motivele și mecanismul de contestare.',
     ],
   },
   {
@@ -852,7 +852,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
     id: 'modificarea-termenilor',
     title: '44. Modificarea Termenilor',
     blocks: [
-      'Clavium poate modifica acești Termeni pentru:',
+      'Vatrio poate modifica acești Termeni pentru:',
       [
         'a. schimbări legislative;',
         'b. introducerea sau modificarea serviciilor;',
@@ -871,7 +871,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
     id: 'comunicari-electronice',
     title: '45. Comunicări electronice',
     blocks: [
-      'Comunicările dintre Clavium și utilizator pot fi transmise prin:',
+      'Comunicările dintre Vatrio și utilizator pot fi transmise prin:',
       [
         'a. e-mail;',
         'b. notificări în cont;',
@@ -887,7 +887,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
     id: 'reclamatii',
     title: '46. Reclamații',
     blocks: [
-      'Reclamațiile privind serviciile Clavium pot fi transmise la: [ADRESA DE E-MAIL PENTRU RECLAMAȚII].',
+      'Reclamațiile privind serviciile Vatrio pot fi transmise la: [ADRESA DE E-MAIL PENTRU RECLAMAȚII].',
       'Reclamația trebuie să includă:',
       [
         'a. identitatea solicitantului;',
@@ -896,8 +896,8 @@ export const TERMS_SECTIONS: TermsSection[] = [
         'd. documentele relevante;',
         'e. soluția solicitată.',
       ],
-      'Clavium va confirma primirea și va răspunde într-un termen rezonabil, de regulă în maximum [15/30] zile calendaristice, dacă natura cererii sau legea nu justifică un alt termen.',
-      'Clavium nu poate soluționa în mod obligatoriu un litigiu contractual dintre doi utilizatori dacă nu este parte în contract.',
+      'Vatrio va confirma primirea și va răspunde într-un termen rezonabil, de regulă în maximum [15/30] zile calendaristice, dacă natura cererii sau legea nu justifică un alt termen.',
+      'Vatrio nu poate soluționa în mod obligatoriu un litigiu contractual dintre doi utilizatori dacă nu este parte în contract.',
     ],
   },
   {
@@ -906,7 +906,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
     blocks: [
       'Consumatorii pot apela la mecanismele de soluționare alternativă a litigiilor puse la dispoziție de autoritățile competente din România, inclusiv structura SAL din cadrul Autorității Naționale pentru Protecția Consumatorilor, în condițiile legii.',
       'Informațiile actualizate privind aceste mecanisme pot fi consultate pe site-ul oficial al ANPC.',
-      'Clavium nu garantează acceptarea sau competența unei anumite entități SAL pentru fiecare litigiu.',
+      'Vatrio nu garantează acceptarea sau competența unei anumite entități SAL pentru fiecare litigiu.',
       'Orice referire mai veche la platforma europeană de soluționare online a litigiilor nu se aplică, această platformă fiind închisă.',
     ],
   },
@@ -923,7 +923,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
     blocks: [
       'Litigiile vor fi soluționate mai întâi, pe cât posibil, pe cale amiabilă.',
       'Pentru litigiile cu Consumatorii, competența instanțelor se stabilește potrivit normelor legale aplicabile, fără impunerea unei instanțe care ar restrânge drepturile obligatorii ale Consumatorului.',
-      'Pentru litigiile dintre Clavium și utilizatorii profesioniști, instanțele competente din [LOCALITATEA SEDIULUI CLAVIUM] vor avea competență, în măsura permisă de lege.',
+      'Pentru litigiile dintre Vatrio și utilizatorii profesioniști, instanțele competente din [LOCALITATEA SEDIULUI VATRIO] vor avea competență, în măsura permisă de lege.',
     ],
   },
   {
@@ -939,8 +939,8 @@ export const TERMS_SECTIONS: TermsSection[] = [
     id: 'cesionarea',
     title: '51. Cesionarea',
     blocks: [
-      'Utilizatorul nu poate transfera drepturile sau obligațiile rezultate din acești Termeni fără acordul prealabil al Clavium, cu excepția cazurilor permise de lege.',
-      'Clavium poate transfera contractul către o societate afiliată sau către succesorul activității, cu informarea utilizatorilor și fără diminuarea drepturilor obligatorii ale Consumatorilor.',
+      'Utilizatorul nu poate transfera drepturile sau obligațiile rezultate din acești Termeni fără acordul prealabil al Vatrio, cu excepția cazurilor permise de lege.',
+      'Vatrio poate transfera contractul către o societate afiliată sau către succesorul activității, cu informarea utilizatorilor și fără diminuarea drepturilor obligatorii ale Consumatorilor.',
     ],
   },
   {
@@ -963,7 +963,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
     id: 'intregul-acord',
     title: '54. Întregul acord',
     blocks: [
-      'Acești Termeni, împreună cu politicile și condițiile speciale aplicabile, reprezintă acordul dintre utilizator și Clavium privind utilizarea Platformei.',
+      'Acești Termeni, împreună cu politicile și condițiile speciale aplicabile, reprezintă acordul dintre utilizator și Vatrio privind utilizarea Platformei.',
       'Ei nu înlocuiesc contractele imobiliare încheiate între utilizatori sau contractele separate privind serviciile de administrare ori alte servicii.',
     ],
   },
@@ -973,9 +973,9 @@ export const TERMS_SECTIONS: TermsSection[] = [
     blocks: [
       'Pentru întrebări privind acești Termeni:',
       [
-        'Clavium – [DENUMIREA JURIDICĂ]',
+        'Vatrio – [DENUMIREA JURIDICĂ]',
         'Adresă: [●]',
-        'E-mail: contact@clavium.ro',
+        'E-mail: contact@vatrio.ro',
         'Telefon: [●]',
         'Pentru reclamații: [●]',
         'Pentru raportarea conținutului ilegal: [●]',
@@ -989,7 +989,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
     blocks: [
       'Acest formular se completează și se transmite numai dacă dorești retragerea dintr-un contract eligibil.',
       [
-        'Către: [DENUMIREA JURIDICĂ A CLAVIUM], adresa: [●], e-mail: [●]',
+        'Către: [DENUMIREA JURIDICĂ A VATRIO], adresa: [●], e-mail: [●]',
         'Vă informez prin prezenta cu privire la retragerea mea din contractul având ca obiect următorul serviciu: [descrierea serviciului]',
         'Comandat la data de: [data]',
         'Numele consumatorului: [numele]',
@@ -1004,7 +1004,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
     id: 'anexa-2',
     title: 'Anexa 2 — Informații ce trebuie stabilite pentru plăți și garanții',
     blocks: [
-      'Înainte de activarea funcționalităților de plată, Clavium va publica sau va comunica cel puțin:',
+      'Înainte de activarea funcționalităților de plată, Vatrio va publica sau va comunica cel puțin:',
       [
         '1. identitatea procesatorului de plăți;',
         '2. entitatea care încasează fiecare categorie de sumă;',

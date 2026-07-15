@@ -8,7 +8,7 @@ import { getEurRonRate } from '@/lib/exchangeRate'
 import { getNavUser } from '@/lib/session'
 
 export const metadata: Metadata = {
-  title: 'Proprietăți de închiriat — Clavium.ro',
+  title: 'Proprietăți de închiriat — Vatrio.ro',
   description: 'Caută proprietăți de închiriat direct de la proprietari, fără intermediari.',
 }
 

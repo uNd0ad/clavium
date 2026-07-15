@@ -8,7 +8,7 @@ import OtpInput from '@/components/ui/OtpInput'
 import Button from '@/components/ui/Button'
 import { useCooldown } from '@/hooks/useCooldown'
 
-const LOGIN_TAB_KEY = 'clavium_login_tab'
+const LOGIN_TAB_KEY = 'vatrio_login_tab'
 type LoginTab = 'password' | 'otp'
 
 // Citim tab-ul memorat dintr-un „external store” (localStorage) prin useSyncExternalStore,

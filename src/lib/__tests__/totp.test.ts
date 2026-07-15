@@ -42,6 +42,6 @@ describe('TOTP (RFC 6238)', () => {
     const uri = totpAuthUri('JBSWY3DPEHPK3PXP', 'user@ex.ro')
     expect(uri).toContain('otpauth://totp/')
     expect(uri).toContain('secret=JBSWY3DPEHPK3PXP')
-    expect(uri).toContain('issuer=Clavium')
+    expect(uri).toContain('issuer=Vatrio')
   })
 })

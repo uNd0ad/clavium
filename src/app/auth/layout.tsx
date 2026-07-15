@@ -27,7 +27,7 @@ export default function AuthLayout({ children }: PropsWithChildren) {
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 sm:px-6 lg:flex-row lg:gap-10 lg:px-12">
         <aside className="relative hidden flex-1 flex-col overflow-hidden rounded-4xl bg-[var(--brand)] px-10 py-12 text-white shadow-[0_30px_80px_rgba(0,113,227,0.18)] lg:flex">
           <Link href="/" className="font-sans text-xl font-semibold tracking-wide text-white no-underline">
-            Clavium<span className="text-white/70">.ro</span>
+            Vatrio<span className="text-white/70">.ro</span>
           </Link>
 
           <div className="mt-14 space-y-10">
@@ -65,7 +65,7 @@ export default function AuthLayout({ children }: PropsWithChildren) {
         <div className="flex flex-1 flex-col rounded-4xl bg-[var(--card)] p-6 shadow-[0_30px_80px_rgba(15,23,42,0.08)] sm:p-8 lg:p-12">
           <div className="mb-8 flex items-center justify-between gap-4">
             <Link href="/" className="font-sans text-lg font-semibold tracking-wide text-[var(--text)] no-underline lg:hidden">
-              Clavium<span className="text-[var(--brand)]">.ro</span>
+              Vatrio<span className="text-[var(--brand)]">.ro</span>
             </Link>
             <div className="ml-auto flex items-center gap-3">
               <Link

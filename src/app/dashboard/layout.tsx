@@ -10,7 +10,7 @@ import { hasAcceptedCurrentTerms } from '@/lib/terms'
 import { prisma } from '@/lib/prisma'
 
 export const metadata: Metadata = {
-  title: 'Clavium Dashboard',
+  title: 'Vatrio Dashboard',
   description: 'Panou de control pentru administrare, oferte, contracte și plăți.',
 }
 

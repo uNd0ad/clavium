@@ -22,9 +22,9 @@ async function main() {
     return
   }
 
-  const admin = await upsertUser('Ana', 'Administratorul', 'admin@clavium.ro', 'ADMIN', '0700000001')
-  const owner = await upsertUser('Andrei', 'Ionescu', 'owner@clavium.ro', 'OWNER', '0723456789')
-  const client = await upsertUser('Mihai', 'Popescu', 'client@clavium.ro', 'CLIENT', '0745123456')
+  const admin = await upsertUser('Ana', 'Administratorul', 'admin@vatrio.ro', 'ADMIN', '0700000001')
+  const owner = await upsertUser('Andrei', 'Ionescu', 'owner@vatrio.ro', 'OWNER', '0723456789')
+  const client = await upsertUser('Mihai', 'Popescu', 'client@vatrio.ro', 'CLIENT', '0745123456')
 
   const dorobanti = await prisma.property.create({
     data: {
@@ -104,7 +104,7 @@ async function main() {
   })
 
   console.log('Seed finalizat. Conturi demo (parola: parola123):')
-  console.log('  admin@clavium.ro / owner@clavium.ro / client@clavium.ro')
+  console.log('  admin@vatrio.ro / owner@vatrio.ro / client@vatrio.ro')
 }
 
 main()

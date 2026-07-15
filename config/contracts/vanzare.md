@@ -26,7 +26,7 @@ actul autentic notarial.
 ## Prețul și avansul (arvuna)
 
 Prețul total al vânzării este de {{price}}. La semnarea prezentului antecontract, cumpărătorul
-achită, prin platforma Clavium.ro, un avans cu titlu de arvună confirmatorie de {{deposit}}
+achită, prin platforma Vatrio.ro, un avans cu titlu de arvună confirmatorie de {{deposit}}
 (art. 1544 Cod civil), care se impută asupra prețului.
 
 Diferența de preț se achită la data încheierii contractului de vânzare în formă autentică, dacă
@@ -78,11 +78,11 @@ evenimentului și face dovada acestuia.
 Părțile prelucrează datele cu caracter personal din prezentul antecontract exclusiv în scopul
 încheierii și executării acestuia, cu respectarea Regulamentului (UE) 2016/679 (GDPR). Detaliile
 privind prelucrarea efectuată de platformă sunt disponibile în politica de confidențialitate
-Clavium.ro.
+Vatrio.ro.
 
 ## Notificări
 
-Comunicările dintre părți se transmit prin platforma Clavium.ro sau prin email, la adresele
+Comunicările dintre părți se transmit prin platforma Vatrio.ro sau prin email, la adresele
 menționate în partea introductivă, și se consideră primite la data transmiterii, dacă aceasta este
 zi lucrătoare, sau în prima zi lucrătoare următoare.
 
@@ -96,7 +96,7 @@ inclusiv structurii SAL pentru soluționarea alternativă a litigiilor.
 ## Semnătura electronică
 
 Antecontractul se încheie în formă electronică și se semnează cu semnătură electronică prin
-platforma Clavium.ro, în conformitate cu Regulamentul (UE) nr. 910/2014 (eIDAS) și Legea
+platforma Vatrio.ro, în conformitate cu Regulamentul (UE) nr. 910/2014 (eIDAS) și Legea
 nr. 214/2024. Părțile convin că documentul semnat electronic, împreună cu jurnalul de audit al
 platformei (amprenta SHA-256 și referințele semnăturilor), face dovada încheierii și a
 conținutului prezentului antecontract. Contractul de vânzare propriu-zis se încheie în formă

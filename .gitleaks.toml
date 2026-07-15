@@ -1,0 +1,8 @@
+title = "Vatrio secret scanning configuration"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Test-only private key paired with the committed QES certificate fixture"
+paths = ['''^src/test/fixtures/qes/leaf\.key\.pem$''']

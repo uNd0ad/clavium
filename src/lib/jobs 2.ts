@@ -76,7 +76,7 @@ export async function processDunning(now: Date = new Date()) {
       await sendEmailSafe(
         payment.user.email,
         'Reamintire: chiria se apropie de scadență',
-        `Bună, ${payment.user.firstName},\n\nChiria de ${ronFmt.format(payment.amount)} pentru „${title}” este scadentă pe ${formatDay(payment.dueDate)}.\nPoți plăti din contul tău Clavium.`
+        `Bună, ${payment.user.firstName},\n\nChiria de ${ronFmt.format(payment.amount)} pentru „${title}” este scadentă pe ${formatDay(payment.dueDate)}.\nPoți plăti din contul tău Vatrio.`
       )
       await prisma.payment.update({ where: { id: payment.id }, data: { lastReminderAt: now } })
       remindersSent += 1
@@ -106,7 +106,7 @@ export async function processDunning(now: Date = new Date()) {
       await sendEmailSafe(
         payment.user.email,
         'Chirie restantă',
-        `Bună, ${payment.user.firstName},\n\nChiria de ${ronFmt.format(payment.amount)} pentru „${title}” este restantă de ${days} zile. Te rugăm să o achiți din contul tău Clavium pentru a evita penalitățile prevăzute în contract.`
+        `Bună, ${payment.user.firstName},\n\nChiria de ${ronFmt.format(payment.amount)} pentru „${title}” este restantă de ${days} zile. Te rugăm să o achiți din contul tău Vatrio pentru a evita penalitățile prevăzute în contract.`
       )
       await prisma.payment.update({ where: { id: payment.id }, data: { lastReminderAt: now } })
       overdueSent += 1

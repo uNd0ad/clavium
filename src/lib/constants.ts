@@ -1,4 +1,4 @@
-export const COOKIE_NAME = 'clavium_token'
+export const COOKIE_NAME = 'vatrio_token'
 
 const secret = process.env.JWT_SECRET
 // Enforcarea strictă a JWT_SECRET se aplică DOAR deployment-ului de producție real. Pe Vercel toate
@@ -11,10 +11,11 @@ const secret = process.env.JWT_SECRET
 const isProdDeploy = process.env.VERCEL_ENV
   ? process.env.VERCEL_ENV === 'production'
   : process.env.NODE_ENV === 'production'
-if (isProdDeploy && (!secret || secret === 'dev_secret_clavium' || secret.length < 32)) {
+const insecureDevelopmentSecrets = new Set(['dev_secret_vatrio', 'dev_secret_clavium'])
+if (isProdDeploy && (!secret || insecureDevelopmentSecrets.has(secret) || secret.length < 32)) {
   throw new Error('JWT_SECRET trebuie setat în producție (minim 32 de caractere).')
 }
-export const JWT_SECRET = secret ?? 'dev_secret_clavium'
+export const JWT_SECRET = secret ?? 'dev_secret_vatrio'
 
 // URL-ul public al aplicației — baza tuturor linkurilor absolute (emailuri de verificare /
 // resetare parolă, alerte căutări salvate, sitemap, metadataBase). Prioritate:

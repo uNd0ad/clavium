@@ -28,7 +28,7 @@ Nu expune `SENTRY_AUTH_TOKEN` cu prefixul `NEXT_PUBLIC_` și nu îl salva în re
 3. Verifică în Sentry că evenimentul are environment, release și stack trace cu fișierele sursă.
 4. Navighează prin câteva pagini și confirmă trace-uri browser → server/API în Performance.
 5. Rulează manual, cu `CRON_SECRET`, rutele `/api/cron/cleanup` și `/api/cron/dunning`; monitoarele
-   `clavium-cleanup` și `clavium-dunning` trebuie să apară cu status OK.
+   `vatrio-cleanup` și `vatrio-dunning` trebuie să apară cu status OK.
 
 ## Alerte recomandate în Sentry
 

@@ -12,7 +12,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 mb-16">
           <div className="lg:col-span-1">
             <div className="font-sans text-2xl font-semibold text-[var(--text)] mb-4">
-              Clavium<span className="italic text-[var(--brand)]">.ro</span>
+              Vatrio<span className="italic text-[var(--brand)]">.ro</span>
             </div>
             <p className="text-sm leading-relaxed text-[var(--muted)]/85">
               {dict.footer.tagline}
@@ -41,7 +41,7 @@ export default function Footer() {
             {
               title: dict.footer.colContact,
               links: [
-                { label: 'contact@clavium.ro', href: 'mailto:contact@clavium.ro' },
+                { label: 'contact@vatrio.ro', href: 'mailto:contact@vatrio.ro' },
                 // Adresa și programul nu sunt linkuri — se afișează ca text simplu (fără href="#").
                 { label: 'Timișoara, România' },
                 { label: dict.footer.hours },
@@ -71,7 +71,7 @@ export default function Footer() {
 
         <div className="border-t border-[var(--border)] pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-[var(--muted)]/70">
-            © {year} Clavium.ro · {dict.footer.rights}
+            © {year} Vatrio.ro · {dict.footer.rights}
           </p>
           <span className="text-xs tracking-[0.18em] uppercase text-[var(--muted)]/70">
             {dict.footer.compliance}

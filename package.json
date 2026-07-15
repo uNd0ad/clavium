@@ -1,6 +1,6 @@
 {
-  "name": "clavium",
-  "version": "1.4.7",
+  "name": "vatrio",
+  "version": "1.4.8",
   "private": true,
   "engines": {
     "node": ">=22 <23"

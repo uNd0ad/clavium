@@ -145,7 +145,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
         </div>
 
         <p className="mt-8 border-t border-[var(--border)] pt-4 text-xs text-[var(--muted)]">
-          Document generat de Clavium.ro · semnătură electronică calificată conformă eIDAS / Legea 214/2024.
+          Document generat de Vatrio.ro · semnătură electronică calificată conformă eIDAS / Legea 214/2024.
         </p>
       </article>
 

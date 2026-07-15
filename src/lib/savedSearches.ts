@@ -74,7 +74,7 @@ export async function processSavedSearchAlerts(now: Date = new Date()) {
           const lines = matches.map((m) => `• ${m.title} — ${m.location}: ${APP_URL}/proprietati/${m.id}`).join('\n')
           await sendEmail(
             search.user.email,
-            'Listări noi pe Clavium pentru căutarea ta',
+            'Listări noi pe Vatrio pentru căutarea ta',
             `Bună, ${search.user.firstName},\n\nAm găsit ${matches.length} listări noi pentru „${label}”:\n\n${lines}\n\nVezi toate: ${APP_URL}/proprietati`
           )
         } catch (err) {

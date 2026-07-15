@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.8 — 2026-07-16
+
+- Rebrand complet din Clavium în Vatrio: identitate vizuală nouă, metadate, interfață, emailuri,
+  documente, localizare, identificatori de client și valori implicite actualizate.
+- Securitate GitHub: analiză CodeQL, actualizări Dependabot pentru npm și GitHub Actions, scanare
+  Gitleaks a istoricului, configurare pentru secret scanning și politică de raportare.
+
 ## 1.4.6 — 2026-07-12
 
 - Homepage, slide 4: eliminat cardul „dovadă socială" (contoare proprietăți/contracte + insigna
@@ -11,7 +18,7 @@
 ## 1.4.5 — 2026-07-12
 
 - Termeni și condiții noi: pagina `/termeni` afișează acum documentul juridic complet (55 de
-  secțiuni + 3 anexe, transcris din „Termeni și Condiții Clavium.ro.pdf"), cu cuprins cu ancore.
+  secțiuni + 3 anexe, transcris din „Termeni și Condiții Vatrio.ro.pdf"), cu cuprins cu ancore.
   Textul stă în `src/app/termeni/content.ts` (date, nu logică); marcajele `[●]` din document
   (datele societății, adrese dedicate etc.) rămân vizibile până sunt completate — lista lor e în
   `contract_caveats.txt`. Procesatorul de plăți e completat factual (Stripe).
@@ -36,10 +43,10 @@
 
 ## 1.4.3 — 2026-07-10
 
-- Logo-ul Clavium (varianta din `logo.svg` — fundal negru, culori mai bogate) e acum sursa tuturor
+- Logo-ul Vatrio (varianta din `logo.svg` — fundal negru, culori mai bogate) e acum sursa tuturor
   icon-urilor: favicon (icon.png, favicon.ico 16/32/48, apple-icon.png, public/favicon.png), cu
   negrul eliminat ca transparență + un-matting pe margini (fără franjuri închise pe fundal deschis).
-- Navbar: textul „Clavium.ro" e înlocuit cu logo-ul (`public/logo.png`, 40px, `next/image` cu
+- Navbar: textul „Vatrio.ro" e înlocuit cu logo-ul (`public/logo.png`, 40px, `next/image` cu
   `priority`; `aria-label` păstrat pentru accesibilitate). Subsolul rămâne cu text.
 - Notă: `logo.svg` e de fapt un PNG împachetat în SVG (nu vector real) — asset-urile sunt generate
   din rasterul încorporat.
@@ -60,7 +67,7 @@
   Acum `APP_URL` se deduce automat pe Vercel (domeniul de producție pe deployment-ul de producție,
   URL-ul deployment-ului pe Preview); localhost rămâne doar pentru dev local. Avertisment la pornire
   când lipsește complet. Setează `APP_URL` explicit când există domeniu propriu — are prioritate.
-- Favicon nou din logo-ul Clavium: `src/app/icon.png` (servit + legat automat de Next) — fundal alb
+- Favicon nou din logo-ul Vatrio: `src/app/icon.png` (servit + legat automat de Next) — fundal alb
   transparent, decupat pătrat, 512×512; `public/favicon.png` actualizat identic. Până acum niciun
   favicon nu era legat în pagini (browserele primeau 404).
 
@@ -210,7 +217,7 @@
 ### Homepage regândit — „slide deck" în 4 slide-uri
 - Pagina principală restructurată dintr-o listă minimală de funcții într-un deck de 4 slide-uri orientate spre vânzare, fiecare adresat unei audiențe (în ordinea pâlniei):
   - **Slide 1 — chiriași & cumpărători**: titlu pe beneficiu („direct de la proprietar, fără comision"), căutare + listări reale + CTA.
-  - **Slide 2 — proprietari**: modelul dual — self-service (listare gratuită, semnătură QES online) vs. administrat de Clavium (de la 8%).
+  - **Slide 2 — proprietari**: modelul dual — self-service (listare gratuită, semnătură QES online) vs. administrat de Vatrio (de la 8%).
   - **Slide 3 — dezvoltatori & spații comerciale**: ansambluri rezidențiale, spații de birouri pentru companii, spații comerciale; CTA de tip lead (demo).
   - **Slide 4 — cum funcționează**: proces + încredere (QES/eIDAS/Legea 214) + contoare reale.
 - Pagină publică nouă **`/servicii`** cu oferta de administrare (până acum doar în dashboard); catalog de servicii partajat (`src/lib/services.ts`), reutilizat pe homepage, `/servicii` și în dashboard.
@@ -417,7 +424,7 @@ Pas major de UX: feedback modern, interacțiuni instant și un dashboard în lim
 - Toate paginile de dashboard (overview, oferte, contracte, proprietăți, plăți, profil) citesc acum din baza de date, cu date filtrate pe rol (ADMIN vede tot, OWNER doar proprietățile/contractele/încasările proprii, CLIENT doar ofertele/contractele/plățile proprii) și stări goale pentru conturile noi.
 - Overview cu statistici calculate (venit lunar, contracte active, oferte noi) și alerte generate din starea reală (semnături lipsă, plăți eșuate).
 - Clienții sunt redirecționați de la `/dashboard/plati` și `/dashboard/proprietati`, conform regulilor de rol din navigație.
-- Script de seed (`npm run db:seed`) cu conturi demo: `admin@clavium.ro`, `owner@clavium.ro`, `client@clavium.ro` (parola `parola123`).
+- Script de seed (`npm run db:seed`) cu conturi demo: `admin@vatrio.ro`, `owner@vatrio.ro`, `client@vatrio.ro` (parola `parola123`).
 
 ### Înregistrare
 - Alegerea rolului (Client / Proprietar) la primul pas; rolul ADMIN este respins server-side la înregistrarea publică.

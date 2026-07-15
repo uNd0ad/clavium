@@ -28,12 +28,12 @@ import { getPublicListing, listingJsonLd, absoluteUrl } from '@/lib/seo'
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
   const property = await getPublicListing(id)
-  if (!property) return { title: 'Proprietate negăsită — Clavium.ro' }
+  if (!property) return { title: 'Proprietate negăsită — Vatrio.ro' }
 
   const isSale = property.transactionType === 'VANZARE'
   const priceLabel = isSale ? formatRon(property.price) : `${formatRon(property.rent)}/lună`
-  const title = `${property.title} · ${property.location} — ${priceLabel} | Clavium.ro`
-  const description = property.description?.slice(0, 160) || `${isSale ? 'De vânzare' : 'De închiriat'} în ${property.location}, direct de la proprietar pe Clavium.ro.`
+  const title = `${property.title} · ${property.location} — ${priceLabel} | Vatrio.ro`
+  const description = property.description?.slice(0, 160) || `${isSale ? 'De vânzare' : 'De închiriat'} în ${property.location}, direct de la proprietar pe Vatrio.ro.`
   const photos = parsePhotos(property.photos).map((p) => (p.startsWith('http') ? p : absoluteUrl(p)))
   const canonical = `/proprietati/${property.id}`
 

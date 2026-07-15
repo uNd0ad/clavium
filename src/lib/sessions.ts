@@ -96,8 +96,8 @@ export async function notifyNewDevice(
   try {
     await sendEmail(
       user.email,
-      'Autentificare de pe un dispozitiv nou — Clavium',
-      `Bună, ${user.firstName},\n\nAm detectat o autentificare nouă în contul tău Clavium de pe ${where}.\n\nDacă ai fost tu, poți ignora acest mesaj. Dacă nu, schimbă-ți parola imediat și revocă sesiunile active din Profil → Sesiuni active.`
+      'Autentificare de pe un dispozitiv nou — Vatrio',
+      `Bună, ${user.firstName},\n\nAm detectat o autentificare nouă în contul tău Vatrio de pe ${where}.\n\nDacă ai fost tu, poți ignora acest mesaj. Dacă nu, schimbă-ți parola imediat și revocă sesiunile active din Profil → Sesiuni active.`
     )
   } catch (err) {
     logger.warn('alertă dispozitiv nou: email eșuat', { userId: user.id, error: (err as Error).message })

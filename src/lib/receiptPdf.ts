@@ -33,9 +33,9 @@ export async function buildReceiptPdf(data: ReceiptData): Promise<Uint8Array> {
 
   const docTitle = data.isInvoice ? 'FACTURĂ' : 'CHITANȚĂ'
   pdf.setTitle(`${docTitle} ${data.reference}`)
-  pdf.setProducer('Clavium.ro')
+  pdf.setProducer('Vatrio.ro')
 
-  cur.text('Clavium.ro', { size: 9, bold: true, color: MUTED })
+  cur.text('Vatrio.ro', { size: 9, bold: true, color: MUTED })
   cur.gap(2)
   cur.text(docTitle, { size: 22, bold: true })
   cur.gap(2)
@@ -58,7 +58,7 @@ export async function buildReceiptPdf(data: ReceiptData): Promise<Uint8Array> {
 
   cur.rule()
   cur.text(
-    'Document generat electronic de Clavium.ro. Pentru contracte și plăți, accesează contul tău.',
+    'Document generat electronic de Vatrio.ro. Pentru contracte și plăți, accesează contul tău.',
     { size: 8, color: MUTED, lineGap: 2 }
   )
 

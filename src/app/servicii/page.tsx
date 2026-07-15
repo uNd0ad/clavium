@@ -6,7 +6,7 @@ import { SERVICES, SUPPORT_EMAIL } from '@/lib/services'
 import { getNavUser } from '@/lib/session'
 
 export const metadata: Metadata = {
-  title: 'Servicii pentru proprietari — Clavium.ro',
+  title: 'Servicii pentru proprietari — Vatrio.ro',
   description:
     'Lasă-ne să-ți administrăm proprietatea: evaluare, fotografie, administrare, verificare chiriași, juridic și fiscal. Agenția ta imobiliară digitală.',
 }

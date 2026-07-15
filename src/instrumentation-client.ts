@@ -9,7 +9,7 @@ Sentry.init({
   environment: firstDefined(process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT, process.env.NODE_ENV),
   tracesSampleRate: sentryTraceSampleRate(process.env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE),
 
-  // Clavium procesează date KYC și financiare. Nu colectăm IP/user implicit și nu activăm
+  // Vatrio procesează date KYC și financiare. Nu colectăm IP/user implicit și nu activăm
   // Session Replay; breadcrumbs și erorile tehnice rămân suficiente pentru diagnosticare.
   dataCollection: sentryDataCollection(),
   attachStacktrace: true,

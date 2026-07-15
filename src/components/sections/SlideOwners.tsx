@@ -6,7 +6,7 @@ import SlideShell from './SlideShell'
 import { useDict } from '@/lib/i18n/client'
 
 // Slide 2 — proprietari care vor să închirieze sau să vândă. Modelul dual: self-service vs.
-// administrat de Clavium. `services` = preview cu carduri de serviciu randate pe server (păstrează
+// administrat de Vatrio. `services` = preview cu carduri de serviciu randate pe server (păstrează
 // iconițele pe server, evitând trecerea de funcții peste granița server/client).
 export default function SlideOwners({ services }: { services: React.ReactNode }) {
   const dict = useDict()
@@ -42,7 +42,7 @@ export default function SlideOwners({ services }: { services: React.ReactNode })
           </Link>
         </div>
 
-        {/* Administrat de Clavium */}
+        {/* Administrat de Vatrio */}
         <div className="relative flex flex-col rounded-4xl border border-[var(--brand)]/30 bg-[var(--brand-soft)] p-8">
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-3xl bg-[var(--brand)] text-white">
             <Building2 size={22} strokeWidth={1.75} />

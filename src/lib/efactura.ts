@@ -7,7 +7,7 @@ export const EFACTURA_ENABLED = enabled
 
 export type InvoiceParty = {
   name: string
-  cui: string // CUI/CIF (cumpărător) sau al furnizorului (Clavium)
+  cui: string // CUI/CIF (cumpărător) sau al furnizorului (Vatrio)
   address: string
   country?: string // implicit RO
 }

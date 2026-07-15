@@ -167,7 +167,7 @@ export async function sendVerificationEmail(user: User) {
   })
   await sendEmail(
     user.email,
-    'Confirmă adresa de email — Clavium',
+    'Confirmă adresa de email — Vatrio',
     `Salut, ${user.firstName}!\n\nConfirmă adresa de email accesând linkul:\n${APP_URL}/api/auth/verify-email/confirm?token=${token}\n\nLinkul expiră în 24 de ore.`
   )
 }
@@ -198,7 +198,7 @@ export async function requestPasswordReset(email: string) {
   })
   await sendEmail(
     user.email,
-    'Resetare parolă — Clavium',
+    'Resetare parolă — Vatrio',
     `Salut, ${user.firstName}!\n\nResetează parola accesând linkul:\n${APP_URL}/auth/reset-parola?token=${token}\n\nLinkul expiră în 30 de minute. Dacă nu ai cerut resetarea, ignoră acest mesaj.`
   )
 }
@@ -229,7 +229,7 @@ export async function changePassword(userId: string, currentPassword: string, ne
 export async function sendPhoneOtpCode(phone: string) {
   const code = String(Math.floor(100000 + Math.random() * 900000))
   await storePhoneOtp(phone, code)
-  await sendSms(phone, `Codul tău de verificare Clavium este: ${code}`)
+  await sendSms(phone, `Codul tău de verificare Vatrio este: ${code}`)
   return code
 }
 
@@ -265,7 +265,7 @@ export async function sendOtpCode(data: OtpSendRequest) {
   if (!user || !user.isActive) return null
   const code = String(Math.floor(100000 + Math.random() * 900000))
   await storeOtpCode(data.email, code)
-  await sendEmail(data.email, 'Codul tău de autentificare — Clavium', `Codul tău de autentificare Clavium este: ${code}\n\nExpiră în 10 minute.`)
+  await sendEmail(data.email, 'Codul tău de autentificare — Vatrio', `Codul tău de autentificare Vatrio este: ${code}\n\nExpiră în 10 minute.`)
   return code
 }
 

@@ -30,7 +30,7 @@ export async function importListingAction(url: string): Promise<{ ok: true; list
     try {
       const res = await fetch(parsed.toString(), {
         signal: controller.signal,
-        headers: { 'User-Agent': 'ClaviumBot/1.0 (+https://clavium.ro)' },
+        headers: { 'User-Agent': 'VatrioBot/1.0 (+https://vatrio.ro)' },
       })
       if (!res.ok) return { ok: false, error: `Sursa a răspuns cu ${res.status}.` }
       html = await res.text()

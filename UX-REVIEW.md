@@ -1,4 +1,4 @@
-# Clavium — UX Review & Ideas
+# Vatrio — UX Review & Ideas
 
 An honest, opinionated assessment of why the app currently feels "rough, unedged and messy,"
 and a prioritized set of ideas to make it smooth and natural. Grounded in the actual codebase

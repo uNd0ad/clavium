@@ -10,8 +10,8 @@ test.describe('pagini publice', () => {
 
   test('homepage: cele 4 slide-uri se randează', async ({ page }) => {
     await page.goto('/')
-    await expect(page).toHaveTitle(/Clavium/i)
-    await expect(page.getByRole('link', { name: /Clavium/i }).first()).toBeVisible()
+    await expect(page).toHaveTitle(/Vatrio/i)
+    await expect(page.getByRole('link', { name: /Vatrio/i }).first()).toBeVisible()
 
     // Slide 1 — chiriași & cumpărători: titlu + căutare + CTA.
     await expect(page.getByRole('heading', { name: /Găsește-ți casa/i })).toBeVisible()
@@ -62,7 +62,7 @@ test.describe('autentificare (UI)', () => {
 
   test('login cu credențiale greșite afișează o eroare', async ({ page }) => {
     await page.goto('/auth/login')
-    await page.getByPlaceholder(/exemplu@/i).fill('inexistent@clavium.test')
+    await page.getByPlaceholder(/exemplu@/i).fill('inexistent@vatrio.test')
     await page.getByPlaceholder('••••••••').fill('parolagresita123')
     await page.getByRole('button', { name: /Conectează-te|Sign in/i }).click()
     await expect(page.getByText(/incorect|invalid/i).first()).toBeVisible({ timeout: 10_000 })

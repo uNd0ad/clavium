@@ -31,7 +31,7 @@ export default function ReviewForm({ contractId, subjectName }: { contractId: st
     <div className="space-y-4 rounded-4xl border border-[var(--border)] bg-[var(--card)] p-6">
       <div>
         <h3 className="text-lg font-semibold">Evaluează: {subjectName}</h3>
-        <p className="mt-1 text-sm text-[var(--muted)]">Experiența ta ajută comunitatea Clavium.</p>
+        <p className="mt-1 text-sm text-[var(--muted)]">Experiența ta ajută comunitatea Vatrio.</p>
       </div>
       <div className="flex items-center gap-1">
         {[1, 2, 3, 4, 5].map((i) => (

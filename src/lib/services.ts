@@ -1,11 +1,11 @@
 // Catalogul de servicii pentru proprietari (oferta de „agenție administrată"). Sursă unică,
 // reutilizată de pagina publică /servicii, de slide-ul „Proprietari" de pe homepage și de pagina
-// din dashboard. Static deocamdată: cererile se preiau prin e-mail (contact@clavium.ro); când va
+// din dashboard. Static deocamdată: cererile se preiau prin e-mail (contact@vatrio.ro); când va
 // exista un flux dedicat de comenzi, sursa de date se poate muta în DB.
 import { LineChart, Camera, Sparkles, Scale, UserCheck, ShieldCheck, Building2, Calculator } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
-export const SUPPORT_EMAIL = 'contact@clavium.ro'
+export const SUPPORT_EMAIL = 'contact@vatrio.ro'
 
 export type OwnerService = {
   icon: LucideIcon

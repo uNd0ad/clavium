@@ -9,7 +9,7 @@ import { useDict } from '@/lib/i18n/client'
 // HTML-ul SSR, deci fără mismatch la hidratare), pe client starea vine din sessionStorage —
 // închiderea ține doar sesiunea curentă, ca vizitatorii care revin să vadă din nou anunțul.
 // De șters din layout la lansarea produsului final.
-const STORAGE_KEY = 'clavium_dev_notice_dismissed'
+const STORAGE_KEY = 'vatrio_dev_notice_dismissed'
 
 const listeners = new Set<() => void>()
 

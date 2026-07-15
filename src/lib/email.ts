@@ -30,7 +30,7 @@ export async function sendEmail(to: string, subject: string, body: string): Prom
     return
   }
 
-  const from = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@clavium.ro'
+  const from = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@vatrio.ro'
   const tx = await getTransporter()
   await tx.sendMail({ from, to, subject, text: body })
 }

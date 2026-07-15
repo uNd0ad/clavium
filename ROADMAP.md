@@ -1,4 +1,4 @@
-# Clavium — Road to Paid Public Launch
+# Vatrio — Road to Paid Public Launch
 
 Working tracker. Target: **real paid public launch**. Phases 1–2 are mandatory for a
 real deploy; Phase 3 is compliance; Phase 4 is post-launch differentiation. Add new

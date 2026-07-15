@@ -117,7 +117,7 @@ export async function buildContractPdf(
   const isSale = doc.type === 'VANZARE'
 
   pdf.setTitle(doc.number)
-  pdf.setProducer('Clavium.ro')
+  pdf.setProducer('Vatrio.ro')
 
   // Antet.
   cur.text(isSale ? 'ANTECONTRACT DE VÂNZARE-CUMPĂRARE' : 'CONTRACT DE ÎNCHIRIERE', {
@@ -188,7 +188,7 @@ export async function buildContractPdf(
   // Subsol. Mențiunea despre actul autentic e specifică antecontractului de vânzare.
   cur.rule()
   cur.text(
-    'Document generat de Clavium.ro · semnătură electronică conformă eIDAS / Legea 214/2024.' +
+    'Document generat de Vatrio.ro · semnătură electronică conformă eIDAS / Legea 214/2024.' +
       (isSale ? ' Antecontractul nu transferă proprietatea; transferul se realizează prin act autentic la notar.' : ''),
     { size: 8, color: MUTED, lineGap: 2 }
   )

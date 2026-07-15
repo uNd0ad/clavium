@@ -69,8 +69,8 @@ export default function Navbar({ initialUser }: { initialUser?: NavUser | null }
         )}
       >
         <div className="max-w-[1600px] mx-auto px-6 lg:px-16 flex items-center justify-between">
-          <Link href="/" aria-label="Clavium.ro" className="flex items-center no-underline">
-            <Image src="/logo.png" alt="Clavium.ro" width={74} height={80} priority className="h-10 w-auto" />
+          <Link href="/" aria-label="Vatrio.ro" className="flex items-center no-underline">
+            <Image src="/logo.png" alt="Vatrio.ro" width={80} height={80} priority className="h-10 w-10" />
           </Link>
 
           <div className="hidden lg:flex items-center gap-10">

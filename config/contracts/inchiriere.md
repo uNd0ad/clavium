@@ -73,7 +73,7 @@ rămânere în folosință a Imobilului după expirare nu prelungește contractu
 
 ## Chiria și modalitatea de plată
 
-Chiria lunară este de {{rent}} și se achită prin platforma Clavium.ro, până cel târziu în ziua de
+Chiria lunară este de {{rent}} și se achită prin platforma Vatrio.ro, până cel târziu în ziua de
 {{dueDay}} a fiecărei luni, pentru luna în curs. Dacă chiria este stabilită în altă monedă decât
 leul, plata se face în lei la cursul BNR din ziua plății, dacă părțile nu convin altfel.
 
@@ -193,11 +193,11 @@ Părțile prelucrează datele cu caracter personal din prezentul contract exclus
 constatării, exercitării sau apărării unor drepturi în justiție, cu respectarea Regulamentului
 (UE) 2016/679 (GDPR). Copiile actelor de identitate se păstrează doar cât este necesar acestor
 scopuri. Detaliile privind prelucrarea efectuată de platformă sunt disponibile în politica de
-confidențialitate Clavium.ro.
+confidențialitate Vatrio.ro.
 
 ## Notificări
 
-Comunicările dintre părți se transmit prin platforma Clavium.ro sau prin email, la adresele
+Comunicările dintre părți se transmit prin platforma Vatrio.ro sau prin email, la adresele
 menționate în partea introductivă, și se consideră primite la data transmiterii, dacă aceasta este
 zi lucrătoare, sau în prima zi lucrătoare următoare.
 
@@ -211,7 +211,7 @@ alternativă a litigiilor.
 
 ## Semnătura electronică
 
-Contractul se încheie în formă electronică și se semnează cu semnătură electronică prin platforma Clavium.ro, în conformitate cu Regulamentul (UE) nr. 910/2014 (eIDAS) și Legea nr. 214/2024.
+Contractul se încheie în formă electronică și se semnează cu semnătură electronică prin platforma Vatrio.ro, în conformitate cu Regulamentul (UE) nr. 910/2014 (eIDAS) și Legea nr. 214/2024.
 Părțile convin că documentul semnat electronic, împreună cu jurnalul de audit al platformei
 (amprenta SHA-256 și referințele semnăturilor), face dovada încheierii și a conținutului
 prezentului contract.

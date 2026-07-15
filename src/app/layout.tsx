@@ -29,10 +29,10 @@ export async function generateMetadata(): Promise<Metadata> {
     description: dict.meta.description,
     keywords: ['imobiliare', 'chirie', 'vânzare apartamente', 'contract electronic', 'semnătură digitală'],
     openGraph: {
-      title: 'Clavium.ro',
+      title: 'Vatrio.ro',
       description: dict.meta.description,
-      url: 'https://clavium.ro',
-      siteName: 'Clavium.ro',
+      url: 'https://vatrio.ro',
+      siteName: 'Vatrio.ro',
       locale: locale === 'en' ? 'en_US' : 'ro_RO',
       type: 'website',
     },

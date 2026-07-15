@@ -44,7 +44,7 @@ export async function GET() {
     return new NextResponse(JSON.stringify(data, null, 2), {
       headers: {
         'Content-Type': 'application/json',
-        'Content-Disposition': `attachment; filename="clavium-date-${user.id}.json"`,
+        'Content-Disposition': `attachment; filename="vatrio-date-${user.id}.json"`,
       },
     })
   } catch (err) {

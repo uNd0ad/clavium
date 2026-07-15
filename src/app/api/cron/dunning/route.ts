@@ -26,7 +26,7 @@ export async function GET(req: Request): Promise<NextResponse> {
   if (!authorizeCron(req)) return cronUnauthorized()
   try {
     return await Sentry.withMonitor(
-      'clavium-dunning',
+      'vatrio-dunning',
       async () => {
         const autopay = await processAutopay()
         const result = await processDunning()

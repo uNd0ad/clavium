@@ -42,16 +42,16 @@ describe('listing import (scaffold)', () => {
 describe('e-Factura (scaffold)', () => {
   it('construiește XML UBL valid cu TVA și totaluri corecte', () => {
     const xml = buildCommissionInvoiceXml({
-      number: 'CLV-2026-001',
+      number: 'VTR-2026-001',
       issueDate: '2026-06-29',
       currency: 'RON',
       amount: 100,
       vatRate: 19,
-      supplier: { name: 'Clavium SRL', cui: 'RO12345678', address: 'Timișoara' },
+      supplier: { name: 'Vatrio SRL', cui: 'RO12345678', address: 'Timișoara' },
       customer: { name: 'Proprietar SRL', cui: 'RO87654321', address: 'Cluj' },
       description: 'Comision intermediere',
     })
-    expect(xml).toContain('<cbc:ID>CLV-2026-001</cbc:ID>')
+    expect(xml).toContain('<cbc:ID>VTR-2026-001</cbc:ID>')
     expect(xml).toContain('RO12345678')
     expect(xml).toContain('<cbc:TaxAmount currencyID="RON">19.00</cbc:TaxAmount>')
     expect(xml).toContain('<cbc:PayableAmount currencyID="RON">119.00</cbc:PayableAmount>')

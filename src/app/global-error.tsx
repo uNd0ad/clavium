@@ -20,7 +20,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
 
           <div className="relative w-full max-w-xl">
             <p className="mb-8 select-none text-2xl font-semibold text-[var(--text)]">
-              Clavium<span className="italic text-[var(--brand)]">.ro</span>
+              Vatrio<span className="italic text-[var(--brand)]">.ro</span>
             </p>
 
             <div className="section-label justify-center">A apărut o problemă</div>

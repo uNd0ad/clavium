@@ -4,7 +4,7 @@ import Footer from '@/components/layout/Footer'
 import { getNavUser } from '@/lib/session'
 
 export const metadata: Metadata = {
-  title: 'Politica de confidențialitate — Clavium.ro',
+  title: 'Politica de confidențialitate — Vatrio.ro',
 }
 
 const sections = [
@@ -26,11 +26,11 @@ const sections = [
   },
   {
     title: '5. Drepturile tale',
-    body: 'Ai dreptul de acces, rectificare, ștergere, restricționare, portabilitate și opoziție. Îți poți descărca toate datele din pagina de profil („Descarcă datele mele") și îți poți dezactiva contul oricând. Pentru cereri suplimentare: contact@clavium.ro. Te poți adresa și ANSPDCP (dataprotection.ro).',
+    body: 'Ai dreptul de acces, rectificare, ștergere, restricționare, portabilitate și opoziție. Îți poți descărca toate datele din pagina de profil („Descarcă datele mele") și îți poți dezactiva contul oricând. Pentru cereri suplimentare: contact@vatrio.ro. Te poți adresa și ANSPDCP (dataprotection.ro).',
   },
   {
     title: '6. Cookies',
-    body: 'Folosim un singur cookie strict necesar (clavium_token) pentru menținerea sesiunii de autentificare. Nu folosim cookie-uri de tracking sau publicitate.',
+    body: 'Folosim un singur cookie strict necesar (vatrio_token) pentru menținerea sesiunii de autentificare. Nu folosim cookie-uri de tracking sau publicitate.',
   },
   {
     title: '7. Securitate',

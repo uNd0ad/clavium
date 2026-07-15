@@ -25,7 +25,7 @@ export default function ReferralCard({ code, count }: { code: string; count: num
       <div className="flex items-center gap-3">
         <Gift size={20} className="text-[var(--brand)]" />
         <div>
-          <h2 className="text-xl font-semibold">Recomandă Clavium</h2>
+          <h2 className="text-xl font-semibold">Recomandă Vatrio</h2>
           <p className="text-sm text-[var(--muted)]">
             {count > 0 ? `Ai recomandat ${count} ${count === 1 ? 'persoană' : 'persoane'}.` : 'Invită cunoscuți cu linkul tău.'}
           </p>

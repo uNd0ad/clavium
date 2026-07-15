@@ -25,7 +25,7 @@ export async function GET(req: Request): Promise<NextResponse> {
   if (!authorizeCron(req)) return cronUnauthorized()
   try {
     return await Sentry.withMonitor(
-      'clavium-cleanup',
+      'vatrio-cleanup',
       async () => {
         const tokens = await cleanupExpiredTokens()
         const kyc = await purgeKycBiometrics()
