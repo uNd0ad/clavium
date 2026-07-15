@@ -199,8 +199,11 @@ npx prisma studio  # browse the database
 
 ## Roadmap / not yet implemented
 
-The full production roadmap with current status lives in [TODO.md](TODO.md). As of v0.4.0 the
-marketplace flows (browsing, offers, contracts, signing, rent payments), security hardening, and
-the legal/GDPR layer are implemented. What remains is connecting real external providers
-(payments — Stripe/Netopia, QES — eIDAS provider, email — Resend/SendGrid, all pluggable in
-`src/lib/`), migrating SQLite → PostgreSQL, file storage for photos, monitoring, and E2E tests.
+The full production roadmap with current status lives in [ROADMAP.md](ROADMAP.md). As of v1.3.8
+the marketplace flows (browsing, offers, contracts, QES signing, rent & sale payments via Stripe),
+KYC verification, 2FA (TOTP), the hash-chained audit log, PostgreSQL (Neon), S3/R2 photo storage,
+SMTP email, RO/EN i18n, the 4-slide sales homepage, and the Playwright E2E suite are implemented.
+What remains before a paid public launch (see the phases in ROADMAP.md): Stripe live keys +
+production webhook, the "bank model" signing flow for users without a qualified certificate, the
+QES provider decision, secrets rotation/deploy hygiene, persisting the final signed PDF, and legal
+sign-off on the contract templates (Legea 214/2024 / Civil Code).

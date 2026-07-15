@@ -14,25 +14,28 @@ Re-architect the homepage from a minimal feature-list into a **4-slide, audience
 deck** — each slide a benefit-led pitch to one audience, in funnel order, with a single CTA. Lead
 with the visitor's desire, name the pain, handle the objection, show proof, ask for one action.
 
-- [ ] **Slide 1 — Rent-seekers & buyers** (top of funnel): "găsește-ți casa, fără comision,
+- [x] **Slide 1 — Rent-seekers & buyers** (top of funnel): "găsește-ți casa, fără comision,
   direct de la proprietar, semnat online". Keeps the search box + a strip of **live featured
-  listings** (`searchAvailableProperties` + `PropertyCard`). CTA → `/proprietati`.
-- [ ] **Slide 2 — Owners (rent or sell)**: the dual model — **self-service** (listează gratuit,
+  listings** (`searchAvailableProperties` + `PropertyCard`). CTA → `/proprietati`. _(shipped
+  v1.1.0; refined through v1.3.x: vertical auto-scroll slider, compact 3-line cards with EUR,
+  full-bleed background)_
+- [x] **Slide 2 — Owners (rent or sell)**: the dual model — **self-service** (listează gratuit,
   contract + QES online → `/auth/register`) **vs. managed agency** (administrăm totul, de la 8% —
-  reuses the existing Servicii catalog → public `/servicii`).
-- [ ] **Slide 3 — Developers & commercial** (new B2B audience): **bulk residential** (ansambluri),
+  reuses the existing Servicii catalog → public `/servicii`). _(shipped v1.1.0)_
+- [x] **Slide 3 — Developers & commercial** (new B2B audience): **bulk residential** (ansambluri),
   **office space leased to companies** (spații de birouri), **commercial spaces** (spații
-  comerciale). Lead-gen CTA (sales/demo). *Follow-up:* commercial/office property categories +
-  filters in the data model + a developer account/portal.
-- [ ] **Slide 4 — How it works**: end-to-end process + QES/Signature trust + eIDAS / Legea 214
-  badges + **live stat counters** (Prisma counts); closing CTA.
-- [ ] **Wiring & cleanup**: `page.tsx` → async + **ISR**; extract the `SERVICES` catalog into
+  comerciale). Lead-gen CTA (sales/demo). _(shipped v1.1.0)_ *Follow-up (still open):*
+  commercial/office property categories + filters in the data model + a developer account/portal.
+- [x] **Slide 4 — How it works**: end-to-end process + QES/Signature trust + eIDAS / Legea 214
+  badges + **live stat counters** (Prisma counts); closing CTA. _(shipped v1.1.0)_
+- [x] **Wiring & cleanup**: `page.tsx` → async; extract the `SERVICES` catalog into
   `src/lib/services.ts` (shared by Slide 2, public `/servicii`, dashboard); **fix dead links**
   (`/vanzare` `/inchiriere` `/leasing` → `/proprietati?type=…`); new copy in i18n (ro + en);
-  full-bleed **scroll-snap** slides (mobile + reduced-motion safe).
-- [ ] **Sales principles** (every slide): benefit-led headline (not "we do X"), name the pain
+  full-bleed **scroll-snap** slides (mobile + reduced-motion safe). _(shipped v1.1.0; the initial
+  ISR cache was later removed in v1.3.1 so listings/photos stay fresh — the route is dynamic anyway)_
+- [x] **Sales principles** (every slide): benefit-led headline (not "we do X"), name the pain
   (commission, scams, paperwork, time), handle the objection (QES + verified + encrypted), show
-  proof (real listings + live counts), one unambiguous CTA.
+  proof (real listings + live counts), one unambiguous CTA. _(shipped v1.1.0)_
 
 ---
 
@@ -69,6 +72,13 @@ with the visitor's desire, name the pain, handle the objection, show proof, ask 
 - [ ] _(optional follow-up)_ Persist the **final signed** PDF to storage + add
   `Contract.documentUrl` (immutable archived copy). Currently regenerated on demand —
   deterministic, so functionally equivalent, but not a frozen artifact.
+- [~] **Email verification needs fixing** — SMTP is now set on Vercel (emails go out), but
+  verification links pointed to `localhost:3000`: `APP_URL` wasn't set, and `constants.ts` fell
+  back to localhost. Fixed in code: `APP_URL` now auto-derives on Vercel (production domain on
+  the production deployment, deployment URL on Preview) with localhost only as the local-dev
+  fallback + an env warning at startup. Remaining: set `APP_URL` explicitly once a custom domain
+  exists, verify SPF/DKIM for the sender domain, then test register → verify → OTP-login
+  end-to-end on prod.
 - [ ] **Stripe live** — live keys + production webhook endpoint + verified end-to-end
   test charge (code already idempotent/hardened).
 - [~] **Landlord payouts (Stripe Connect / escrow)** — scaffolded: `lib/payouts.ts` (`PAYOUTS_ENABLED`
@@ -124,6 +134,28 @@ with the visitor's desire, name the pain, handle the objection, show proof, ask 
 - [x] e-Factura commission invoicing — `lib/efactura.ts`: pure `buildCommissionInvoiceXml` (UBL 2.1 /
   RO_CIUS, VAT + totals, XML-escaped), `submitEFactura` ANAF-SPV seam gated on `EFACTURA_*` creds.
   Tested. (Company KYC of legal-rep authority remains a manual/admin step.)
+
+## Scale readiness — path to 100k users
+
+> Assessment (iul 2026): the architecture (stateless serverless on Vercel + Cloudflare CDN, pooled
+> Postgres, R2 object storage, DB sessions, idempotent crons) is the right shape for 100k registered
+> users — no rewrite needed. The risks are operational, in rough order of when they bite:
+
+- [ ] **Transactional email provider** — everything sends via raw SMTP (`nodemailer`). At volume
+  (verification, dunning, saved-search alerts) move to Resend/Postmark/SES: SPF/DKIM, bounce
+  handling, deliverability. _(Overlaps with the Phase 1 email-verification item + Phase 2 SPF/DKIM.)_
+- [ ] **Confirm Upstash rate limiting is live in prod** — `rateLimit()` falls back to per-instance
+  memory when `UPSTASH_REDIS_REST_URL/TOKEN` are unset (silently weak brute-force protection on
+  serverless). Verify the vars on Vercel. _(PRODUCTION-READINESS P0 #2.)_
+- [ ] **Batch the dunning cron** — `processDunning()` is a sequential email+notify+update loop in
+  one invocation; with thousands of active rentals it hits the function time limit mid-batch
+  (idempotent, so reminders slip rather than corrupt). Parallelize in chunks or queue it.
+- [ ] **Move KYC face-match out of process** — `@vladmandic/face-api` model loading makes serverless
+  cold starts heavy/expensive at high signup rates; a dedicated KYC provider also helps compliance.
+- [ ] **Search indexes at listing scale** — Prisma-filter search (60-result cap) is fine to tens of
+  thousands of listings; beyond that add Postgres full-text/geo (FTS/PostGIS) indexes.
+- [ ] **Observability before growth** — Sentry seam exists (Phase 2, done); add DB metrics/alerts
+  (slow queries, pool saturation). At scale the failure mode is "slow and unnoticed", not "crashed".
 
 ## Domain gaps — real-use logic (currently happy-path only)
 
