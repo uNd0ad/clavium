@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const { withSentryConfig } = require('@sentry/nextjs')
+
 const securityHeaders = [
   { key: 'X-Frame-Options', value: 'DENY' },
   { key: 'X-Content-Type-Options', value: 'nosniff' },
@@ -49,4 +51,34 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+module.exports = withSentryConfig(nextConfig, {
+  // SENTRY_ORG, SENTRY_PROJECT și SENTRY_AUTH_TOKEN sunt citite și automat de plugin.
+  // Le trecem explicit ca documentația configurației să rămână lângă cod.
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+
+  // Upload-ul rulează la build când credențialele sunt prezente. Hărțile client sunt șterse
+  // după upload, iar cele server rămân doar în artefactul privat pentru simbolizare la runtime.
+  widenClientFileUpload: true,
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: true,
+  },
+
+  // Evenimentele browser trec prin aceeași origine, ca să nu fie blocate de ad blockers.
+  // Ruta este exclusă explicit din proxy-ul aplicației (src/proxy.ts).
+  tunnelRoute: '/monitoring',
+
+  // Release-ul este dedus de plugin din SENTRY_RELEASE, Vercel sau commit-ul git.
+  release: {
+    create: true,
+    finalize: true,
+  },
+
+  bundleSizeOptimizations: {
+    excludeDebugStatements: true,
+  },
+
+  // Păstrăm build-urile locale silențioase; CI afișează upload-ul și orice eroare aferentă.
+  silent: !process.env.CI,
+})

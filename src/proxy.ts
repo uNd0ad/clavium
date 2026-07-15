@@ -72,9 +72,10 @@ export function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    // Toate rutele, mai puțin fișierele statice, optimizatorul de imagini, uploads și favicon.
+    // Toate rutele, mai puțin fișierele statice, uploads și tunelul Sentry. Tunelul trebuie să
+    // ajungă direct la handler-ul generat de SDK, fără redirecturi sau antete injectate de proxy.
     {
-      source: '/((?!_next/static|_next/image|favicon.ico|uploads/|robots.txt|sitemap.xml).*)',
+      source: '/((?!monitoring|_next/static|_next/image|favicon.ico|uploads/|robots.txt|sitemap.xml).*)',
       missing: [
         { type: 'header', key: 'next-router-prefetch' },
         { type: 'header', key: 'purpose', value: 'prefetch' },

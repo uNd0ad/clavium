@@ -5,11 +5,11 @@ import { useEffect } from 'react'
 import { RotateCcw, Home, TriangleAlert } from 'lucide-react'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import { reportException } from '@/lib/sentry'
 
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
-    // Logăm eroarea în consolă pentru diagnosticare (în producție ar merge într-un serviciu de monitorizare).
-    console.error(error)
+    reportException(error, { boundary: 'app', digest: error.digest })
   }, [error])
 
   return (

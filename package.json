@@ -1,6 +1,6 @@
 {
   "name": "clavium",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "private": true,
   "engines": {
     "node": ">=22 <23"
@@ -30,6 +30,7 @@
     "@aws-sdk/client-s3": "^3.1075.0",
     "@pdf-lib/fontkit": "^1.1.1",
     "@prisma/client": "^5.15.0",
+    "@sentry/nextjs": "^10.65.0",
     "@vladmandic/face-api": "^1.7.15",
     "asn1js": "^3.0.10",
     "bcryptjs": "^2.4.3",

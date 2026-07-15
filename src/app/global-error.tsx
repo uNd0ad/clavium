@@ -2,14 +2,14 @@
 
 import { useEffect } from 'react'
 import { RotateCcw } from 'lucide-react'
-import { captureException } from '@/lib/logger'
+import { reportException } from '@/lib/sentry'
 // global-error înlocuiește complet root layout-ul, deci trebuie să-și aducă singur stilurile
 // (tokenii din :root și clasele utilitare .section-label / .btn-primary) și propriile <html>/<body>.
 import './globals.css'
 
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
-    captureException(error, { digest: error.digest })
+    reportException(error, { boundary: 'global', digest: error.digest })
   }, [error])
 
   return (

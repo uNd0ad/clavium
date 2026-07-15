@@ -1,6 +1,6 @@
 // Logger structurat. În producție emite JSON pe o linie (ușor de parsat de Vercel/Datadog/agregatoare);
 // în dev rămâne lizibil. `captureException` e punctul unic pentru erorile neașteptate — log structurat
-// acum, plus un hook gata pregătit pentru un APM (Sentry) când se adaugă SENTRY_DSN.
+// local și îl transmite către Sentry când integrarea este configurată.
 type Level = 'info' | 'warn' | 'error'
 type Meta = Record<string, unknown>
 
@@ -26,7 +26,6 @@ export const logger = {
 export function captureException(error: unknown, context?: Meta) {
   const err = error instanceof Error ? error : new Error(String(error))
   logger.error(err.message, { ...context, stack: err.stack })
-  // Forward către Sentry dacă SENTRY_DSN e setat (best-effort, non-blocant). Import leneș ca să
-  // evităm un ciclu de module la încărcare (sentry.ts folosește acest logger).
+  // Import leneș: logger-ul rămâne utilizabil și în timpul inițializării runtime-ului.
   void import('./sentry').then((m) => m.reportException(err, context)).catch(() => {})
 }
