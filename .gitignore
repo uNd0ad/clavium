@@ -39,3 +39,8 @@ private/
 /test-results/
 /playwright-report/
 /playwright/.cache/
+/.lighthouseci/
+/lighthouse-report/
+
+# Vitest coverage
+/coverage/

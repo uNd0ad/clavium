@@ -13,7 +13,7 @@ export default function FeaturedSlider({ children, className = '' }: { children:
   const items = Children.toArray(children)
   const copy = (prefix: string, hidden = false) =>
     items.map((child, i) => (
-      <div key={`${prefix}-${i}`} className="pb-4" aria-hidden={hidden || undefined}>
+      <div key={`${prefix}-${i}`} className="pb-4" aria-hidden={hidden || undefined} inert={hidden || undefined}>
         {child}
       </div>
     ))

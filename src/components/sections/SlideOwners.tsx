@@ -48,7 +48,7 @@ export default function SlideOwners({ services }: { services: React.ReactNode })
             <Building2 size={22} strokeWidth={1.75} />
           </div>
           <h3 className="mt-5 text-2xl font-semibold text-[var(--text)]">{t.managedTitle}</h3>
-          <p className="mt-3 text-base leading-7 text-[var(--muted)]">{t.managedDesc}</p>
+          <p className="mt-3 text-base leading-7 text-[var(--text)]">{t.managedDesc}</p>
           <ul className="mt-6 space-y-3">
             {t.managedBullets.map((b) => (
               <li key={b} className="flex items-start gap-3 text-sm text-[var(--text)]">

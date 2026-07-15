@@ -31,5 +31,32 @@ export default defineConfig({
     },
     globalSetup: ['./src/test/globalSetup.ts'],
     setupFiles: ['./src/test/setup.ts'],
+    coverage: {
+      provider: 'v8',
+      reportsDirectory: './coverage',
+      reporter: ['text', 'json-summary', 'lcov', 'html'],
+      reportOnFailure: true,
+      include: [
+        'src/lib/**/*.ts',
+        'src/app/actions/**/*.ts',
+        'src/app/api/**/*.ts',
+        'src/proxy.ts',
+        'src/instrumentation.ts',
+        'src/instrumentation-client.ts',
+      ],
+      exclude: [
+        'src/**/*.test.ts',
+        'src/**/__tests__/**',
+        'src/test/**',
+        // Copii istorice neimportate; nu fac parte din bundle-ul aplicației.
+        'src/lib/**/* 2.ts',
+      ],
+      thresholds: {
+        lines: 50,
+        statements: 50,
+        functions: 50,
+        branches: 40,
+      },
+    },
   },
 })

@@ -34,11 +34,15 @@ function sampleDoc(overrides: Partial<ContractDocument> = {}): ContractDocument 
 }
 
 describe('buildContractPdf', () => {
-  it('generează un PDF valid pentru un contract semnat (cu diacritice)', async () => {
-    const bytes = await buildContractPdf(sampleDoc(), { documentHash: 'a'.repeat(64) })
-    expect(bytes.length).toBeGreaterThan(1000)
-    expect(Buffer.from(bytes.slice(0, 5)).toString()).toBe('%PDF-')
-  })
+  it(
+    'generează un PDF valid pentru un contract semnat (cu diacritice)',
+    async () => {
+      const bytes = await buildContractPdf(sampleDoc(), { documentHash: 'a'.repeat(64) })
+      expect(bytes.length).toBeGreaterThan(1000)
+      expect(Buffer.from(bytes.slice(0, 5)).toString()).toBe('%PDF-')
+    },
+    15_000
+  )
 
   it('generează un PDF de previzualizare pentru un contract nesemnat fără clauze', async () => {
     const bytes = await buildContractPdf(

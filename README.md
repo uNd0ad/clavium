@@ -192,10 +192,21 @@ Auth and OTP endpoints are rate limited (429 on abuse).
 npm run dev        # dev server with HMR
 npm run build      # production build
 npm start          # run production server
+npm test           # Vitest unit/integration suite
+npm run test:coverage # Vitest + V8 coverage report and enforced thresholds
+npm run test:e2e   # Playwright Chromium E2E suite
+npm run lighthouse:ci # Lighthouse gates (requires a production build)
 npm run db:seed    # populate demo data
 npm run db:push    # push schema without a migration
 npx prisma studio  # browse the database
 ```
+
+CI runs Vitest with V8 coverage and uploads the HTML/LCOV report. The enforced global minimums are
+50% for lines, statements, and functions, and 40% for branches. Playwright runs separately against
+a migrated PostgreSQL service, includes axe WCAG 2.1 A/AA scans, and uploads its HTML report and
+retry traces. Lighthouse CI audits the public routes in a third isolated job and uploads the full
+HTML reports; accessibility, best-practices, and SEO scores are blocking, while performance is a
+warning threshold because shared CI runners are inherently noisy.
 
 ## Roadmap / not yet implemented
 

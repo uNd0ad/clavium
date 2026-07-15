@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.9 — 2026-07-16
+
+- CI: Playwright rulează în Chromium într-un job separat, pe PostgreSQL izolat, cu retry controlat
+  și rapoarte/traces încărcate ca artefacte GitHub Actions.
+- Testare: acoperire Vitest prin V8, rapoarte text/HTML/LCOV și praguri minime globale pentru linii,
+  instrucțiuni, funcții și ramuri.
+- Accesibilitate și calitate web: scanări axe WCAG 2.1 A/AA în Playwright și Lighthouse CI pentru
+  performanță, accesibilitate, bune practici și SEO, cu rapoarte încărcate ca artefacte.
+
 ## 1.4.8 — 2026-07-16
 
 - Rebrand complet din Clavium în Vatrio: identitate vizuală nouă, metadate, interfață, emailuri,

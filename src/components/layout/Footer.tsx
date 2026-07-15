@@ -49,7 +49,7 @@ export default function Footer() {
             },
           ].map((col) => (
             <div key={col.title}>
-              <h4 className="text-2xs tracking-[0.22em] uppercase text-[var(--brand)] mb-6 font-semibold">
+              <h4 className="text-2xs tracking-[0.22em] uppercase text-[var(--brand-dark)] mb-6 font-semibold">
                 {col.title}
               </h4>
               <ul className="space-y-3">
