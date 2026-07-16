@@ -10,6 +10,9 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
+    // Acoperirea V8 și schema PostgreSQL remote pot împinge fluxurile PDF/money-path peste
+    // implicitul de 5s pe runner-ele partajate; păstrăm o limită finită, dar realistă.
+    testTimeout: 15_000,
     // Doar testele unitare/integrare din `src`. Specurile Playwright din `e2e/` rulează separat
     // (npm run test:e2e) — altfel Vitest le-ar prelua și ar eșua la importul `@playwright/test`.
     include: ['src/**/*.test.ts'],

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { absoluteUrl, listingJsonLd } from '@/lib/seo'
+import { absoluteUrl, formatMemberSince, listingJsonLd } from '@/lib/seo'
 
 const base = {
   id: 'p1',
@@ -41,5 +41,10 @@ describe('seo', () => {
     const images = ld.image as string[]
     expect(images[0]).toMatch(/^https?:\/\/.+\/uploads\/a\.webp$/)
     expect(images[1]).toBe('https://cdn.ex/b.webp')
+  })
+
+  it('formatează data serializată din cache și tratează defensiv o valoare invalidă', () => {
+    expect(formatMemberSince('2025-06-10T12:00:00.000Z')).toMatch(/iunie 2025/)
+    expect(formatMemberSince('invalid')).toBe('—')
   })
 })

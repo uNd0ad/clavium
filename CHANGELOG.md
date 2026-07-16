@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+## 1.4.10 — 2026-07-16
+
+- E2E money path: fixture-uri PostgreSQL locale și protejate la resetare, două roluri autentificate,
+  listare → ofertă → acceptare → semnare QES → plată dev → chitanță PDF, plus livrare dublă a unui
+  webhook Stripe semnat pentru verificarea idempotentă a decontării.
+
 ## 1.4.9 — 2026-07-16
 
 - CI: Playwright rulează în Chromium într-un job separat, pe PostgreSQL izolat, cu retry controlat

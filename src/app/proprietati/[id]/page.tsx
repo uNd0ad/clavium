@@ -19,7 +19,7 @@ import { getUserReputation } from '@/lib/reviews'
 import { formatRonWithEur } from '@/lib/currency'
 import { getEurRonRate } from '@/lib/exchangeRate'
 import { staticMapUrl, hasCoordinates } from '@/lib/maps'
-import { getPublicListing, listingJsonLd, absoluteUrl } from '@/lib/seo'
+import { getPublicListing, listingJsonLd, absoluteUrl, formatMemberSince } from '@/lib/seo'
 
 // Datele publice ale listării sunt cache-uite între request-uri și revalidate la cel mult o oră
 // (vezi `getPublicListing` → unstable_cache); personalizarea (utilizator/salvat) rămâne pe request.
@@ -159,7 +159,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               <h2 className="text-xl font-semibold">Proprietar</h2>
               <p className="mt-3 text-base text-[var(--muted)]">
                 {property.owner.firstName} {property.owner.lastName} · membru din{' '}
-                {new Intl.DateTimeFormat('ro-RO', { year: 'numeric', month: 'long' }).format(property.owner.createdAt)}
+                {formatMemberSince(property.owner.createdAt)}
               </p>
               {ownerReputation.count > 0 ? (
                 <p className="mt-2 flex items-center gap-2 text-sm text-[var(--muted)]">

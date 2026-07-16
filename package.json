@@ -1,6 +1,6 @@
 {
   "name": "vatrio",
-  "version": "1.4.9",
+  "version": "1.4.10",
   "private": true,
   "engines": {
     "node": ">=22 <23"
@@ -17,6 +17,7 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
+    "test:e2e:money": "playwright test e2e/money-path.spec.ts",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:install": "playwright install chromium",
     "lighthouse:ci": "lhci autorun",

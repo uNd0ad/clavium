@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe, STRIPE_WEBHOOK_SECRET } from '@/lib/stripe'
+import { constructStripeWebhookEvent, STRIPE_WEBHOOK_SECRET } from '@/lib/stripe'
 import { settlePayment } from '@/lib/paymentSettle'
 import { logger, captureException } from '@/lib/logger'
 
@@ -9,7 +9,7 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
-  if (!stripe || !STRIPE_WEBHOOK_SECRET) {
+  if (!STRIPE_WEBHOOK_SECRET) {
     return NextResponse.json({ error: 'Stripe nu este configurat.' }, { status: 503 })
   }
 
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 
   let event
   try {
-    event = stripe.webhooks.constructEvent(payload, signature, STRIPE_WEBHOOK_SECRET)
+    event = constructStripeWebhookEvent(payload, signature, STRIPE_WEBHOOK_SECRET)
   } catch (err) {
     // Semnătură invalidă: cerere care nu provine de la Stripe (sau secret greșit).
     logger.warn('stripe webhook signature invalid', { error: (err as Error).message })

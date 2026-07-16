@@ -93,12 +93,13 @@ with the visitor's desire, name the pain, handle the objection, show proof, ask 
   `@sentry/nextjs` only when `SENTRY_DSN` is set (hidden dynamic import → optional dependency; app
   builds/runs without the package). `captureException` forwards to it; the Stripe webhook
   settle-failure path now reports via `captureException` (was log-only). Env vars documented. Tested.
-- [x] **Playwright E2E** scaffolded — `@playwright/test` + `playwright.config.ts` (webServer runs
-  `dev` locally / `build && start` in CI). Working smoke suite (`e2e/public.spec.ts`): landing +
-  hero/CTA, language switch RO→EN, listings page, robots/sitemap, login/register pages, bad-login
-  error. Money-path + webhook specs (`e2e/money-path.spec.ts`) written as a documented `test.skip`
-  skeleton listing the CI fixtures needed (test DB, OTP/email bypass, QES cert, dev-settle). Scripts:
-  `test:e2e`, `test:e2e:ui`, `test:e2e:install`.
+- [x] **Playwright E2E** — `@playwright/test` + `playwright.config.ts` (webServer runs `dev` locally /
+  `build && start` in CI). Smoke suite (`e2e/public.spec.ts`): landing + hero/CTA, language switch
+  RO→EN, listings page, robots/sitemap, login/register pages, bad-login error. Calea banilor rulează
+  activ în CI pe PostgreSQL izolat: fixture-uri cu două roluri verificate, listare → ofertă → contract
+  → semnare QES → plată dev → chitanță PDF, plus webhook Stripe semnat livrat de două ori pentru
+  idempotency. Resetarea fixture-urilor refuză orice host DB non-local. Scripturi: `test:e2e`,
+  `test:e2e:money`, `test:e2e:ui`, `test:e2e:install`.
 - [ ] Secrets/deploy hygiene — rotate the exposed SMSO key, move secrets to Vercel env,
   confirm `CSP_DISABLED` unset in prod, set up SPF/DKIM, deploy from `main`.
 - [x] **Background jobs / scheduler (Vercel Cron)** — `src/lib/cron.ts` (Bearer-secret auth),

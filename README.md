@@ -195,6 +195,7 @@ npm start          # run production server
 npm test           # Vitest unit/integration suite
 npm run test:coverage # Vitest + V8 coverage report and enforced thresholds
 npm run test:e2e   # Playwright Chromium E2E suite
+npm run test:e2e:money # critical listing → contract → payment path (isolated local DB only)
 npm run lighthouse:ci # Lighthouse gates (requires a production build)
 npm run db:seed    # populate demo data
 npm run db:push    # push schema without a migration
@@ -207,6 +208,14 @@ a migrated PostgreSQL service, includes axe WCAG 2.1 A/AA scans, and uploads its
 retry traces. Lighthouse CI audits the public routes in a third isolated job and uploads the full
 HTML reports; accessibility, best-practices, and SEO scores are blocking, while performance is a
 warning threshold because shared CI runners are inherently noisy.
+
+The money-path suite is enabled automatically in CI. For a local run, point `DATABASE_URL` and
+`DIRECT_URL` to a disposable PostgreSQL instance on localhost (or use the exact dedicated schema
+query `schema=vatrio_e2e`), set `E2E_MONEY_PATH=1` and
+`E2E_DATABASE_RESET=1`, and configure `QES_TRUST_DIR=src/test/fixtures/qes/trust`,
+`QES_OCSP_DISABLED=1`, plus any non-empty test-only `STRIPE_WEBHOOK_SECRET`. The reset guard rejects
+non-local database hosts unless that dedicated schema is selected, preventing accidental cleanup
+of development or production data.
 
 ## Roadmap / not yet implemented
 

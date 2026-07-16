@@ -19,11 +19,22 @@ export async function getPublicListing(id: string) {
         include: { owner: { select: { firstName: true, lastName: true, createdAt: true } } },
       })
       if (!property || property.status === 'INACTIVA') return null
-      return property
+      // `unstable_cache` serializează valorile prin limita cache-ului; normalizăm explicit Date
+      // ca pagina să primească același tip atât la cache miss, cât și la cache hit.
+      return {
+        ...property,
+        owner: { ...property.owner, createdAt: property.owner.createdAt.toISOString() },
+      }
     },
     ['public-listing', id],
     { revalidate: 3600 }
   )()
+}
+
+export function formatMemberSince(createdAt: string | Date): string {
+  const date = new Date(createdAt)
+  if (Number.isNaN(date.getTime())) return '—'
+  return new Intl.DateTimeFormat('ro-RO', { year: 'numeric', month: 'long' }).format(date)
 }
 
 type ListingForLd = {

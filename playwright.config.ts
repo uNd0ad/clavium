@@ -10,7 +10,8 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // Calea banilor mută stare în baza izolată; o serializăm și local când este activată explicit.
+  workers: process.env.CI || process.env.E2E_MONEY_PATH === '1' ? 1 : undefined,
   reporter: process.env.CI
     ? [['github'], ['html', { outputFolder: 'playwright-report', open: 'never' }]]
     : 'list',

@@ -97,8 +97,13 @@ jobs:
       DIRECT_URL: postgresql://postgres:postgres@localhost:5432/clavium
       JWT_SECRET: ci_secret_used_only_for_e2e_0123456789abcdef
       APP_URL: http://127.0.0.1:3000
+      CSP_DISABLED: '1'
+      E2E_MONEY_PATH: '1'
+      E2E_DATABASE_RESET: '1'
       STRIPE_SECRET_KEY: ''
-      STRIPE_WEBHOOK_SECRET: ''
+      STRIPE_WEBHOOK_SECRET: whsec_vatrio_e2e_signature_only
+      QES_TRUST_DIR: ${{ github.workspace }}/src/test/fixtures/qes/trust
+      QES_OCSP_DISABLED: '1'
 
     steps:
       - uses: actions/checkout@v5
@@ -160,6 +165,7 @@ jobs:
       DIRECT_URL: postgresql://postgres:postgres@localhost:5432/clavium
       JWT_SECRET: ci_secret_used_only_for_lighthouse_0123456789abcdef
       APP_URL: http://127.0.0.1:3000
+      CSP_DISABLED: '1'
       STRIPE_SECRET_KEY: ''
       STRIPE_WEBHOOK_SECRET: ''
 
