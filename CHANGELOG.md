@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.5.1 — 2026-07-17
+
+- Footer: litera „V” din wordmark-ul Vatrio.ro este înlocuită de simbolul oficial, dimensionat și
+  aliniat optic cu textul, cu etichetă accesibilă pentru cititoarele de ecran.
+
 ## 1.5.0 — 2026-07-16
 
 - Identitate vizuală: noul simbol Vatrio din `VatrioLogo.png` este folosit unitar în navbar,
