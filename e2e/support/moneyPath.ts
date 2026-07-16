@@ -88,7 +88,7 @@ function pemToDer(pem: string): ArrayBuffer {
   return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
 }
 
-let qesKeyPromise: Promise<CryptoKey> | null = null
+let qesKeyPromise: Promise<webcrypto.CryptoKey> | null = null
 function qesKey() {
   if (!qesKeyPromise) {
     qesKeyPromise = webcrypto.subtle.importKey(
