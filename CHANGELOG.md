@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.5.0 — 2026-07-16
+
+- Identitate vizuală: noul simbol Vatrio din `VatrioLogo.png` este folosit unitar în navbar,
+  favicon, iconul aplicației și iconul Apple Touch, cu decupaje pătrate optimizate pentru fiecare
+  dimensiune și transparența originală păstrată.
+
 ## 1.4.11 — 2026-07-16
 
 - Dependențe Lighthouse CI: `chrome-launcher` este suprascris la 1.2.1, eliminând lanțul depreciat
