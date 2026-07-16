@@ -1,6 +1,6 @@
 {
   "name": "vatrio",
-  "version": "1.4.10",
+  "version": "1.4.11",
   "private": true,
   "engines": {
     "node": ">=22 <23"
@@ -30,6 +30,7 @@
     "seed": "node prisma/seed.js"
   },
   "overrides": {
+    "chrome-launcher": "1.2.1",
     "tmp": "0.2.7",
     "uuid": "11.1.1"
   },

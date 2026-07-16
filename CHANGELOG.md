@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 1.4.11 — 2026-07-16
+
+- Dependențe Lighthouse CI: `chrome-launcher` este suprascris la 1.2.1, eliminând lanțul depreciat
+  `rimraf@3` → `glob@7` → `inflight` și păstrând compatibilitatea cu `@lhci/cli`.
+- Graphify: graful proiectului și snapshot-ul din 2026-07-16 au fost regenerate după schimbările
+  recente de testare, CI și dependențe.
+
 ## 1.4.10 — 2026-07-16
 
 - E2E money path: fixture-uri PostgreSQL locale și protejate la resetare, două roluri autentificate,

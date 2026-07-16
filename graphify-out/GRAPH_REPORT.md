@@ -1,16 +1,16 @@
-# Graph Report - clavium  (2026-07-12)
+# Graph Report - clavium  (2026-07-16)
 
 ## Corpus Check
-- 315 files · ~158,567 words
+- 323 files · ~158,348 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1375 nodes · 3432 edges · 138 communities (78 shown, 60 thin omitted)
+- 1430 nodes · 3524 edges · 144 communities (82 shown, 62 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 12 edges (avg confidence: 0.59)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5fe6094e`
+- Built from commit: `c6baa5d9`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -56,14 +56,14 @@
 - Legal & Static Pages
 - page.tsx
 - StatusBadge.tsx
-- Inquiry Messaging
+- contracts.ts
 - Inquiry Actions
 - 2FA Setup
 - Profile Page & Referrals
 - Package Metadata
 - QES Compliance Docs
 - Session Revocation
-- storageBackend.ts
+- Button.tsx
 - tickets.ts
 - Referral System
 - Test Harness
@@ -87,6 +87,7 @@
 - PDF Fonts
 - 2FA Changelog
 - Graphify Workflow
+- E2E Money Path
 - Dunning Roadmap
 - i18n Roadmap
 - eFactura Flag
@@ -94,7 +95,7 @@
 - Owner Role
 - page 2.tsx
 - Ancore de încredere QES (certificate root ale furnizorilor calificați)
-- kyc.ts
+- FormField.tsx
 - 0.5.1 — 2026-06-14
 - 0.6.0 — 2026-06-14
 - 0.7.0 — 2026-06-14
@@ -135,27 +136,32 @@
 - SaleTermsForm.tsx
 - FormField.tsx
 - page.tsx
-- roles.ts
+- SaleTermsForm.tsx
 - ThemeToggle.tsx
-- storage.ts
+- requireActionUser
 - sessions.ts
 - env.ts
 - 1.4.0 — 2026-07-10
-- referrals.ts
 - page.tsx
 - terms.ts
-- sessions.ts
+- inquiries.ts
+- audit.ts
+- page.tsx
+- page.tsx
+- autopay.ts
+- proxy.ts
+- contractDates.ts
 
 ## God Nodes (most connected - your core abstractions)
 1. `errorMessage()` - 96 edges
 2. `requireActionUser()` - 66 edges
-3. `getCurrentUser` - 48 edges
-4. `notify()` - 45 edges
-5. `Changelog` - 45 edges
+3. `Changelog` - 50 edges
+4. `getCurrentUser` - 48 edges
+5. `notify()` - 45 edges
 6. `formatRon()` - 35 edges
 7. `makeUser()` - 34 edges
 8. `Button` - 29 edges
-9. `resetDb()` - 26 edges
+9. `resetDb()` - 29 edges
 10. `sha256()` - 25 edges
 
 ## Surprising Connections (you probably didn't know these)
@@ -163,53 +169,53 @@
   .github/workflows/ci.yml → docker-compose.yml
 - `Isolated Test Database Harness` --semantically_similar_to--> `Isolated Test Schema (clavium_test)`  [INFERRED] [semantically similar]
   CHANGELOG.md → .github/workflows/ci.yml
-- `AdminPage()` --calls--> `getCurrentUser`  [EXTRACTED]
-  src/app/dashboard/admin/page 2.tsx → src/lib/session.ts
-- `Footer()` --calls--> `useDict()`  [EXTRACTED]
-  src/components/layout/Footer.tsx → src/lib/i18n/client.tsx
-- `Navbar()` --calls--> `useDict()`  [EXTRACTED]
-  src/components/layout/Navbar.tsx → src/lib/i18n/client.tsx
+- `resetAndSeedMoneyPath()` --calls--> `resetDb()`  [EXTRACTED]
+  e2e/support/moneyPath.ts → src/test/helpers.ts
+- `cleanMoneyPath()` --calls--> `resetDb()`  [EXTRACTED]
+  e2e/support/moneyPath.ts → src/test/helpers.ts
+- `session()` --calls--> `sessionFor()`  [EXTRACTED]
+  src/app/actions/__tests__/kyc.test.ts → src/test/helpers.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (138 total, 60 thin omitted)
+## Communities (144 total, 62 thin omitted)
 
 ### Community 0 - "Property & Offer Actions"
-Cohesion: 0.09
-Nodes (37): createOfferAction(), OPEN_CONTRACT_STATUSES, respondToOfferAction(), createPropertyAction(), DbUser, DbUser, listing(), DbUser (+29 more)
+Cohesion: 0.07
+Nodes (55): createOfferAction(), OPEN_CONTRACT_STATUSES, respondToOfferAction(), createPropertyAction(), deletePhotoAction(), revalidateProperties(), toggleSaveAction(), updatePropertyAction() (+47 more)
 
 ### Community 1 - "Contract & Payment Flow"
-Cohesion: 0.23
-Nodes (10): FeaturedSlider(), SlideDevelopers(), SlideHowItWorks(), STEP_ICONS, SlideOwners(), SlideRenters(), TX_TO_FILTER, TxType (+2 more)
+Cohesion: 0.20
+Nodes (12): Footer(), FeaturedSlider(), SlideDevelopers(), SlideHowItWorks(), STEP_ICONS, SlideOwners(), SlideRenters(), TX_TO_FILTER (+4 more)
 
 ### Community 2 - "Property Search & Listing UI"
-Cohesion: 0.05
-Nodes (63): GET(), GET(), DashboardSearchPage(), metadata, PropertiesPage(), SavedSearchView, PropertyCard(), PropertyCardData (+55 more)
+Cohesion: 0.10
+Nodes (35): deleteSavedSearchAction(), saveSearchAction(), DashboardSearchPage(), metadata, PropertiesPage(), SavedSearches(), SavedSearchView, PropertyCard() (+27 more)
 
 ### Community 3 - "Cron Jobs & Email"
-Cohesion: 0.05
-Nodes (78): adminModeratePropertyAction(), adminRefundPaymentAction(), adminSetKycStatusAction(), KYC_STATUSES, KycStatus, cancelSaleAction(), payRentAction(), paySaleAction() (+70 more)
+Cohesion: 0.22
+Nodes (12): AdminPage(), AdminPage(), AdminReportsPage(), REASON_LABELS, dateFmt, KycVerificationPage(), AdminUserRow, DashboardHeader() (+4 more)
 
 ### Community 4 - "Commission & Sale Terms"
 Cohesion: 0.07
-Nodes (41): setSaleTermsAction(), generateMetadata(), PropertyDetailPage(), ronFmt, SaleTerms, SaleTermsForm(), CopyLinkButton(), CopyLinkButtonProps (+33 more)
+Nodes (37): importListingAction(), generateMetadata(), PropertyDetailPage(), CopyLinkButton(), CopyLinkButtonProps, rentCommission(), APP_URL, buildCommissionInvoiceXml() (+29 more)
 
 ### Community 5 - "Auth Core & Registration"
-Cohesion: 0.19
-Nodes (20): POST(), POST(), POST(), POST(), POST(), POST(), createToken(), isNewDevice() (+12 more)
+Cohesion: 0.20
+Nodes (18): POST(), POST(), POST(), POST(), createToken(), isNewDevice(), loginUser(), sendPhoneOtpCode() (+10 more)
 
 ### Community 6 - "Contract Document & Receipts"
 Cohesion: 0.07
-Nodes (38): GET(), GET(), GET(), GuardResult, requireUser(), buildParty(), ContractDetail, ContractDocument (+30 more)
+Nodes (34): GET(), buildParty(), ContractDetail, ContractDocument, formatDate(), getContractDetail(), Party, PartyUser (+26 more)
 
 ### Community 7 - "KYC Verification"
-Cohesion: 0.23
-Nodes (10): canvasToJpeg(), Capture, fileToCanvas(), KycForm(), Mode, STEP_INFO, Target, faceDescriptor() (+2 more)
+Cohesion: 0.09
+Nodes (32): FaceMatch, KIND_LABELS, KycEvidence, recordKycVerification(), submitKycAction(), DbUser, session(), canvasToJpeg() (+24 more)
 
 ### Community 8 - "QES & Env Validation"
-Cohesion: 0.33
-Nodes (7): HomePage(), SlideSnap(), ServiceCard(), getHomeData(), OwnerService, serviceRequestMailto(), SERVICES
+Cohesion: 0.19
+Nodes (17): processAutopay(), addMonths(), formatRon(), paymentReference(), Variant, CheckoutResult, loadPayment(), SettleablePayment (+9 more)
 
 ### Community 9 - "i18n & Root Layout"
 Cohesion: 0.19
@@ -217,23 +223,23 @@ Nodes (15): setLocaleAction(), LanguageSwitcher(), I18nContext, I18nValue, useI1
 
 ### Community 10 - "Dashboard Data Views"
 Cohesion: 0.10
-Nodes (24): DashboardOffersPage(), BadgeVariant, CONTRACT_STATUS, ContractPayment, ContractView, formatDate(), formatDateTime(), getOffers() (+16 more)
+Nodes (26): DashboardPage(), DashboardPaymentsPage(), BadgeVariant, CONTRACT_STATUS, ContractPayment, contractPaymentProgress(), ContractView, formatDate() (+18 more)
 
 ### Community 11 - "Auth API Routes"
-Cohesion: 0.13
-Nodes (31): GET(), confirmEmailToken(), encoder, jwtKey, registerUser(), sendOtpCode(), verifyOtpCode(), AccountType (+23 more)
+Cohesion: 0.12
+Nodes (34): GET(), POST(), confirmEmailToken(), encoder, jwtKey, registerUser(), sendVerificationEmail(), verifyOtpCode() (+26 more)
 
 ### Community 12 - "Validation Schemas"
 Cohesion: 0.10
-Nodes (24): POST(), POST(), resetConfirmSchema, resetPassword(), verifyPhoneOtpCode(), isValidCui(), isValidRegNumber(), adminUserUpdateSchema (+16 more)
+Nodes (23): POST(), resetConfirmSchema, resetPassword(), isValidCui(), isValidRegNumber(), ROLES, adminUserUpdateSchema, changePasswordSchema (+15 more)
 
 ### Community 13 - "Homepage Slide Deck"
-Cohesion: 0.23
-Nodes (14): contractDigest(), contractDocumentHash(), SignableContract, certName(), checkRevocation(), engine, loadTrustAnchors(), ocspUrl() (+6 more)
+Cohesion: 0.08
+Nodes (37): GET(), monitorConfig, GET(), monitorConfig, GET(), POST(), authorizeCron(), cronUnauthorized() (+29 more)
 
 ### Community 14 - "NPM Dependencies"
 Cohesion: 0.09
-Nodes (22): dependencies, asn1js, @aws-sdk/client-s3, bcryptjs, clsx, jose, lucide-react, next (+14 more)
+Nodes (23): dependencies, asn1js, @aws-sdk/client-s3, bcryptjs, clsx, jose, lucide-react, next (+15 more)
 
 ### Community 15 - "Admin Dashboard Pages"
 Cohesion: 0.23
@@ -248,27 +254,27 @@ Cohesion: 0.10
 Nodes (19): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+11 more)
 
 ### Community 18 - "Support Tickets"
-Cohesion: 0.22
-Nodes (13): setAutopayAction(), importListingAction(), submitKycAction(), markNotificationsReadAction(), createReviewAction(), deleteSavedSearchAction(), saveSearchAction(), GET() (+5 more)
+Cohesion: 0.48
+Nodes (5): DashboardProfilePage(), relativeTime(), ReferralCard(), getNotifications(), getCurrentSessionId()
 
 ### Community 19 - "NPM Scripts"
-Cohesion: 0.12
-Nodes (17): scripts, build, db:generate, db:push, db:seed, dev, dev:https, lint (+9 more)
+Cohesion: 0.10
+Nodes (20): scripts, build, db:generate, db:push, db:seed, dev, dev:https, lighthouse:ci (+12 more)
 
 ### Community 20 - "Auth Pages & Forms"
 Cohesion: 0.16
 Nodes (13): CtaSection(), HeroSection(), TX_TO_FILTER, TxType, HowItWorksSection(), STEPS, FEATURES, SignatureSection() (+5 more)
 
 ### Community 22 - "Dev Dependencies"
-Cohesion: 0.12
-Nodes (16): devDependencies, autoprefixer, eslint, eslint-config-next, @eslint/eslintrc, @playwright/test, postcss, prisma (+8 more)
+Cohesion: 0.11
+Nodes (19): devDependencies, autoprefixer, @axe-core/playwright, eslint, eslint-config-next, @eslint/eslintrc, @lhci/cli, @playwright/test (+11 more)
 
 ### Community 23 - "Listing Reports & Moderation"
-Cohesion: 0.26
-Nodes (10): reportAction(), REASONS, ReportButton(), REPORT_REASONS, REPORT_STATUSES, REPORT_TARGETS, ReportListItem, ReportReason (+2 more)
+Cohesion: 0.21
+Nodes (12): reportAction(), resolveReportAction(), ReportResolveControls(), REASONS, ReportButton(), REPORT_REASONS, REPORT_STATUSES, REPORT_TARGETS (+4 more)
 
 ### Community 24 - "Saved Searches & APIs"
-Cohesion: 0.15
+Cohesion: 0.18
 Nodes (11): 10. Content & microcopy, 2. Forms (where users spend the most effort), 3. Loading & perceived performance, 4. Flow & guidance (the "natural" part), 5. Search & listings, 6. Property photos, 7. Micro-interactions & motion, 8. Accessibility (also makes it feel "finished") (+3 more)
 
 ### Community 25 - "Session & Site Meta"
@@ -276,68 +282,68 @@ Cohesion: 0.19
 Nodes (13): generateMetadata(), inter, RootLayout(), CookieBanner(), hasConsent(), listeners, subscribe(), DevNoticeBanner() (+5 more)
 
 ### Community 26 - "Admin Support Actions"
-Cohesion: 0.06
-Nodes (35): 0.8.0 — 2026-06-15, 0.8.1 — 2026-06-15, 0.8.2 — 2026-06-16, 0.8.3 — 2026-06-16, 0.8.4 — 2026-06-17, 0.9.0 — 2026-06-19, 0.9.10 — 2026-06-27, 0.9.1 — 2026-06-19 (+27 more)
+Cohesion: 0.05
+Nodes (40): 0.8.0 — 2026-06-15, 0.8.1 — 2026-06-15, 0.8.2 — 2026-06-16, 0.8.3 — 2026-06-16, 0.8.4 — 2026-06-17, 0.9.0 — 2026-06-19, 0.9.10 — 2026-06-27, 0.9.1 — 2026-06-19 (+32 more)
 
 ### Community 27 - "Admin Users & KYC Pages"
-Cohesion: 0.24
-Nodes (11): DashboardPage(), DashboardPaymentsPage(), DashboardServicesPage(), dateFmt, KycVerificationPage(), DashboardHeader(), DashboardHeaderProps, getOverview() (+3 more)
+Cohesion: 0.17
+Nodes (11): updateUserAction(), DashboardContractsPage(), PropertyDetailPage(), AdminUsersTable(), ROLES, MESSAGES, PaymentToast(), badgeStyles (+3 more)
 
 ### Community 28 - "Misc Dashboard Actions"
 Cohesion: 0.13
-Nodes (15): Backlog — room for more, Clavium — Road to Paid Public Launch, Design Re-Shaped, Domain gaps — real-use logic (currently happy-path only), Done (v0.9.10 — branch `refactor/stability-perf-pass`), Growth & reach, Housekeeping, Phase 1 — Make a real deploy work (BLOCKERS) (+7 more)
+Nodes (15): Backlog — room for more, Design Re-Shaped, Domain gaps — real-use logic (currently happy-path only), Done (v0.9.10 — branch `refactor/stability-perf-pass`), Growth & reach, Housekeeping, Phase 1 — Make a real deploy work (BLOCKERS), Phase 2 — Launch confidence & ops (+7 more)
 
 ### Community 29 - "Reviews & UI Buttons"
-Cohesion: 0.18
-Nodes (16): deletePhotoAction(), revalidateProperties(), toggleSaveAction(), updatePropertyAction(), updatePropertyStatusAction(), uploadPhotosAction(), PhotoManager(), PropertyEditForm() (+8 more)
+Cohesion: 0.22
+Nodes (10): Error(), GlobalError(), register(), reportException(), SENTRY_ENABLED, firstDefined(), sentryDataCollection(), sentryTraceSampleRate() (+2 more)
 
 ### Community 30 - "Dashboard Navigation"
-Cohesion: 0.07
-Nodes (33): highlights, DashboardLayout(), metadata, ActionResult, DueType, MarkNotificationsRead(), OfferActions(), PAY_LABEL (+25 more)
+Cohesion: 0.05
+Nodes (44): markNotificationsReadAction(), acceptTermsAction(), highlights, DashboardLayout(), metadata, ActionResult, DueType, MarkNotificationsRead() (+36 more)
 
 ### Community 31 - "Project Docs & CI"
 Cohesion: 0.40
 Nodes (5): Isolated Test Database Harness, Local Dev Postgres (docker compose), CI Pipeline (lint, typecheck, test, build), CI Postgres 16 Service, Isolated Test Schema (clavium_test)
 
 ### Community 32 - "constants.ts"
-Cohesion: 0.15
-Nodes (9): POST(), GET(), getUserFromToken(), revokeSessionFromToken(), verifyToken(), APP_URL, buildCsp(), config (+1 more)
+Cohesion: 0.27
+Nodes (6): POST(), GET(), getUserFromToken(), revokeSessionFromToken(), verifyToken(), insecureDevelopmentSecrets
 
 ### Community 33 - "Dashboard Action Helpers"
 Cohesion: 0.17
 Nodes (11): Arvuna — efecte (art. 1544 Cod civil), Declarațiile vânzătorului, Legea aplicabilă și litigiile, Notificări, Obiectul antecontractului, Predarea imobilului, Prețul și avansul (arvuna), Protecția datelor cu caracter personal (+3 more)
 
 ### Community 34 - "TOTP Algorithm"
-Cohesion: 0.11
-Nodes (30): RFC-4226, RFC-4648, RFC-6238, begin2faSetupAction(), confirm2faAction(), disable2faAction(), LoginPage(), LoginTab (+22 more)
+Cohesion: 0.17
+Nodes (14): setContractTermsAction(), createReviewAction(), AUDIT_LABEL, ContractDetailPage(), ContractTermsForm(), Terms, PrintButton(), ReviewForm() (+6 more)
 
 ### Community 35 - "Profile Management"
-Cohesion: 0.32
-Nodes (10): changePasswordAction(), deactivateAccountAction(), updateProfileAction(), POST(), ProfileForms(), ProfileFormsProps, changePassword(), revokeAllSessions() (+2 more)
+Cohesion: 0.47
+Nodes (7): changePasswordAction(), deactivateAccountAction(), updateProfileAction(), ProfileForms(), ProfileFormsProps, changePassword(), revokeAllSessions()
 
 ### Community 36 - "Login & 2FA Flow"
-Cohesion: 0.18
-Nodes (9): API endpoints, Clavium.ro — Imobiliare fără intermediari, Project structure, Roadmap / not yet implemented, Scripts, Security notes, Tech stack, User roles (+1 more)
+Cohesion: 0.22
+Nodes (9): API endpoints, Project structure, Roadmap / not yet implemented, Scripts, Security notes, Tech stack, User roles, Vatrio.ro — Imobiliare fără intermediari (+1 more)
 
 ### Community 37 - "Theme & Auth Layout"
 Cohesion: 0.29
 Nodes (7): 0.4.0 — 2026-06-13, Calitate, SEO, legal, Fotografii, căutare pentru clienți și UX (follow-up 0.4), Infrastructură, Marketplace funcțional (milestone 0.4), Plăți și chirii recurente (milestone 0.5), Securitate
 
 ### Community 38 - "Legal & Static Pages"
-Cohesion: 0.13
-Nodes (15): metadata, PrivacyPage(), sections, NotFound(), metadata, PublicServicesPage(), TERMS_SECTIONS, TermsBlock (+7 more)
+Cohesion: 0.15
+Nodes (15): metadata, PrivacyPage(), sections, DashboardServicesPage(), NotFound(), HomePage(), metadata, PublicServicesPage() (+7 more)
 
 ### Community 39 - "page.tsx"
-Cohesion: 0.21
-Nodes (10): adminVerifyAuditChainAction(), updateUserAction(), AdminPage(), AdminPage(), AdminUserRow, AdminUsersTable(), ROLES, AuditVerifyCard() (+2 more)
+Cohesion: 0.20
+Nodes (20): RFC-4226, RFC-4648, RFC-6238, begin2faSetupAction(), confirm2faAction(), disable2faAction(), groupSecret(), TwoFactorSettings() (+12 more)
 
 ### Community 40 - "StatusBadge.tsx"
-Cohesion: 0.27
-Nodes (7): AdminReportsPage(), REASON_LABELS, PropertyDetailPage(), badgeStyles, StatusBadge(), StatusBadgeProps, getReports()
+Cohesion: 0.40
+Nodes (4): DashboardPropertiesPage(), getProperties(), priceLabel(), PropertyView
 
-### Community 41 - "Inquiry Messaging"
-Cohesion: 0.39
-Nodes (6): closeInquiryAction(), replyInquiryAction(), sendInquiryAction(), InquiryThreadView(), timeFmt, AskOwnerForm()
+### Community 41 - "contracts.ts"
+Cohesion: 0.20
+Nodes (15): cancelSaleAction(), payRentAction(), paySaleAction(), renewContractAction(), returnDepositAction(), SignatureInput, terminateContractAction(), ContractActions() (+7 more)
 
 ### Community 42 - "Inquiry Actions"
 Cohesion: 0.33
@@ -348,24 +354,24 @@ Cohesion: 0.33
 Nodes (6): 1.0.0 — 2026-06-30, Domeniu, Growth, Ops & integrări (env-gated), Securitate & confidențialitate, Trust & safety
 
 ### Community 44 - "Profile Page & Referrals"
-Cohesion: 0.36
-Nodes (6): DashboardProfilePage(), relativeTime(), ReferralCard(), SessionView, getNotifications(), getCurrentSessionId()
+Cohesion: 0.19
+Nodes (12): revokeOtherSessionsAction(), revokeSessionAction(), SessionManager(), SessionView, DeviceMeta, getTransporter(), sendEmail(), deviceLabel() (+4 more)
 
 ### Community 45 - "Package Metadata"
-Cohesion: 0.25
-Nodes (7): engines, node, name, prisma, seed, private, version
+Cohesion: 0.17
+Nodes (11): engines, node, name, overrides, chrome-launcher, tmp, uuid, prisma (+3 more)
 
 ### Community 47 - "Session Revocation"
-Cohesion: 0.12
-Nodes (14): resolveReportAction(), createTicketAction(), CATEGORIES, NewTicketForm(), PRIORITIES, ReportResolveControls(), Button, ButtonProps (+6 more)
+Cohesion: 0.20
+Nodes (14): POST(), POST(), POST(), GET(), GET(), GET(), requireUser(), errorMessage() (+6 more)
 
-### Community 48 - "storageBackend.ts"
-Cohesion: 0.16
-Nodes (9): getS3(), localBackend, PRIVATE_ROOT, PUBLIC_ROOT, publicBaseUrl(), requireEnv(), s3Backend, S3Module (+1 more)
+### Community 48 - "Button.tsx"
+Cohesion: 0.15
+Nodes (10): adminVerifyAuditChainAction(), AuditVerifyCard(), Result, Button, ButtonProps, Variant, variantClass, ConfirmDialog() (+2 more)
 
 ### Community 49 - "tickets.ts"
-Cohesion: 0.21
-Nodes (12): AUTHOR_STATUSES, markTicketReadAction(), replyToTicketAction(), setTicketStatusAction(), STATUS_LABEL, MANAGER_STATUSES, TicketCard(), ConfirmDialog() (+4 more)
+Cohesion: 0.40
+Nodes (5): createTicketAction(), CATEGORIES, NewTicketForm(), PRIORITIES, TicketableContract
 
 ### Community 50 - "Referral System"
 Cohesion: 0.40
@@ -383,9 +389,17 @@ Nodes (5): 0.6.1 — 2026-06-14, Editarea proprietăților, Mod întunecat (dark
 Cohesion: 0.40
 Nodes (5): 1. Landing page (`/`), 2. Registration (`/auth/register`), 3. Login (`/auth/login`), 4. Dashboard (`/dashboard`), How it's intended to be used
 
+### Community 56 - "Next.js Config"
+Cohesion: 0.40
+Nodes (3): nextConfig, securityHeaders, { withSentryConfig }
+
 ### Community 57 - "Vercel Config"
 Cohesion: 0.40
 Nodes (4): buildCommand, crons, regions, $schema
+
+### Community 74 - "E2E Money Path"
+Cohesion: 0.23
+Nodes (14): login(), openRolePages(), signVisibleContract(), assertDisposableDatabase(), cleanMoneyPath(), E2E_ACCOUNTS, moneyPathEnabled(), pemToDer() (+6 more)
 
 ### Community 84 - "page 2.tsx"
 Cohesion: 0.33
@@ -395,9 +409,9 @@ Nodes (7): InquiryThreadPage(), DashboardMessagesPage(), fullName(), getInquirie
 Cohesion: 0.50
 Nodes (3): Ancore de încredere QES (certificate root ale furnizorilor calificați), Cum se populează, Important
 
-### Community 86 - "kyc.ts"
-Cohesion: 0.22
-Nodes (9): FaceMatch, KIND_LABELS, KycEvidence, recordKycVerification(), KYC_ENABLED, KycDecision, KycStatus, TODO: integrare furnizor KYC — creează un „applicant", încarcă documentele, porn (+1 more)
+### Community 86 - "FormField.tsx"
+Cohesion: 0.19
+Nodes (12): LoginPage(), LoginTab, readTab(), subscribeTab(), RegisterPage(), roleOptions, steps, FormField (+4 more)
 
 ### Community 87 - "0.5.1 — 2026-06-14"
 Cohesion: 0.67
@@ -413,67 +427,75 @@ Nodes (5): 1.1 Feedback is a single mutable string — the biggest offender, 1.2
 
 ### Community 126 - "FormField.tsx"
 Cohesion: 0.35
-Nodes (8): findDuplicateListingSignals(), findStolenPhotoSignals(), FraudSignal, hammingDistance(), isSimilar(), POPCOUNT, runFraudChecks(), createSystemReport()
+Nodes (11): signContractAction(), recordAuditSafe(), authorizedOnContract(), cancelSaleContract(), CloseResult, renewRentalContract(), returnRentalDeposit(), terminateRentalContract() (+3 more)
 
 ### Community 127 - "page.tsx"
-Cohesion: 0.38
-Nodes (5): DashboardContractsPage(), MESSAGES, PaymentToast(), contractPaymentProgress(), getContracts()
+Cohesion: 0.32
+Nodes (9): adminModeratePropertyAction(), adminRefundPaymentAction(), adminSetKycStatusAction(), KYC_STATUSES, KycStatus, AdminUserSupportPage(), KycOverrideControls(), PropertyModerateControl() (+1 more)
 
-### Community 128 - "roles.ts"
-Cohesion: 0.25
-Nodes (6): RoleCheckRequest, canAccessResource(), hasPermission(), ROLE_PERMISSIONS, ROLES, UserRole
+### Community 128 - "SaleTermsForm.tsx"
+Cohesion: 0.38
+Nodes (7): setSaleTermsAction(), ronFmt, SaleTerms, SaleTermsForm(), SALE_BRACKETS, saleCommission(), saleCommissionRate()
 
 ### Community 129 - "ThemeToggle.tsx"
 Cohesion: 0.50
 Nodes (4): Larger investments (worth it for production), Medium (1–3 days each), Prioritized roadmap, Quick wins (hours each, do first)
 
-### Community 130 - "storage.ts"
-Cohesion: 0.33
-Nodes (9): ALLOWED_INPUT_FORMATS, ALLOWED_TYPES, deleteKycDocument(), deletePropertyPhoto(), KYC_DOCUMENT_KINDS, KycDocumentKind, saveKycDocument(), savePropertyPhoto() (+1 more)
+### Community 130 - "requireActionUser"
+Cohesion: 0.42
+Nodes (8): AUTHOR_STATUSES, markTicketReadAction(), replyToTicketAction(), setTicketStatusAction(), STATUS_LABEL, MANAGER_STATUSES, TicketCard(), requireActionUser()
 
 ### Community 131 - "sessions.ts"
-Cohesion: 0.57
-Nodes (5): revokeOtherSessionsAction(), revokeSessionAction(), SessionManager(), revokeOtherSessions(), revokeUserSession()
+Cohesion: 0.40
+Nodes (4): Alerte recomandate în Sentry, Sentry — configurare și operare, Variabile de mediu, Verificarea primului deploy
 
 ### Community 132 - "env.ts"
-Cohesion: 0.43
-Nodes (5): register(), isPlaceholder(), validateEnv(), qesConfigured(), storageIsPersistent()
-
-### Community 134 - "referrals.ts"
-Cohesion: 0.52
-Nodes (5): applyReferral(), ensureReferralCode(), getReferralStats(), randomCode(), ReferralStats
+Cohesion: 0.09
+Nodes (27): isPlaceholder(), validateEnv(), contractDigest(), contractDocumentHash(), SignableContract, certName(), checkRevocation(), engine (+19 more)
 
 ### Community 135 - "page.tsx"
-Cohesion: 0.40
-Nodes (4): DashboardPropertiesPage(), getProperties(), priceLabel(), PropertyView
-
-### Community 136 - "terms.ts"
-Cohesion: 0.70
-Nodes (3): acceptTermsAction(), TermsReconsentBanner(), recordTermsConsent()
-
-### Community 137 - "sessions.ts"
 Cohesion: 0.50
-Nodes (4): DeviceMeta, deviceLabel(), getUserSessions(), SessionInfo
+Nodes (3): Automated controls, Reporting a vulnerability, Security policy
+
+### Community 137 - "inquiries.ts"
+Cohesion: 0.39
+Nodes (6): closeInquiryAction(), replyInquiryAction(), sendInquiryAction(), InquiryThreadView(), timeFmt, AskOwnerForm()
+
+### Community 138 - "audit.ts"
+Cohesion: 0.28
+Nodes (8): AuditAction, AuditEntity, AuditInput, AuditTrailItem, canonical(), GENESIS, recordAudit(), verifyAuditChain()
+
+### Community 139 - "page.tsx"
+Cohesion: 0.33
+Nodes (5): TERMS_SECTIONS, TermsBlock, TermsSection, metadata, TermsPage()
+
+### Community 140 - "page.tsx"
+Cohesion: 0.40
+Nodes (4): DashboardOffersPage(), getOffers(), offerStatus(), OfferView
+
+### Community 142 - "proxy.ts"
+Cohesion: 0.67
+Nodes (3): buildCsp(), config, proxy()
 
 ## Knowledge Gaps
-- **464 isolated node(s):** `eslintConfig`, `securityHeaders`, `nextConfig`, `name`, `version` (+459 more)
+- **492 isolated node(s):** `publicRoutes`, `QES_FIXTURES`, `qesKeyPem`, `eslintConfig`, `{ withSentryConfig }` (+487 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **60 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **62 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `errorMessage()` connect `Support Tickets` to `Property & Offer Actions`, `TOTP Algorithm`, `Cron Jobs & Email`, `Commission & Sale Terms`, `Profile Management`, `sessions.ts`, `page.tsx`, `terms.ts`, `Inquiry Messaging`, `Auth Core & Registration`, `Contract Document & Receipts`, `Validation Schemas`, `Property Search & Listing UI`, `Session Revocation`, `tickets.ts`, `kyc.ts`, `Listing Reports & Moderation`, `Reviews & UI Buttons`?**
-  _High betweenness centrality (0.049) - this node is a cross-community bridge._
 - **Why does `devDependencies` connect `Dev Dependencies` to `Package Metadata`?**
-  _High betweenness centrality (0.047) - this node is a cross-community bridge._
+  _High betweenness centrality (0.059) - this node is a cross-community bridge._
 - **Why does `prisma` connect `Dev Dependencies` to `Property & Offer Actions`?**
-  _High betweenness centrality (0.047) - this node is a cross-community bridge._
-- **What connects `eslintConfig`, `NOTE: This file should not be edited`, `securityHeaders` to the rest of the system?**
-  _470 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _High betweenness centrality (0.058) - this node is a cross-community bridge._
+- **Why does `errorMessage()` connect `Session Revocation` to `SaleTermsForm.tsx`, `Property & Offer Actions`, `Property Search & Listing UI`, `requireActionUser`, `Commission & Sale Terms`, `Auth Core & Registration`, `Contract Document & Receipts`, `KYC Verification`, `inquiries.ts`, `Auth API Routes`, `Validation Schemas`, `autopay.ts`, `Homepage Slide Deck`, `Listing Reports & Moderation`, `Admin Users & KYC Pages`, `Dashboard Navigation`, `TOTP Algorithm`, `Profile Management`, `page.tsx`, `contracts.ts`, `Profile Page & Referrals`, `Button.tsx`, `tickets.ts`, `FormField.tsx`, `page.tsx`?**
+  _High betweenness centrality (0.050) - this node is a cross-community bridge._
+- **What connects `publicRoutes`, `QES_FIXTURES`, `qesKeyPem` to the rest of the system?**
+  _498 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Property & Offer Actions` be split into smaller, more focused modules?**
-  _Cohesion score 0.09399585921325052 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07066167290886392 - nodes in this community are weakly interconnected._
 - **Should `Property Search & Listing UI` be split into smaller, more focused modules?**
-  _Cohesion score 0.0546218487394958 - nodes in this community are weakly interconnected._
-- **Should `Cron Jobs & Email` be split into smaller, more focused modules?**
-  _Cohesion score 0.05238095238095238 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10040816326530612 - nodes in this community are weakly interconnected._
+- **Should `Commission & Sale Terms` be split into smaller, more focused modules?**
+  _Cohesion score 0.06623376623376623 - nodes in this community are weakly interconnected._
