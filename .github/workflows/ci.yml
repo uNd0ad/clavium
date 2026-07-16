@@ -35,7 +35,7 @@ jobs:
       JWT_SECRET: ci_secret_used_only_for_build_0123456789abcdef
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v5
         with:
@@ -106,7 +106,7 @@ jobs:
       QES_OCSP_DISABLED: '1'
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v5
         with:
@@ -170,7 +170,7 @@ jobs:
       STRIPE_WEBHOOK_SECRET: ''
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v5
         with:
